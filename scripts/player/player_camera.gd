@@ -25,12 +25,8 @@ func _process(delta: float) -> void:
 		offset = Vector2.ZERO
 
 func update_speed_zoom(boost_active: bool, delta: float) -> void:
-	var target_zoom_value: float = normal_zoom
-
-	if boost_active:
-		target_zoom_value = boost_zoom
-
 	var target_transition: float = 0.0
+
 	if boost_active:
 		target_transition = 1.0
 
@@ -38,7 +34,7 @@ func update_speed_zoom(boost_active: bool, delta: float) -> void:
 	zoom_transition = move_toward(zoom_transition, target_transition, transition_speed * delta)
 
 	var eased_transition: float = smoothstep(0.0, 1.0, zoom_transition)
-	var current_zoom_value: float = lerpf(normal_zoom, target_zoom_value, eased_transition)
+	var current_zoom_value: float = lerpf(normal_zoom, boost_zoom, eased_transition)
 	zoom = Vector2(current_zoom_value, current_zoom_value)
 
 func shake(_duration: float, strength: float) -> void:
