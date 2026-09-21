@@ -56,7 +56,7 @@ func _physics_process(delta: float) -> void:
 
 		var strafe_input: float = Input.get_axis("move_left", "move_right")
 		if strafe_input != 0.0:
-			var right_direction: Vector2 = Vector2.UP.rotated(rotation)
+			var right_direction: Vector2 = Vector2.DOWN.rotated(rotation)
 			velocity += right_direction * strafe_input * forward_acceleration * delta
 
 	forward_direction = Vector2.RIGHT.rotated(rotation)
