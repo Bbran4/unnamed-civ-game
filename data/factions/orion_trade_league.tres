@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="FactionData" load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/factions/faction_data.gd" id="1_script"]
+[ext_resource type="Resource" path="res://data/economy/stations/trade.tres" id="station_trade"]
+[ext_resource type="Resource" path="res://data/economy/stations/refinery.tres" id="station_refinery"]
+[ext_resource type="Resource" path="res://data/economy/stations/shipyard.tres" id="station_shipyard"]
+[ext_resource type="Resource" path="res://data/economy/goods/electronics.tres" id="good_electronics"]
+[ext_resource type="Resource" path="res://data/economy/goods/machinery.tres" id="good_machinery"]
+[ext_resource type="Resource" path="res://data/economy/goods/advanced_components.tres" id="good_advanced_components"]
+
+[resource]
+script = ExtResource("1_script")
+id = "orion_trade_league"
+display_name = "Orion Trade League"
+description = "A commercial network that operates major markets and long-distance cargo routes."
+preferred_station_types = Array[StationTypeData]([ExtResource("station_trade"), ExtResource("station_refinery"), ExtResource("station_shipyard")])
+preferred_goods = Array[GoodData]([ExtResource("good_electronics"), ExtResource("good_machinery"), ExtResource("good_advanced_components")])
