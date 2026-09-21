@@ -8,6 +8,7 @@ var owned_ships: Array[String] = ["starter_shuttle"]
 var active_missions: Array[String] = []
 var completed_missions: Array[String] = []
 var faction_reputation: Dictionary = {}
+var control_style: int = 0
 
 func reset_to_defaults() -> void:
 	credits = 500
@@ -17,3 +18,4 @@ func reset_to_defaults() -> void:
 	active_missions = []
 	completed_missions = []
 	faction_reputation = {}
+	control_style = 0
