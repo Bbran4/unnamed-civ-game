@@ -56,9 +56,9 @@ Star System
 │   ├── NPCs and Services
 │   └── Missions and Activities
 └── Ship Interiors
-    ├── Player Ship
-    ├── Friendly Ships
-    └── Hostile or Disabled Ships
+	├── Player Ship
+	├── Friendly Ships
+	└── Hostile or Disabled Ships
 ```
 
 Actions should persist between modes. Examples include stolen cargo entering the inventory, ship damage remaining until repaired, purchases persisting after departure, and mission results updating shared world state.
