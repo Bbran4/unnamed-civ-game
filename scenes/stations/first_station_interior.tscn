@@ -1,0 +1,33 @@
+[gd_scene format=3]
+
+[node name="FirstStationInterior" type="Node2D"]
+
+[node name="Background" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-900, -600, 900, -600, 900, 600, -900, 600)
+color = Color(0.035, 0.045, 0.07, 1)
+
+[node name="Floor" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-500, -300, 500, -300, 500, 300, -500, 300)
+color = Color(0.16, 0.18, 0.22, 1)
+
+[node name="CentralWalkway" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-90, -300, 90, -300, 90, 300, -90, 300)
+color = Color(0.22, 0.25, 0.3, 1)
+
+[node name="Title" type="Label" parent="."]
+offset_left = -190.0
+offset_top = -260.0
+offset_right = 190.0
+offset_bottom = -220.0
+text = "ORBITAL STATION 01"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 28
+
+[node name="Description" type="Label" parent="."]
+offset_left = -300.0
+offset_top = 330.0
+offset_right = 300.0
+offset_bottom = 370.0
+text = "Docking complete. Station interior prototype."
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 18
