@@ -8,19 +8,29 @@ extends CharacterBody2D
 @export var boost_max_speed: float = 800.0
 @export var boost_acceleration: float = 850.0
 @export var max_hull: float = 100.0
+@export var max_shield: float = 50.0
+@export var shield_regen_rate: float = 15.0
+@export var shield_regen_delay: float = 2.0
 @export var primary_fire_cooldown: float = 0.18
 @export var projectile_scene: PackedScene
 
 var current_hull: float = 100.0
+var current_shield: float = 50.0
+var shield_regen_remaining: float = 0.0
 var fire_cooldown_remaining: float = 0.0
 
 @onready var weapon_muzzle: Marker2D = $WeaponMuzzle
 @onready var camera: Camera2D = $Camera2D
+@onready var status_bars: Control = $PlayerStatusBars/Bars
 
 func _ready() -> void:
 	current_hull = max_hull
+	current_shield = max_shield
+	_update_status_bars()
 
 func _physics_process(delta: float) -> void:
+	_shield_regeneration(delta)
+
 	var turn_input: float = Input.get_axis("move_left", "move_right")
 
 	if turn_input != 0.0:
@@ -73,7 +83,33 @@ func _fire_primary() -> void:
 		fire_cooldown_remaining = primary_fire_cooldown
 
 func take_damage(damage_amount: float) -> void:
-	current_hull = maxf(0.0, current_hull - damage_amount)
+	shield_regen_remaining = shield_regen_delay
+	var remaining_damage: float = damage_amount
+
+	if current_shield > 0.0:
+		var shield_damage: float = minf(current_shield, remaining_damage)
+		current_shield -= shield_damage
+		remaining_damage -= shield_damage
+
+	if remaining_damage > 0.0:
+		current_hull = maxf(0.0, current_hull - remaining_damage)
+
+	_update_status_bars()
 	camera.shake(0.06, 2.0)
+
 	if current_hull <= 0.0:
 		queue_free()
+
+func _shield_regeneration(delta: float) -> void:
+	if shield_regen_remaining > 0.0:
+		shield_regen_remaining = maxf(0.0, shield_regen_remaining - delta)
+		return
+
+	if current_shield >= max_shield:
+		return
+
+	current_shield = minf(max_shield, current_shield + shield_regen_rate * delta)
+	_update_status_bars()
+
+func _update_status_bars() -> void:
+	status_bars.set_values(current_hull, max_hull, current_shield, max_shield)
