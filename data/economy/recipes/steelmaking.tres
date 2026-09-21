@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="ProductionRecipeData" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/economy/production_recipe_data.gd" id="1_script"]
+[ext_resource type="Resource" path="res://data/economy/resources/iron.tres" id="resource_iron"]
+[ext_resource type="Resource" path="res://data/economy/resources/carbon.tres" id="resource_carbon"]
+[ext_resource type="Resource" path="res://data/economy/goods/steel.tres" id="good_steel"]
+[sub_resource type="Resource" id="Ingredient1"]
+resource = ExtResource("resource_iron")
+quantity = 3
+
+[sub_resource type="Resource" id="Ingredient2"]
+resource = ExtResource("resource_carbon")
+quantity = 1
+
+[resource]
+script = ExtResource("1_script")
+id = "steelmaking"
+display_name = "Steelmaking"
+description = "Combines iron ore and carbon into structural steel."
+inputs = Array[RecipeIngredientData]([SubResource("Ingredient1"), SubResource("Ingredient2")])
+output = ExtResource("good_steel")
+output_quantity = 2
+production_time = 90
