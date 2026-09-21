@@ -1,6 +1,12 @@
-[gd_scene format=3]
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/stations/space_station_docking.gd" id="1_docking"]
+
+[sub_resource type="CircleShape2D" id="CircleShape_docking"]
+radius = 180.0
 
 [node name="FirstSpaceStation" type="Node2D" groups=["space_station"]]
+script = ExtResource("1_docking")
 
 [node name="StationBody" type="Polygon2D" parent="."]
 polygon = PackedVector2Array(-90, -45, 90, -45, 120, -15, 120, 15, 90, 45, -90, 45, -120, 15, -120, -15)
@@ -14,3 +20,21 @@ color = Color(0.65, 0.68, 0.72, 1)
 points = PackedVector2Array(-70, -25, 70, -25, 70, 25, -70, 25, -70, -25)
 width = 4.0
 default_color = Color(0.2, 0.8, 1, 1)
+
+[node name="DockingRange" type="Area2D" parent="."]
+monitoring = true
+collision_layer = 0
+collision_mask = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DockingRange"]
+shape = SubResource("CircleShape_docking")
+disabled = true
+
+[node name="DockingPrompt" type="Label" parent="."]
+offset_left = -180.0
+offset_top = 115.0
+offset_right = 180.0
+offset_bottom = 155.0
+text = "Press E to dock"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 22
