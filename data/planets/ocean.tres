@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="PlanetTypeData" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/planets/planet_type_data.gd" id="1_script"]
+[ext_resource type="Resource" path="res://data/economy/resources/water.tres" id="res_water"]
+[ext_resource type="Resource" path="res://data/economy/resources/organic_matter.tres" id="res_organic_matter"]
+[ext_resource type="Resource" path="res://data/economy/resources/carbon.tres" id="res_carbon"]
+[ext_resource type="Resource" path="res://data/economy/resources/helium.tres" id="res_helium"]
+[ext_resource type="Resource" path="res://data/economy/resources/crystals.tres" id="res_crystals"]
+
+[resource]
+script = ExtResource("1_script")
+id = "ocean"
+display_name = "Ocean"
+description = "Water-dominated worlds with floating settlements, aquatic resources, and deep industrial platforms."
+min_radius = 5000
+max_radius = 10000
+min_temperature = 270
+max_temperature = 320
+atmosphere = "Breathable"
+gravity_multiplier = 1.1
+available_resources = Array[ResourceData]([ExtResource("res_water"), ExtResource("res_organic_matter"), ExtResource("res_carbon"), ExtResource("res_helium"), ExtResource("res_crystals")])
