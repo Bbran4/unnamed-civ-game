@@ -10,3 +10,6 @@ extends Resource
 @export var atmosphere: String = ""
 @export var population: int = 0
 @export var resource_abundance: Dictionary = {}
+@export var orbital_distance: float = 0.0
+@export var orbital_angle: float = 0.0
+@export var orbital_period: float = 1.0
