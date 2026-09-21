@@ -30,8 +30,6 @@ func clear_generated_objects() -> void:
         child.queue_free()
 
 func build_system_visuals() -> void:
-    var planet_positions: Dictionary = {}
-
     for planet_index: int in range(generated_system.planets.size()):
         var planet: GeneratedPlanetData = generated_system.planets[planet_index]
         var planet_instance: Node2D = PLANET_SCENE.instantiate() as Node2D
@@ -42,7 +40,6 @@ func build_system_visuals() -> void:
         generated_objects.add_child(planet_instance)
         planet_instance.name = planet.id
         planet_instance.position = get_planet_position(planet_index, generated_system.planets.size())
-        planet_positions[planet.id] = planet_instance.position
 
         var planet_visual: GeneratedPlanetVisual = planet_instance as GeneratedPlanetVisual
         if planet_visual != null:
@@ -58,7 +55,7 @@ func build_system_visuals() -> void:
         generated_objects.add_child(station_instance)
         station_instance.name = station.id
 
-        var planet_position: Vector2 = planet_positions.get(station.planet_id, Vector2.ZERO)
+        var planet_position: Vector2 = get_planet_position_by_id(station.planet_id)
         station_instance.position = planet_position + get_station_offset(station_index)
 
         var station_label: Label = station_instance.get_node("StationLabel") as Label
@@ -76,6 +73,14 @@ func get_planet_position(planet_index: int, total_planets: int) -> Vector2:
     var angle: float = -PI * 0.5 + (TAU * float(planet_index) / float(total_planets))
     var orbit_radius: float = 300.0 + (220.0 * float(planet_index))
     return Vector2(cos(angle), sin(angle)) * orbit_radius
+
+func get_planet_position_by_id(planet_id: String) -> Vector2:
+    for planet_index: int in range(generated_system.planets.size()):
+        var planet: GeneratedPlanetData = generated_system.planets[planet_index]
+        if planet.id == planet_id:
+            return get_planet_position(planet_index, generated_system.planets.size())
+
+    return Vector2.ZERO
 
 func get_station_offset(station_index: int) -> Vector2:
     var angle: float = float(station_index) * TAU / maxf(float(station_count), 1.0)
