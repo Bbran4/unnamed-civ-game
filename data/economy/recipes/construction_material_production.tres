@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="ProductionRecipeData" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/economy/production_recipe_data.gd" id="1_script"]
+[ext_resource type="Resource" path="res://data/economy/resources/silicates.tres" id="resource_silicates"]
+[ext_resource type="Resource" path="res://data/economy/goods/steel.tres" id="good_steel"]
+[ext_resource type="Resource" path="res://data/economy/goods/construction_materials.tres" id="good_construction_materials"]
+[sub_resource type="Resource" id="Ingredient1"]
+good = ExtResource("good_steel")
+quantity = 2
+
+[sub_resource type="Resource" id="Ingredient2"]
+resource = ExtResource("resource_silicates")
+quantity = 2
+
+[resource]
+script = ExtResource("1_script")
+id = "construction_material_production"
+display_name = "Construction Material Production"
+description = "Produces construction materials from steel and mineral feedstock."
+inputs = Array[RecipeIngredientData]([SubResource("Ingredient1"), SubResource("Ingredient2")])
+output = ExtResource("good_construction_materials")
+output_quantity = 3
+production_time = 120
