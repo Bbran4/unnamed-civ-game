@@ -1,14 +1,17 @@
-[gd_resource type="Resource" script_class="ProductionRecipeData" load_steps=7 format=3]
+[gd_resource type="Resource" script_class="ProductionRecipeData" load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/economy/production_recipe_data.gd" id="1_script"]
+[ext_resource type="Script" path="res://scripts/economy/recipe_ingredient_data.gd" id="ingredient_script"]
 [ext_resource type="Resource" path="res://data/economy/resources/organic_matter.tres" id="resource_organic_matter"]
 [ext_resource type="Resource" path="res://data/economy/resources/water.tres" id="resource_water"]
 [ext_resource type="Resource" path="res://data/economy/goods/fertilizer.tres" id="good_fertilizer"]
 [sub_resource type="Resource" id="Ingredient1"]
+script = ExtResource("ingredient_script")
 resource = ExtResource("resource_organic_matter")
 quantity = 2
 
 [sub_resource type="Resource" id="Ingredient2"]
+script = ExtResource("ingredient_script")
 resource = ExtResource("resource_water")
 quantity = 1
 
