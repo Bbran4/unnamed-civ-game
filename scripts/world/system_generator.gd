@@ -24,13 +24,27 @@ func generate_system(system_seed: int) -> GeneratedSystemData:
         push_error("System generation produced no planets.")
         return generated_system
 
-    for station_index: int in range(mini(station_count, generated_system.planets.size())):
-        var planet_index: int = rng.randi_range(0, generated_system.planets.size() - 1)
+    var planet_indices: Array[int] = []
+    for planet_index: int in range(generated_system.planets.size()):
+        planet_indices.append(planet_index)
+
+    shuffle_indices(planet_indices, rng)
+
+    var generated_station_count: int = mini(station_count, generated_system.planets.size())
+    for station_index: int in range(generated_station_count):
+        var planet_index: int = planet_indices[station_index]
         var planet: GeneratedPlanetData = generated_system.planets[planet_index]
         var station: GeneratedStationData = station_generator.generate_station(station_index, planet, rng)
         generated_system.stations.append(station)
 
     return generated_system
+
+func shuffle_indices(indices: Array[int], rng: RandomNumberGenerator) -> void:
+    for index: int in range(indices.size() - 1, 0, -1):
+        var swap_index: int = rng.randi_range(0, index)
+        var current_value: int = indices[index]
+        indices[index] = indices[swap_index]
+        indices[swap_index] = current_value
 
 func generate_system_name(rng: RandomNumberGenerator) -> String:
     var names: Array[String] = [
