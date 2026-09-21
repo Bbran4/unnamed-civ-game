@@ -66,6 +66,7 @@ The primary ship control style is inspired by **Star Valor**.
 | Left Mouse Button | Fire primary weapon |
 | Right Mouse Button | Secondary weapon |
 | E | Dock / interact |
+| M | Open star map |
 | Tab | Target |
 | Esc | Pause / menu |
 
