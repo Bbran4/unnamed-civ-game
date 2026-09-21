@@ -19,6 +19,7 @@ func apply_data(data: GeneratedPlanetData) -> void:
         return
 
     var visual_radius: float = get_visual_radius(planet_data.radius)
+    visual_radius *= 2.0
     var visual_scale: float = visual_radius / BASE_SCENE_RADIUS
     scale = Vector2.ONE * visual_scale
 
