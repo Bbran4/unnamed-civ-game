@@ -1,14 +1,17 @@
-[gd_resource type="Resource" script_class="ProductionRecipeData" load_steps=7 format=3]
+[gd_resource type="Resource" script_class="ProductionRecipeData" load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/economy/production_recipe_data.gd" id="1_script"]
+[ext_resource type="Script" path="res://scripts/economy/recipe_ingredient_data.gd" id="ingredient_script"]
 [ext_resource type="Resource" path="res://data/economy/resources/hydrogen.tres" id="resource_hydrogen"]
 [ext_resource type="Resource" path="res://data/economy/resources/carbon.tres" id="resource_carbon"]
 [ext_resource type="Resource" path="res://data/economy/goods/fuel.tres" id="good_fuel"]
 [sub_resource type="Resource" id="Ingredient1"]
+script = ExtResource("ingredient_script")
 resource = ExtResource("resource_hydrogen")
 quantity = 3
 
 [sub_resource type="Resource" id="Ingredient2"]
+script = ExtResource("ingredient_script")
 resource = ExtResource("resource_carbon")
 quantity = 1
 
