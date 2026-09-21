@@ -34,6 +34,14 @@ const MAX_ORBIT_DISTANCE: float = 15400.0
     $Panel/SystemList/NexusButton
 ]
 
+@onready var orbit_lines: Array[Line2D] = [
+    $Panel/MapArea/OrbitMap/Orbit1,
+    $Panel/MapArea/OrbitMap/Orbit2,
+    $Panel/MapArea/OrbitMap/Orbit3,
+    $Panel/MapArea/OrbitMap/Orbit4,
+    $Panel/MapArea/OrbitMap/Orbit5
+]
+
 @onready var planet_markers: Array[Polygon2D] = [
     $Panel/MapArea/OrbitMap/Planet1,
     $Panel/MapArea/OrbitMap/Planet2,
