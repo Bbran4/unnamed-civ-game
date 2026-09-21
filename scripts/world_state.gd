@@ -9,6 +9,8 @@ var active_missions: Array[String] = []
 var completed_missions: Array[String] = []
 var faction_reputation: Dictionary = {}
 var control_style: int = 0
+var returning_from_station: bool = false
+var station_exit_position: Vector2 = Vector2(950.0, 120.0)
 
 func reset_to_defaults() -> void:
 	credits = 500
@@ -19,3 +21,5 @@ func reset_to_defaults() -> void:
 	completed_missions = []
 	faction_reputation = {}
 	control_style = 0
+	returning_from_station = false
+	station_exit_position = Vector2(950.0, 120.0)
