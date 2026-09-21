@@ -183,11 +183,11 @@ func is_player_in_danger_zone() -> bool:
     if player_ship == null:
         return true
 
-    var danger_method: Callable = player_ship.get("is_in_danger_zone")
-    if not danger_method.is_valid():
+    if not player_ship.has_method("is_in_danger_zone"):
         return true
 
-    return danger_method.call()
+    var danger_result: Variant = player_ship.call("is_in_danger_zone")
+    return bool(danger_result)
 
 func print_system_summary() -> void:
     print("Generated system: %s" % generated_system.display_name)
