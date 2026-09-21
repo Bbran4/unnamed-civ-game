@@ -158,6 +158,28 @@ offset_right = 1100.0
 offset_bottom = 385.0
 text = "WARP DRIVE"
 
+[node name="StationList" type="VBoxContainer" parent="Panel"]
+offset_left = 820.0
+offset_top = 480.0
+offset_right = 1100.0
+offset_bottom = 610.0
+theme_override_constants/separation = 6
+
+[node name="Heading" type="Label" parent="Panel/StationList"]
+text = "STATIONS"
+
+[node name="Station1Button" type="Button" parent="Panel/StationList"]
+custom_minimum_size = Vector2(0, 32)
+text = "Station"
+
+[node name="Station2Button" type="Button" parent="Panel/StationList"]
+custom_minimum_size = Vector2(0, 32)
+text = "Station"
+
+[node name="Station3Button" type="Button" parent="Panel/StationList"]
+custom_minimum_size = Vector2(0, 32)
+text = "Station"
+
 [node name="CloseButton" type="Button" parent="Panel"]
 offset_left = 820.0
 offset_top = 400.0
