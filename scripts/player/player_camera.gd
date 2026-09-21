@@ -2,13 +2,15 @@ extends Camera2D
 
 @export var normal_zoom: float = 1.0
 @export var boost_zoom: float = 0.62
-@export var zoom_response: float = 5.0
+@export var zoom_response: float = 2.0
 @export var shake_decay: float = 10.0
 
 var shake_strength: float = 0.0
+var zoom_transition: float = 0.0
 
 func _ready() -> void:
 	zoom = Vector2(normal_zoom, normal_zoom)
+	zoom_transition = 0.0
 
 func _process(delta: float) -> void:
 	shake_strength = maxf(0.0, shake_strength - shake_decay * delta)
@@ -28,9 +30,16 @@ func update_speed_zoom(boost_active: bool, delta: float) -> void:
 	if boost_active:
 		target_zoom_value = boost_zoom
 
-	var target_zoom: Vector2 = Vector2(target_zoom_value, target_zoom_value)
-	var zoom_weight: float = minf(1.0, delta * zoom_response)
-	zoom = zoom.lerp(target_zoom, zoom_weight)
+	var target_transition: float = 0.0
+	if boost_active:
+		target_transition = 1.0
 
-func shake(duration: float, strength: float) -> void:
+	var transition_step: float = zoom_response * delta
+	zoom_transition = move_toward(zoom_transition, target_transition, transition_step)
+
+	var eased_transition: float = smoothstep(0.0, 1.0, zoom_transition)
+	var current_zoom_value: float = lerpf(normal_zoom, target_zoom_value, eased_transition)
+	zoom = Vector2(current_zoom_value, current_zoom_value)
+
+func shake(_duration: float, strength: float) -> void:
 	shake_strength = maxf(shake_strength, strength)
