@@ -2,6 +2,7 @@ class_name SpaceSystem
 extends Node2D
 
 @export var system_id: String = "asterion"
+@export var system_display_name: String = "Asterion"
 @export var system_seed: int = 18472931
 @export var planet_count: int = 5
 @export var station_count: int = 3
@@ -36,6 +37,9 @@ func generate_and_build_system() -> void:
     generator.station_count = station_count
 
     generated_system = generator.generate_system(system_seed)
+    if not system_display_name.is_empty():
+        generated_system.display_name = system_display_name
+
     clear_generated_objects()
     planet_instances.clear()
     station_instances.clear()
