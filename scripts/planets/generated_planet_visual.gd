@@ -3,6 +3,12 @@ extends Node2D
 
 @export var planet_data: GeneratedPlanetData
 
+const MIN_VISUAL_RADIUS: float = 80.0
+const MAX_VISUAL_RADIUS: float = 600.0
+const MIN_PLANET_RADIUS: float = 2500.0
+const MAX_PLANET_RADIUS: float = 80000.0
+const BASE_SCENE_RADIUS: float = 180.0
+
 @onready var planet_body: Polygon2D = $PlanetBody
 @onready var atmosphere: Polygon2D = $Atmosphere
 @onready var planet_label: Label = $PlanetLabel
@@ -12,14 +18,8 @@ func apply_data(data: GeneratedPlanetData) -> void:
     if planet_data == null:
         return
 
-    var visual_radius: float = remap(
-        clampf(planet_data.radius, 2500.0, 80000.0),
-        2500.0,
-        80000.0,
-        90.0,
-        220.0
-    )
-    var visual_scale: float = visual_radius / 180.0
+    var visual_radius: float = get_visual_radius(planet_data.radius)
+    var visual_scale: float = visual_radius / BASE_SCENE_RADIUS
     scale = Vector2.ONE * visual_scale
 
     planet_body.color = get_planet_color(planet_data.planet_type.id)
@@ -29,6 +29,20 @@ func apply_data(data: GeneratedPlanetData) -> void:
         planet_data.display_name,
         planet_data.planet_type.display_name
     ]
+
+func get_visual_radius(planet_radius: float) -> float:
+    var clamped_radius: float = clampf(
+        planet_radius,
+        MIN_PLANET_RADIUS,
+        MAX_PLANET_RADIUS
+    )
+    return remap(
+        clamped_radius,
+        MIN_PLANET_RADIUS,
+        MAX_PLANET_RADIUS,
+        MIN_VISUAL_RADIUS,
+        MAX_VISUAL_RADIUS
+    )
 
 func get_planet_color(planet_type_id: String) -> Color:
     match planet_type_id:
