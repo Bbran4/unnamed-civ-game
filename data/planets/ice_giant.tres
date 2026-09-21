@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="PlanetTypeData" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/planets/planet_type_data.gd" id="1_script"]
+[ext_resource type="Resource" path="res://data/economy/resources/hydrogen.tres" id="res_hydrogen"]
+[ext_resource type="Resource" path="res://data/economy/resources/helium.tres" id="res_helium"]
+[ext_resource type="Resource" path="res://data/economy/resources/water.tres" id="res_water"]
+[ext_resource type="Resource" path="res://data/economy/resources/crystals.tres" id="res_crystals"]
+
+[resource]
+script = ExtResource("1_script")
+id = "ice_giant"
+display_name = "Ice Giant"
+description = "Cold giant worlds rich in volatile compounds and exotic atmospheric resources."
+min_radius = 18000
+max_radius = 50000
+min_temperature = 40
+max_temperature = 220
+atmosphere = "Gas"
+gravity_multiplier = 1.8
+available_resources = Array[ResourceData]([ExtResource("res_hydrogen"), ExtResource("res_helium"), ExtResource("res_water"), ExtResource("res_crystals")])
