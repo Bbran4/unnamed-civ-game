@@ -51,7 +51,7 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 
-	camera.update_speed_zoom(velocity.length(), current_max_speed)
+	camera.update_speed_zoom(boost_active)
 
 	fire_cooldown_remaining = maxf(0.0, fire_cooldown_remaining - delta)
 	if Input.is_action_pressed("primary_fire"):
