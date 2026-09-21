@@ -214,51 +214,72 @@ Ownership and usability may be separate. A player can potentially purchase an it
 
 ## Technical Architecture
 
-Space combat, ground exploration, boarding and progression should be separate systems connected through shared world state.
+The project is organized by game domain so new systems have a predictable home without forcing everything into one large manager or script.
 
 ```text
 res://
-├── scenes/
-│   ├── main/game.tscn
-│   ├── space/space_map.tscn
-│   ├── space/player_ship.tscn
-│   ├── space/enemy_ship.tscn
-│   ├── ground/station.tscn
-│   ├── ground/player_character.tscn
-│   ├── boarding/boarding_map.tscn
-│   └── ui/
-├── scripts/
-│   ├── player_ship.gd
-│   ├── enemy_ship.gd
-│   ├── player_character.gd
-│   ├── mission_manager.gd
-│   ├── world_state.gd
-│   ├── scene_manager.gd
-│   └── save_manager.gd
-├── resources/
-│   ├── missions/
+├── assets/
 │   ├── ships/
+│   ├── enemies/
+│   ├── planets/
+│   ├── stations/
+│   ├── characters/
 │   ├── weapons/
 │   ├── items/
-│   └── factions/
+│   ├── effects/
+│   ├── environment/
+│   ├── ui/
+│   └── audio/
+│
+├── data/
+│   ├── ships/
+│   ├── enemies/
+│   ├── planets/
+│   ├── weapons/
+│   ├── items/
+│   ├── missions/
+│   ├── factions/
+│   └── economy/
+│
+├── scenes/
+│   ├── main/
+│   ├── player/
+│   ├── enemies/
+│   ├── planets/
+│   ├── ships/
+│   ├── stations/
+│   ├── boarding/
+│   ├── ui/
+│   └── world/
+│
+├── scripts/
+│   ├── player/
+│   ├── enemies/
+│   ├── planets/
+│   ├── ships/
+│   ├── managers/
+│   ├── economy/
+│   ├── missions/
+│   ├── boarding/
+│   ├── ui/
+│   └── world/
+│
 └── README.md
 ```
 
-A minimal shared state may include:
+### Folder Responsibilities
 
-```gdscript
-extends Node
+| Folder | Purpose |
+|---|---|
+| `assets/` | Visuals, audio, effects and other imported game assets |
+| `data/` | Game definitions and configuration such as ships, weapons, missions and economy data |
+| `scenes/` | Godot scenes grouped by gameplay domain |
+| `scripts/` | Gameplay and system logic grouped by gameplay domain |
+| `scripts/managers/` | Cross-system managers such as scene, mission and save management |
 
-var credits: int = 500
-var current_ship_id: String = "starter_shuttle"
-var inventory: Dictionary = {}
-var owned_ships: Array[String] = ["starter_shuttle"]
-var active_missions: Array = []
-var completed_missions: Array = []
-var faction_reputation: Dictionary = {}
-```
+The structure is deliberately prepared before gameplay implementation. Empty directories are kept in Git with placeholder files and will be replaced as real content is added.
 
-This is a starting example, not a final architecture. Add systems only when they are needed.
+Space combat, ground exploration, boarding and progression should remain separate systems connected through shared world state.
 
 ## Development Roadmap
 
