@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bet08okbfea60"]
 
 [ext_resource type="Script" uid="uid://ccxvq4njig7ld" path="res://scripts/game.gd" id="1_game"]
-[ext_resource type="PackedScene" uid="uid://djypow7in5ekw" path="res://scenes/world/space_prototype.tscn" id="2_space"]
+[ext_resource type="PackedScene" path="res://scenes/world/space_prototype.tscn" id="2_space"]
 [ext_resource type="PackedScene" path="res://scenes/ui/control_style_selector.tscn" id="3_controls"]
 [ext_resource type="PackedScene" path="res://scenes/ui/offscreen_indicators.tscn" id="4_indicators"]
 
