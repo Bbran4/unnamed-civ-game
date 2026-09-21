@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="ProductionRecipeData" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/economy/production_recipe_data.gd" id="1_script"]
+[ext_resource type="Resource" path="res://data/economy/resources/organic_matter.tres" id="resource_organic_matter"]
+[ext_resource type="Resource" path="res://data/economy/resources/water.tres" id="resource_water"]
+[ext_resource type="Resource" path="res://data/economy/goods/food.tres" id="good_food"]
+[sub_resource type="Resource" id="Ingredient1"]
+resource = ExtResource("resource_organic_matter")
+quantity = 2
+
+[sub_resource type="Resource" id="Ingredient2"]
+resource = ExtResource("resource_water")
+quantity = 1
+
+[resource]
+script = ExtResource("1_script")
+id = "food_processing"
+display_name = "Food Processing"
+description = "Processes organic matter and water into consumable food."
+inputs = Array[RecipeIngredientData]([SubResource("Ingredient1"), SubResource("Ingredient2")])
+output = ExtResource("good_food")
+output_quantity = 3
+production_time = 60
