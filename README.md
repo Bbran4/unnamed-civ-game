@@ -302,13 +302,13 @@ Space combat, ground exploration, boarding and progression should remain separat
 
 **Goal:** Prove that flying and fighting are enjoyable.
 
-- [ ] Space scene and camera
-- [ ] Player ship movement
-- [ ] Mouse or right-stick aiming
-- [ ] Primary weapon and projectiles
-- [ ] One enemy ship
-- [ ] Enemy movement and firing
-- [ ] Collision and damage
+- [x] Space scene and camera
+- [x] Player ship movement
+- [x] Mouse or right-stick aiming
+- [x] Primary weapon and projectiles
+- [x] One enemy ship
+- [x] Enemy movement and firing
+- [x] Collision and damage
 - [ ] Ship destruction or disabling
 - [ ] Combat feedback
 - [ ] Salvage or reward drop
