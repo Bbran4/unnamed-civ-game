@@ -32,4 +32,5 @@ func _dock_player() -> void:
 		push_error("Docking destination scene is not configured.")
 		return
 
+	WorldState.station_exit_position = global_position + Vector2(250.0, 0.0)
 	SceneManager.change_scene(destination_scene)
