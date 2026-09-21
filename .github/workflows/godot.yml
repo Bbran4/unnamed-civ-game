@@ -1,0 +1,25 @@
+name: Godot Project Check
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Godot 4.7.2
+        run: |
+          wget -q https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip
+          unzip -q Godot_v4.7.2-stable_linux.x86_64.zip
+          chmod +x Godot_v4.7.2-stable_linux.x86_64
+
+      - name: Validate project
+        run: ./Godot_v4.7.2-stable_linux.x86_64 --headless --path . --editor --quit
+
+      - name: Launch project
+        run: timeout 10s ./Godot_v4.7.2-stable_linux.x86_64 --headless --path . --quit-after 3
