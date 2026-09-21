@@ -1,220 +1,512 @@
-# Untitled Space RPG
+# Unnamed Space Game
 
-A top-down 2D space detective RPG inspired by Freelancer and GTA 2, built around a high-profile murder investigation. The player flies between locations, gathers evidence, questions people, boards ships and fights when an investigation turns hostile.
+A top-down 2D space RPG inspired by **Freelancer, GTA 2 and Star Valor**.
 
-The player is a pilot, traveller and opportunist. They can fight in space, travel between star systems, trade goods, gather salvage, accept missions, upgrade ships and equipment, explore stations on foot, and board hostile or disabled ships for contained ground encounters.
+The player flies a ship through a living space economy, docks at stations, walks around on foot, trades goods, fights, salvages wrecks, boards ships and eventually takes on missions that react to the world around them.
 
-The game uses a **hybrid world structure**. Space areas, stations, planetary locations and ship interiors are connected through transitions rather than requiring one fully seamless map. This keeps the project achievable while preserving the feeling of an interconnected world.
+The game is deliberately built as a **hybrid world**. Space, stations, planetary locations and ship interiors are separate Godot scenes connected through transitions. This keeps the project achievable while still letting the player move between different layers of the world.
 
 ## Core Identity
 
-**Top-down 2D space detective RPG + Star Valor-style ship combat + explorable stations + ship boarding.**
+**Freelancer-style space RPG + Star Valor-style ship combat + GTA 2-style top-down exploration and interaction.**
 
 ### Gameplay Modes
 
-- **Space Mode:** Fly ships, fight enemies, travel, trade, salvage and interact with other vessels.
-- **Ground Mode:** Leave the ship, explore stations and ship interiors, speak to NPCs, accept missions, shop and fight on foot when necessary.
+- **Space Mode:** Fly, fight, travel, dock, trade and salvage.
+- **Station Mode:** Leave the ship, walk around stations, visit services and interact with NPCs.
+- **Boarding Mode:** Enter ship interiors and complete contained objectives.
+- **World Simulation:** Planets, stations, factions, resources, production and prices create the underlying world.
 
-The ship should feel like both a vehicle and a home. Stations and boarded ships should provide places where stories, danger and opportunities unfold.
+The player should feel like they are moving through a place that exists independently of whatever mission they currently have.
 
-## Design Pillars
+---
 
-1. Give the player freedom to fight, trade, explore, salvage or complete missions.
-2. Make the world enterable. The player is not permanently attached to the cockpit.
-3. Use meaningful progression across ships, character equipment, cargo and reputation.
-4. Keep combat active and understandable. Progression should improve capability without removing player agency.
-5. Build the smallest convincing version first. Do not build a universe before proving the core loop.
-6. Every completed milestone must leave the project playable.
+# Design Pillars
 
-## Core Gameplay Loop
+1. **The world comes first.** Planets, stations, factions and markets should make sense before missions are layered on top.
+2. **Space and ground are both playable.** The ship is not just a menu with wings.
+3. **The economy should create opportunities.** Shortages, production and demand should naturally create reasons to travel.
+4. **Systems should interact.** A shortage of one resource should be capable of affecting several goods and stations.
+5. **Keep the scope finishable.** Build one convincing system before attempting a giant galaxy.
+6. **Every milestone should leave the game playable.**
+7. **Data describes the universe. Generators create it. Managers simulate it. Scenes display it.**
 
-**Receive Case → Visit Crime Scene → Collect Evidence → Identify Leads → Travel → Question, Search or Board → Connect Evidence → Pursue the Truth → Resolve the Case**
+---
 
-A longer-term loop may include:
+# Core Gameplay Loop
 
-**Receive Mission → Travel to Target → Fight or Board a Ship → Complete Objective → Escape or Return → Receive Payment → Upgrade Ship and Character → Unlock New Opportunities**
+The long-term loop is intended to emerge from the world rather than being completely scripted:
 
-## World Structure
+**Explore → Discover Opportunity → Travel → Trade / Fight / Salvage / Board → Earn Credits → Upgrade → Reach New Opportunities**
 
-```text
-Star System
-├── Space Map
-│   ├── Player Ship
-│   ├── Enemy and Civilian Ships
-│   ├── Cargo and Salvage
-│   ├── Travel Points
-│   └── Docking and Boarding Interactions
-├── Orbital Station
-│   ├── Mission Office
-│   ├── Shipyard
-│   ├── Trade Market
-│   ├── Equipment Vendor
-│   ├── Social Area
-│   └── Docking Bay
-├── Planetary Location
-│   ├── Landing Area
-│   ├── NPCs and Services
-│   └── Missions and Activities
-└── Ship Interiors
-	├── Player Ship
-	├── Friendly Ships
-	└── Hostile or Disabled Ships
-```
+Examples:
 
-Actions should persist between modes. Examples include stolen cargo entering the inventory, ship damage remaining until repaired, purchases persisting after departure, and mission results updating shared world state.
+**Cheap Fuel → Buy Cargo → Travel to Shortage → Sell for Profit → Upgrade Ship**
 
-## Space Combat
+**Mining Shortage → Industrial Production Falls → Manufactured Goods Become Scarce → Prices Rise → Trade Opportunity Appears**
 
-Space combat uses a **twin-stick control scheme**.
+**Hostile Ship → Fight → Disable → Board → Recover Cargo → Sell Cargo**
+
+Missions will eventually sit on top of these systems instead of being the only reason the player does anything.
+
+---
+
+# Space Combat
+
+The primary ship control style is inspired by **Star Valor**.
+
+### Default Controls
 
 | Input | Action |
 |---|---|
-| WASD / Left Stick | Move or thrust |
-| Mouse / Right Stick | Aim weapons |
-| Left Mouse Button / Right Trigger | Fire primary weapon |
-| Right Mouse Button / Left Trigger | Secondary weapon or ability |
-| Space / Button | Boost or evade |
-| E / Button | Interact, dock or begin boarding |
-| Tab | Cycle targets or view target information |
-| Esc | Pause or open the system menu |
+| W | Accelerate forward |
+| S | Reverse / brake |
+| A / D | Rotate |
+| Shift | Boost |
+| Left Mouse Button | Fire primary weapon |
+| Right Mouse Button | Secondary weapon |
+| E | Dock / interact |
+| Tab | Target |
+| Esc | Pause / menu |
 
-The initial movement model should be arcade-based. A hybrid momentum model can be tested later if it improves combat without making basic movement frustrating.
+An alternate mouse-aim control style exists for testing.
 
 ### Initial Ship Systems
 
-- Hull health
-- Optional shields or armour
+- Hull
+- Shields
+- Shield regeneration
+- Acceleration
+- Maximum speed
+- Reverse movement
+- Boost
 - Primary weapon
-- Secondary weapon or special ability
-- Movement and aiming
-- Damage and destruction or disabling
-- Cargo capacity
-- Repair cost
-- Ship ownership and identification
+- Projectiles
+- Damage and destruction
+- Salvage
+- Credits
 
-Targeted components such as engines, weapons, cargo holds and power systems should be added only after basic combat is stable.
+The combat model should remain arcade-like and responsive. More detailed ship systems can be added only when they improve the game.
 
-### First Enemy
+---
 
-The first enemy should be able to detect the player, approach or maintain combat distance, aim and fire, take damage, retreat or become disabled, and drop salvage or a mission item.
+# Stations and On-Foot Exploration
 
-## Stations and On-Foot Exploration
+Stations are physical locations rather than menus.
 
-Stations are safe or semi-safe hubs where the player can interact with the world outside the cockpit.
+The player can:
 
-| Location | Purpose |
-|---|---|
-| Mission Office | Accept contracts, quests and faction work |
-| Shipyard | Buy, sell, repair and upgrade ships |
-| Trade Market | Buy and sell goods and resources |
-| Equipment Vendor | Purchase weapons, armour, tools and consumables |
-| Social Area | Meet NPCs, discover rumours and access dialogue |
-| Docking Bay | Enter and leave the player's ship |
+- Dock with a station
+- Leave the ship
+- Walk around
+- Talk to NPCs
+- Use terminals
+- Visit markets
+- Return to the ship
+- Launch back into space
 
-### Initial Ground Mechanics
+Station interiors are separate scenes.
 
-- Top-down character movement
-- Interaction prompts
-- One NPC or mission terminal
-- Basic dialogue or interaction
-- Shop interface
-- Health and damage
-- Simple ranged weapon
-- Station and ship-interior transitions
-- Return to the player's ship
+The current prototype contains:
 
-On-foot gameplay is initially a supporting layer, not a second full-scale RPG. It should add variety and meaningful objectives without multiplying the project's scope.
+- Docking bay
+- Top-down player movement
+- Docked ship
+- Dockmaster NPC
+- Station market terminal
+- Station-to-space return
 
-## Ship Boarding
+---
 
-Boarding is one of the defining features of the project. The early implementation should use a **separate interior map** loaded through a boarding transition. Seamless boarding can be evaluated later.
+# The World
 
-### Boarding Flow
+The world is built around a simple hierarchy:
 
 ```text
-Encounter Ship
-→ Disable or Meet Boarding Requirement
-→ Initiate Boarding
-→ Load Ship Interior
-→ Complete Objective
-→ Extract
-→ Return to Space
-→ Apply Mission and World-State Changes
+Galaxy
+└── Star System
+    ├── Planets
+    │   ├── Type
+    │   ├── Size
+    │   ├── Gravity
+    │   ├── Temperature
+    │   ├── Population
+    │   └── Resources
+    │
+    └── Stations
+        ├── Type
+        ├── Faction
+        ├── Population
+        ├── Industries
+        ├── Imports
+        ├── Exports
+        └── Market
 ```
 
-### Boarding Mission Types
+The first procedural test system targets:
 
-- **Cargo Theft:** Locate marked cargo and escape.
-- **Sabotage:** Reach a system and disable it.
-- **Rescue:** Find and escort an NPC to extraction.
-- **Capture:** Secure a target or hold a location.
-- **Technology Recovery:** Retrieve a specific item.
-- **Inspection:** Investigate a ship without necessarily destroying it.
+- **5 planets**
+- **3 stations**
+- **5 factions**
+- Multiple planet types
+- Raw resources
+- Processed goods
+- Production recipes
+- Dynamic supply and demand
+- Dynamic prices
 
-The first boarding prototype should contain one small interior, one enemy type, one clear objective and a reliable extraction flow.
+---
 
-## Missions
+# Planets
 
-Missions connect combat, travel, stations, boarding and progression.
+Planets are procedurally generated from data-defined planet types.
 
-| Mission | Core Activity |
+Current types:
+
+- Barren
+- Frozen
+- Habitable
+- Desert
+- Ocean
+- Volcanic
+- Gas Giant
+- Ice Giant
+
+Generated properties include:
+
+- Unique name
+- Radius
+- Gravity
+- Temperature
+- Atmosphere
+- Population
+- Resource availability
+- Resource abundance
+
+Gravity is intentionally part of the world data because eventually planetary environments should affect how ships behave.
+
+For example, a large gas giant should not behave like a small barren moon.
+
+---
+
+# Resources
+
+Resources are raw materials extracted from planets and other locations.
+
+Current resources:
+
+| Resource | Use |
 |---|---|
-| Cargo Delivery | Deliver goods to a destination |
-| Pirate Interception | Locate and defeat a hostile ship |
-| Salvage Recovery | Recover cargo or wreckage |
-| Emergency Rescue | Rescue an NPC |
-| Boarding Contract | Complete an interior objective |
-| Escort | Protect a travelling ship |
-| Investigation | Visit locations and collect information |
+| Water | Life support, agriculture and industry |
+| Hydrogen | Fuel production |
+| Helium | Advanced industry |
+| Iron Ore | Steel and manufacturing |
+| Copper Ore | Electronics |
+| Titanium Ore | Shipbuilding |
+| Silicates | Construction and electronics |
+| Carbon | Fuels and alloys |
+| Uranium Ore | Specialised power |
+| Rare Earths | Advanced electronics |
+| Organic Matter | Food and medical production |
+| Industrial Crystals | Sensors and advanced components |
 
-Mission data may include title, description, issuer, destination, objective, requirements, reward, failure conditions and follow-up consequences.
+Resources have:
 
-## Economy and Progression
+- ID
+- Name
+- Description
+- Base value
+- Mass
+- Category
 
-The initial economy should remain small and understandable:
+---
 
-- Credits
-- Cargo items
-- Salvage
-- Repair costs
-- Ship and weapon costs
-- Mission rewards
+# Goods
 
-### Ship Progression
+Goods are processed commodities produced by industries.
 
-- Hull durability
-- Shields or armour
-- Weapon damage and fire rate
-- Movement and handling
-- Cargo capacity
-- Utility slots
-- Special abilities
-- Ship class and size
+Current goods:
 
-### Character Progression
+- Fuel
+- Food
+- Steel
+- Electronics
+- Machinery
+- Fertilizer
+- Ship Components
+- Medical Supplies
+- Construction Materials
+- Advanced Components
 
-- Health
-- On-foot weapons
-- Armour
-- Inventory capacity
-- Boarding abilities
-- Utility tools
-- Dialogue or mission access
+Resources and goods are deliberately separate.
 
-### World Progression
+**Resources are extracted. Goods are manufactured.**
 
-- Credits
-- Faction reputation
-- New systems and destinations
-- Better shops and missions
-- Ship and equipment ownership
-- Unlockable services
+---
 
-Ownership and usability may be separate. A player can potentially purchase an item before meeting the requirements to use it effectively.
+# Production
 
-## Technical Architecture
+Production chains connect the economy.
 
-The project is organized by game domain so new systems have a predictable home without forcing everything into one large manager or script.
+Examples:
+
+```text
+Iron + Carbon
+      ↓
+    Steel
+
+Copper + Rare Earths + Crystals
+      ↓
+  Electronics
+
+Steel + Electronics
+      ↓
+   Machinery
+
+Hydrogen + Carbon
+      ↓
+     Fuel
+
+Steel + Titanium + Electronics
+      ↓
+ Ship Components
+```
+
+Production recipes contain:
+
+- Inputs
+- Input quantities
+- Output
+- Output quantity
+- Production time
+
+This allows shortages to propagate through the economy.
+
+---
+
+# Stations
+
+Stations are generated from station types.
+
+Current station types:
+
+- Mining
+- Agricultural
+- Industrial
+- Refinery
+- Shipyard
+- Research
+- Trade Hub
+- Military
+
+A station has:
+
+- Station type
+- Faction
+- Population
+- Industries
+- Resource imports
+- Resource exports
+- Good imports
+- Good exports
+- Production recipes
+- Local market
+
+Examples:
+
+### Mining Station
+
+Extracts:
+
+- Iron
+- Titanium
+- Rare Earths
+
+Needs:
+
+- Food
+- Water
+- Fuel
+- Machinery
+
+### Industrial Station
+
+Needs:
+
+- Iron
+- Copper
+- Titanium
+- Rare Earths
+- Carbon
+- Fuel
+
+Produces:
+
+- Steel
+- Electronics
+- Machinery
+- Construction Materials
+
+### Shipyard
+
+Needs:
+
+- Titanium
+- Steel
+- Electronics
+- Fuel
+
+Produces:
+
+- Ship Components
+- Advanced Components
+
+---
+
+# Factions
+
+Current factions:
+
+- Colonial Authority
+- Frontier Coalition
+- Helios Mining Consortium
+- Orion Trade League
+- Independent
+
+Factions can influence:
+
+- Station ownership
+- Preferred industries
+- Preferred goods
+- Territory
+- Prices
+- Security
+- Reputation
+- Missions
+
+The faction system will remain simple until the underlying world simulation is working.
+
+---
+
+# Economy
+
+The economy is intended to be a real simulation rather than a collection of static shop prices.
+
+The basic flow is:
+
+```text
+PLANETS
+   ↓
+RESOURCES
+   ↓
+PRODUCTION
+   ↓
+GOODS
+   ↓
+STATIONS
+   ↓
+SUPPLY + DEMAND
+   ↓
+PRICES
+   ↓
+TRADE
+   ↓
+CHANGING SUPPLY
+   ↓
+CHANGING PRODUCTION
+```
+
+A station's price is influenced by:
+
+- Base value
+- Local supply
+- Local demand
+- Population
+- Production
+- Resource availability
+
+Basic pricing pressure follows:
+
+```text
+High Supply + Low Demand  → Lower Price
+Low Supply + High Demand  → Higher Price
+```
+
+The important part is the feedback loop.
+
+If an industrial station runs short of copper:
+
+```text
+Copper shortage
+      ↓
+Electronics production falls
+      ↓
+Electronics supply falls
+      ↓
+Electronics price rises
+      ↓
+Trading copper becomes more attractive
+      ↓
+Copper arrives
+      ↓
+Electronics production recovers
+```
+
+That is the kind of world behaviour the project is aiming for.
+
+---
+
+# Procedural Generation
+
+The procedural world is data-driven.
+
+### Data
+
+Defines what exists.
+
+```text
+data/
+├── planets/
+├── economy/
+│   ├── resources/
+│   ├── goods/
+│   ├── recipes/
+│   └── stations/
+└── factions/
+```
+
+### Generators
+
+Create the world.
+
+```text
+scripts/
+├── planets/
+│   └── planet_generator.gd
+├── economy/
+│   └── station_generator.gd
+└── world/
+    └── system_generator.gd
+```
+
+### Simulation
+
+Handles changing state.
+
+```text
+scripts/economy/
+└── market.gd
+```
+
+### Scenes
+
+Display the generated world.
+
+The generators should not create UI. Godot scenes remain responsible for presentation.
+
+---
+
+# Technical Architecture
 
 ```text
 res://
@@ -252,74 +544,77 @@ res://
 │   ├── ui/
 │   └── world/
 │
-├── scripts/
-│   ├── player/
-│   ├── enemies/
-│   ├── planets/
-│   ├── ships/
-│   ├── managers/
-│   ├── economy/
-│   ├── missions/
-│   ├── boarding/
-│   ├── ui/
-│   └── world/
-│
-└── README.md
+└── scripts/
+    ├── player/
+    ├── enemies/
+    ├── planets/
+    ├── ships/
+    ├── managers/
+    ├── economy/
+    ├── missions/
+    ├── factions/
+    ├── boarding/
+    ├── ui/
+    └── world/
 ```
 
-### Folder Responsibilities
+### Architecture Rules
 
-| Folder | Purpose |
-|---|---|
-| `assets/` | Visuals, audio, effects and other imported game assets |
-| `data/` | Game definitions and configuration such as ships, weapons, missions and economy data |
-| `scenes/` | Godot scenes grouped by gameplay domain |
-| `scripts/` | Gameplay and system logic grouped by gameplay domain |
-| `scripts/managers/` | Cross-system managers such as scene, mission and save management |
+- Data resources describe the universe.
+- Generators create generated world state.
+- Simulation systems modify world state.
+- Scenes display and interact with the world.
+- Shared state stays small and understandable.
+- UI is created through Godot scenes, not generated in scripts.
+- Scripts use explicit variable types.
+- Systems should be testable independently.
+- Do not build a massive manager when a small domain system is enough.
 
-The structure is deliberately prepared before gameplay implementation. Empty directories are kept in Git with placeholder files and will be replaced as real content is added.
+---
 
-Space combat, ground exploration, boarding and progression should remain separate systems connected through shared world state.
+# Development Roadmap
 
-## Development Roadmap
-
-### Milestone 0 - Project Foundation
-
-**Status: COMPLETE**
-
-- [x] Confirm Godot version and project settings
-- [x] Create clean project structure
-- [x] Establish main scene and scene manager
-- [x] Configure input actions
-- [x] Confirm reliable project launch
-- [x] Create basic shared world state
-
-**Completion result:** The project foundation and folder architecture are established. Development can now move into the first playable space-combat prototype.
-
-### Milestone 1 - Space Combat Prototype
+## Milestone 0 - Project Foundation
 
 **Status: COMPLETE**
 
-**Goal:** Prove that flying and fighting are enjoyable before building the investigation systems around them.
+- [x] Godot project configuration
+- [x] Folder architecture
+- [x] Main scene
+- [x] Scene manager
+- [x] Input actions
+- [x] Shared world state
+
+---
+
+## Milestone 1 - Space Combat Prototype
+
+**Status: COMPLETE**
 
 - [x] Space scene and camera
 - [x] Star Valor-style WASD ship movement
 - [x] Momentum and reverse movement
-- [x] Boost input action
-- [x] Boost speed and camera zoom feedback
-- [x] Forward-facing primary weapon
-- [x] Primary weapon and projectiles
-- [x] One enemy ship
+- [x] Boost
+- [x] Boost feedback
+- [x] Forward weapon
+- [x] Projectiles
+- [x] Enemy ship
 - [x] Enemy movement and firing
 - [x] Collision and damage
-- [x] Enemy hit feedback
+- [x] Shields and hull
 - [x] Ship destruction
-- [x] Salvage reward drop
-- [x] Salvage collection and credit reward
+- [x] Salvage
+- [x] Credits
 
-**Completion result:** The player can enter space, fly, boost, fight an enemy, destroy it and collect the resulting salvage.
+**Completion result:**
 
-### Milestone 2 - Docking and First Station
+**Fly → Boost → Fight → Destroy → Salvage → Earn Credits**
+
+---
+
+## Milestone 2 - First Station
+
+**Status: COMPLETE**
 
 - [x] Station scene
 - [x] Docking interaction
@@ -327,172 +622,254 @@ Space combat, ground exploration, boarding and progression should remain separat
 - [x] Top-down character movement
 - [x] Docking bay
 - [x] One NPC
-- [x] One shop or mission terminal
+- [x] One market terminal
 - [x] Station-to-space return
 
-**Completion test:** The player can fly to a station, leave the ship, walk around, interact and return to space.
+**Completion result:**
 
-### Milestone 3 - Missions and Rewards
+**Fly → Dock → Leave Ship → Explore → Interact → Return to Space**
+
+---
+
+## Milestone 3 - Procedural World Foundation
+
+**Status: IN PROGRESS**
+
+### Data Definitions
+
+- [x] Raw resource data
+- [x] Trade good data
+- [x] Production ingredient data
+- [x] Production recipe data
+- [x] Planet type data
+- [x] Station type data
+- [x] Faction data
+
+### Initial Content
+
+- [x] 12 raw resources
+- [x] 10 processed goods
+- [x] 10 production recipes
+- [x] 8 planet types
+- [x] 8 station types
+- [x] 5 factions
+
+### Generation
+
+- [x] Generated planet data
+- [x] Planet generator
+- [x] Generated station data
+- [x] Station generator
+- [x] Generated system data
+- [x] System generator
+- [ ] Generate a complete test system in-game
+- [ ] Place generated planets in space
+- [ ] Place generated stations in space
+- [ ] Display generated names and types
+- [ ] Connect generated stations to their planets
+
+---
+
+## Milestone 4 - Living Economy
+
+- [x] Market data model
+- [x] Initial supply
+- [x] Initial demand
+- [x] Dynamic price calculation
+- [ ] Production simulation
+- [ ] Consumption simulation
+- [ ] Supply changes over time
+- [ ] Demand changes over time
+- [ ] Production shortages
+- [ ] Price feedback
+- [ ] Player trading
+- [ ] Cargo inventory integration
+- [ ] Economy persistence
+
+**Completion test:**
+
+A player should be able to discover a price difference between two stations, trade a commodity, and change the local market by doing so.
+
+---
+
+## Milestone 5 - Missions and Rewards
 
 - [ ] Mission data resource
 - [ ] Mission manager
 - [ ] Mission acceptance
-- [ ] One delivery or combat mission
-- [ ] Completion and failure states
+- [ ] Delivery mission
+- [ ] Combat mission
+- [ ] Salvage mission
+- [ ] Mission completion
+- [ ] Mission failure
 - [ ] Credits reward
-- [ ] Mission status UI
+- [ ] Reputation changes
 
-### Milestone 4 - First Boarding Mission
+Missions should use the existing world rather than creating fake mission-only locations and commodities.
 
-- [ ] Boarding requirement or interaction
+---
+
+## Milestone 6 - Ship Boarding
+
+- [ ] Boarding requirement
 - [ ] Boarding transition
 - [ ] Small ship interior
-- [ ] One on-foot enemy
-- [ ] One boarding objective
-- [ ] Cargo or item interaction
+- [ ] On-foot enemy
+- [ ] Boarding objective
+- [ ] Cargo interaction
 - [ ] Extraction point
 - [ ] Return to space
-- [ ] Apply results to world state
+- [ ] Apply boarding results
 
-**Recommended first mission:** Disable an enemy ship, board it, steal marked cargo and escape.
+---
 
-### Milestone 5 - Basic Economy and Progression
-
-- [ ] Credits display
-- [ ] Cargo inventory
-- [ ] Salvage rewards
-- [ ] Ship repair costs
-- [ ] First weapon upgrade
-- [ ] Hull or cargo upgrade
-- [ ] Shop purchasing
-- [ ] Save and load progression
-- [ ] Balance rewards and costs
-
-### Milestone 6 - Expanded Stations
+## Milestone 7 - Expanded Stations
 
 - [ ] Shipyard
 - [ ] Trade market
 - [ ] Equipment vendor
 - [ ] Mission office
 - [ ] Multiple NPCs
-- [ ] Station identity and visual differentiation
+- [ ] Station visual identities
+- [ ] Station services
 
-### Milestone 7 - More Content
+---
 
-- [ ] Additional player ships
-- [ ] Additional enemy types
-- [ ] Delivery, salvage, rescue and escort missions
-- [ ] Boarding variations
-- [ ] Faction relationships
+## Milestone 8 - Multiple Systems
 
-### Milestone 8 - Star Systems and Travel
-
-- [ ] Star system structure
-- [ ] Travel points or jump routes
-- [ ] Multiple stations or planetary locations
-- [ ] System-specific encounters
-- [ ] Basic map interface
+- [ ] Multiple star systems
+- [ ] System travel
+- [ ] Jump routes
+- [ ] System-specific economies
+- [ ] System map
 - [ ] Unlockable destinations
+- [ ] Inter-system trade
 
-### Milestone 9 - Deeper RPG and Boarding Systems
+---
+
+## Milestone 9 - Deeper RPG Systems
 
 - [ ] Character equipment
-- [ ] On-foot weapon variety
-- [ ] Armour and consumables
+- [ ] On-foot weapons
+- [ ] Armour
+- [ ] Consumables
 - [ ] Boarding hazards
-- [ ] Advanced ship interiors
-- [ ] Capture, rescue and sabotage variations
+- [ ] More boarding objectives
+- [ ] Ship upgrades
 - [ ] Reputation consequences
+- [ ] Faction relationships
 
-### Milestone 10 - Balance and Release Polish
+---
 
-- [ ] Balance ships, weapons, missions and repairs
+## Milestone 10 - Polish
+
+- [ ] Balance ships
+- [ ] Balance weapons
+- [ ] Balance economy
 - [ ] Improve combat feedback
-- [ ] Improve station and interior visuals
-- [ ] Add audio and music
-- [ ] Improve HUD and menus
-- [ ] Finalize saving and migration handling
-- [ ] Test fresh and long-term progression
-- [ ] Optimize and fix release bugs
+- [ ] Improve station visuals
+- [ ] Add audio
+- [ ] Improve HUD
+- [ ] Save/load polish
+- [ ] Optimization
+- [ ] Release testing
 
-## MVP
+---
 
-The first MVP is a vertical slice, not the complete space RPG.
+# MVP
+
+The first real MVP should prove that the **world itself is fun to move through**.
 
 It should contain:
 
-- One space area
+- One generated star system
+- Several generated planets
+- Several generated stations
+- Multiple factions
+- Resources
+- Production
+- Goods
+- Markets
+- Dynamic prices
 - One controllable ship
-- Twin-stick movement and aiming
-- One enemy ship
-- Basic space combat
-- One station
-- One playable character
-- Station movement and interaction
-- One NPC or mission terminal
-- One mission
-- One simple shop
-- One small ship interior
-- One on-foot enemy
-- One boarding objective
-- Basic credits and one upgrade
+- Space combat
+- Salvage
+- Station exploration
+- Basic trading
+- One or two meaningful missions
+- One boarding scenario
 
 ### The MVP Question
 
-> **Does moving between space combat, stations and boarding create a fun gameplay loop?**
+> **Does travelling through the world, interacting with its economy and getting into trouble create a fun loop before we add a giant story?**
 
-If not, improve the existing experience before adding more systems, factions, ships or crafting.
+If not, improve the systems that already exist before adding more content.
 
-## Development Rules
+---
 
-1. Build one milestone at a time.
-2. Keep the first playable version small enough to finish.
-3. Do not build a complete universe before proving the core loop.
-4. Prefer separate boarding interiors during early development.
-5. Keep systems modular without creating unnecessary abstractions.
-6. Introduce one new system at a time and test it in the playable build.
-7. Avoid large content pipelines before mechanics are stable.
-8. Use placeholder art to prove gameplay, then replace it deliberately.
-9. Progression should improve options without making the game play itself.
-10. Every milestone must leave the project playable.
-11. Do not add crafting, complex factions, procedural generation or multiplayer until the core single-player loop is reliable.
-12. Keep shared world state small and understandable.
-13. Design missions around actions that exist in the current build.
-14. When a feature becomes repetitive work, reduce its scope and test a smaller version rather than abandoning the whole project.
-15. The README is a living roadmap. Playtesting can change the design.
-16. Every feature must justify its complexity by improving the player's experience.
+# Current Status
 
-## Current Status
+**Current Stage: Milestone 3 - Procedural World Foundation**
 
-**Current Stage: Milestone 2 - First Investigation Location**
+Milestones 0, 1 and 2 are complete.
 
-Milestones 0 and 1 are complete. The project foundation and first playable space-combat loop are established.
+The project now has the first layer of the world simulation:
+
+```text
+Planet Types
+     ↓
+Generated Planets
+     ↓
+Resources
+
+Station Types
+     ↓
+Generated Stations
+     ↓
+Factions
+     ↓
+Markets
+
+Resources
+     ↓
+Production Recipes
+     ↓
+Goods
+     ↓
+Supply + Demand
+     ↓
+Prices
+```
 
 ### Immediate Next Steps
 
-- [ ] Define the first murder case
-- [ ] Create the first orbital station scene
-- [ ] Add docking and station transition
-- [ ] Add the first crime scene
-- [ ] Add one witness and one suspect
-- [ ] Create the first evidence interaction
+1. Generate one complete test system.
+2. Inspect the generated planets and stations.
+3. Place the generated world into the existing space scene.
+4. Give stations real markets.
+5. Simulate production and consumption.
+6. Let the player buy and sell cargo.
+7. Only then start building missions on top of the simulation.
 
-## Long-Term Possibilities
+---
 
-These ideas are outside the first MVP:
+# Long-Term Possibilities
 
-- Multiple factions and reputation
-- Dynamic economy and supply chains
-- Ship capture and ownership
-- Procedural or semi-procedural star systems
-- Crew members and ship roles
-- Persistent ship interiors and damage
-- Smuggling and illegal goods
+These remain intentionally outside the current prototype:
+
+- Multiple star systems
+- Dynamic faction territories
+- Smuggling
 - Bounty hunting
+- Ship capture
+- Player-owned stations
+- Crew
 - Fleet encounters
-- Crafting and resource processing
-- Player-owned stations or businesses
-- More complex character progression
-- Multiplayer or cooperative play
+- Advanced ship interiors
+- Procedural encounters
+- Large-scale supply chains
+- Multiplayer
 
-The long-term vision can be ambitious. The development process must remain small, testable and finishable.
+The long-term vision can be ambitious.
+
+The implementation should stay small enough to finish.
