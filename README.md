@@ -321,14 +321,14 @@ Space combat, ground exploration, boarding and progression should remain separat
 
 ### Milestone 2 - Docking and First Station
 
-- [ ] Station scene
-- [ ] Docking interaction
-- [ ] Space-to-station transition
-- [ ] Top-down character movement
-- [ ] Docking bay
-- [ ] One NPC
-- [ ] One shop or mission terminal
-- [ ] Station-to-space return
+- [x] Station scene
+- [x] Docking interaction
+- [x] Space-to-station transition
+- [x] Top-down character movement
+- [x] Docking bay
+- [x] One NPC
+- [x] One shop or mission terminal
+- [x] Station-to-space return
 
 **Completion test:** The player can fly to a station, leave the ship, walk around, interact and return to space.
 
