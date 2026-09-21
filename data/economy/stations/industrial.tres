@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="StationTypeData" load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://scripts/economy/station_type_data.gd" id="1_script"]
+[ext_resource type="Resource" path="res://data/economy/goods/iron.tres" id="good_iron"]
+[ext_resource type="Resource" path="res://data/economy/goods/copper.tres" id="good_copper"]
+[ext_resource type="Resource" path="res://data/economy/goods/titanium.tres" id="good_titanium"]
+[ext_resource type="Resource" path="res://data/economy/goods/rare_earths.tres" id="good_rare_earths"]
+[ext_resource type="Resource" path="res://data/economy/goods/fuel.tres" id="good_fuel"]
+[ext_resource type="Resource" path="res://data/economy/goods/steel.tres" id="good_steel"]
+[ext_resource type="Resource" path="res://data/economy/goods/electronics.tres" id="good_electronics"]
+[ext_resource type="Resource" path="res://data/economy/goods/machinery.tres" id="good_machinery"]
+[ext_resource type="Resource" path="res://data/economy/goods/construction_materials.tres" id="good_construction_materials"]
+
+[resource]
+script = ExtResource("1_script")
+id = "industrial"
+display_name = "Industrial Station"
+description = "Converts raw materials into machinery, electronics, and construction goods."
+population_multiplier = 1.4
+industries = Array[String](["Manufacturing"])
+imports = Array[GoodData]([ExtResource("good_iron"), ExtResource("good_copper"), ExtResource("good_titanium"), ExtResource("good_rare_earths"), ExtResource("good_fuel")])
+exports = Array[GoodData]([ExtResource("good_steel"), ExtResource("good_electronics"), ExtResource("good_machinery"), ExtResource("good_construction_materials")])
