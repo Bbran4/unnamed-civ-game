@@ -8,6 +8,7 @@ const ASTEROID_SCENE: PackedScene = preload("res://scenes/asteroids/asteroid.tsc
 @export var outer_radius: float = 11500.0
 @export var orbital_period: float = 180.0
 @export var random_seed: int = 1
+@export var orbit_time_scale: float = 0.05
 
 var asteroid_instances: Array[Node2D] = []
 var asteroid_angles: Array[float] = []
@@ -19,7 +20,7 @@ func _ready() -> void:
     _generate_field()
 
 func _process(delta: float) -> void:
-    simulation_time += delta
+    simulation_time += delta * orbit_time_scale
     _update_field()
 
 func _generate_field() -> void:
