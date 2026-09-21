@@ -39,10 +39,12 @@ func _physics_process(delta: float) -> void:
 	_shield_regeneration(delta)
 
 	var forward_direction: Vector2 = Vector2.RIGHT.rotated(rotation)
-	var boost_active: bool = Input.is_action_pressed("boost") and Input.is_action_pressed("move_up")
+	var boost_active: bool = Input.is_action_pressed("boost")
 	var current_max_speed: float = max_speed
 
 	if control_style == ControlStyle.ROTATION_KEYS:
+		boost_active = boost_active and Input.is_action_pressed("move_up")
+
 		var turn_input: float = Input.get_axis("move_left", "move_right")
 
 		if turn_input != 0.0:
