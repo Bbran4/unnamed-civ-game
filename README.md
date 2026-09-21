@@ -1,6 +1,6 @@
 # Untitled Space RPG
 
-A top-down 2D spacefaring action RPG inspired by the freedom and progression of classic space-trading games, with the added ability to leave the cockpit, explore stations and board other ships.
+A top-down 2D space detective RPG inspired by Freelancer and GTA 2, built around a high-profile murder investigation. The player flies between locations, gathers evidence, questions people, boards ships and fights when an investigation turns hostile.
 
 The player is a pilot, traveller and opportunist. They can fight in space, travel between star systems, trade goods, gather salvage, accept missions, upgrade ships and equipment, explore stations on foot, and board hostile or disabled ships for contained ground encounters.
 
@@ -8,7 +8,7 @@ The game uses a **hybrid world structure**. Space areas, stations, planetary loc
 
 ## Core Identity
 
-**Top-down 2D action RPG + twin-stick space combat + explorable stations + ship boarding.**
+**Top-down 2D space detective RPG + Star Valor-style ship combat + explorable stations + ship boarding.**
 
 ### Gameplay Modes
 
@@ -28,7 +28,7 @@ The ship should feel like both a vehicle and a home. Stations and boarded ships 
 
 ## Core Gameplay Loop
 
-**Undock → Travel → Discover or Accept a Mission → Fight, Trade, Salvage or Explore → Return to a Station → Sell, Repair and Upgrade → Prepare for the Next Journey**
+**Receive Case → Visit Crime Scene → Collect Evidence → Identify Leads → Travel → Question, Search or Board → Connect Evidence → Pursue the Truth → Resolve the Case**
 
 A longer-term loop may include:
 
@@ -296,24 +296,28 @@ Space combat, ground exploration, boarding and progression should remain separat
 
 **Completion result:** The project foundation and folder architecture are established. Development can now move into the first playable space-combat prototype.
 
-### Milestone 1 - Twin-Stick Space Combat
+### Milestone 1 - Space Combat Prototype
 
-**Status: IN PROGRESS**
+**Status: COMPLETE**
 
-**Goal:** Prove that flying and fighting are enjoyable.
+**Goal:** Prove that flying and fighting are enjoyable before building the investigation systems around them.
 
 - [x] Space scene and camera
-- [x] Player ship movement
-- [x] Mouse or right-stick aiming
+- [x] Star Valor-style WASD ship movement
+- [x] Momentum and reverse movement
+- [x] Boost input action
+- [x] Boost speed and camera zoom feedback
+- [x] Forward-facing primary weapon
 - [x] Primary weapon and projectiles
 - [x] One enemy ship
 - [x] Enemy movement and firing
 - [x] Collision and damage
-- [ ] Ship destruction or disabling
-- [ ] Combat feedback
-- [ ] Salvage or reward drop
+- [x] Enemy hit feedback
+- [x] Ship destruction
+- [x] Salvage reward drop
+- [x] Salvage collection and credit reward
 
-**Completion test:** The player can enter space, fight an enemy and immediately understand the combat.
+**Completion result:** The player can enter space, fly, boost, fight an enemy, destroy it and collect the resulting salvage.
 
 ### Milestone 2 - Docking and First Station
 
@@ -460,19 +464,18 @@ If not, improve the existing experience before adding more systems, factions, sh
 
 ## Current Status
 
-**Current Stage: Milestone 1 - Twin-Stick Space Combat**
+**Current Stage: Milestone 2 - First Investigation Location**
 
-Milestone 0 is complete. The project foundation, shared state, input actions and domain-based folder structure are established.
+Milestones 0 and 1 are complete. The project foundation and first playable space-combat loop are established.
 
 ### Immediate Next Steps
 
-- [ ] Create the first space prototype scene
-- [ ] Add the player ship
-- [ ] Implement twin-stick ship movement
-- [ ] Implement aiming
-- [ ] Implement primary fire and projectiles
-- [ ] Add one enemy ship
-- [ ] Test combat feel and feedback
+- [ ] Define the first murder case
+- [ ] Create the first orbital station scene
+- [ ] Add docking and station transition
+- [ ] Add the first crime scene
+- [ ] Add one witness and one suspect
+- [ ] Create the first evidence interaction
 
 ## Long-Term Possibilities
 
