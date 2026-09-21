@@ -23,6 +23,7 @@ polygon = PackedVector2Array(20, 0, -12, -16, -6, 0, -12, 16)
 color = Color(1, 0.3, 0.25, 1)
 
 [node name="EnemyStatusBars" parent="." instance=ExtResource("4_status")]
+rotation = 0.0
 
 [node name="WeaponMuzzle" type="Marker2D" parent="."]
 position = Vector2(20, 0)
