@@ -1,9 +1,9 @@
 extends CharacterBody2D
 
 @export var forward_acceleration: float = 650.0
+@export var reverse_acceleration: float = 350.0
 @export var turn_speed: float = 3.5
 @export var momentum_decay_time: float = 1.0
-@export var braking_acceleration: float = 850.0
 @export var max_speed: float = 700.0
 @export var max_hull: float = 100.0
 @export var primary_fire_cooldown: float = 0.18
@@ -18,7 +18,7 @@ func _ready() -> void:
 	current_hull = max_hull
 
 func _physics_process(delta: float) -> void:
-	var turn_input: float = Input.get_axis("move_left", "move_right)
+	var turn_input: float = Input.get_axis("move_left", "move_right")
 
 	if turn_input != 0.0:
 		rotation += turn_input * turn_speed * delta
@@ -27,17 +27,14 @@ func _physics_process(delta: float) -> void:
 
 	if Input.is_action_pressed("move_up"):
 		velocity += forward_direction * forward_acceleration * delta
-	else:
+
+	if Input.is_action_pressed("move_down"):
+		velocity -= forward_direction * reverse_acceleration * delta
+	elif not Input.is_action_pressed("move_up"):
 		var momentum_decay_acceleration: float = max_speed / momentum_decay_time
 		velocity = velocity.move_toward(
 			Vector2.ZERO,
 			momentum_decay_acceleration * delta
-		)
-
-	if Input.is_action_pressed("move_down"):
-		velocity = velocity.move_toward(
-			Vector2.ZERO,
-			braking_acceleration * delta
 		)
 
 	if velocity.length() > max_speed:
