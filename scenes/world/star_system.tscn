@@ -1,0 +1,37 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/space_system.gd" id="1_system"]
+[ext_resource type="PackedScene" path="res://scenes/stars/generated_star.tscn" id="2_star"]
+
+[node name="StarSystem" type="Node2D"]
+script = ExtResource("1_system")
+
+[node name="Background" type="Polygon2D" parent="."]
+color = Color(0.008, 0.012, 0.025, 1)
+polygon = PackedVector2Array(-20000, -20000, 20000, -20000, 20000, 20000, -20000, 20000)
+
+[node name="OrbitLines" type="Node2D" parent="."]
+
+[node name="Orbit1" type="Line2D" parent="OrbitLines"]
+width = 2.0
+default_color = Color(0.3, 0.4, 0.5, 0.3)
+
+[node name="Orbit2" type="Line2D" parent="OrbitLines"]
+width = 2.0
+default_color = Color(0.3, 0.4, 0.5, 0.3)
+
+[node name="Orbit3" type="Line2D" parent="OrbitLines"]
+width = 2.0
+default_color = Color(0.3, 0.4, 0.5, 0.3)
+
+[node name="Orbit4" type="Line2D" parent="OrbitLines"]
+width = 2.0
+default_color = Color(0.3, 0.4, 0.5, 0.3)
+
+[node name="Orbit5" type="Line2D" parent="OrbitLines"]
+width = 2.0
+default_color = Color(0.3, 0.4, 0.5, 0.3)
+
+[node name="GeneratedObjects" type="Node2D" parent="."]
+
+[node name="Star" parent="." instance=ExtResource("2_star")]
