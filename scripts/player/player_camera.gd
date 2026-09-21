@@ -22,14 +22,15 @@ func _process(delta: float) -> void:
 	else:
 		offset = Vector2.ZERO
 
-func update_speed_zoom(boost_active: bool) -> void:
+func update_speed_zoom(boost_active: bool, delta: float) -> void:
 	var target_zoom_value: float = normal_zoom
 
 	if boost_active:
 		target_zoom_value = boost_zoom
 
 	var target_zoom: Vector2 = Vector2(target_zoom_value, target_zoom_value)
-	zoom = zoom.lerp(target_zoom, get_process_delta_time() * zoom_response)
+	var zoom_weight: float = minf(1.0, delta * zoom_response)
+	zoom = zoom.lerp(target_zoom, zoom_weight)
 
 func shake(duration: float, strength: float) -> void:
 	shake_strength = maxf(shake_strength, strength)
