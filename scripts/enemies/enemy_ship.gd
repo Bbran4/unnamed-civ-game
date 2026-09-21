@@ -27,13 +27,16 @@ func _ready() -> void:
 	current_hull = max_hull
 	current_shield = max_shield
 	_update_status_bars()
+	_update_status_bar_transform()
 	player_ship = get_tree().get_first_node_in_group("player_ship") as Node2D
 
 func _physics_process(delta: float) -> void:
 	_shield_regeneration(delta)
+	_update_status_bar_transform()
 	if not is_instance_valid(player_ship):
 		velocity = velocity.move_toward(Vector2.ZERO, acceleration * delta)
 		move_and_slide()
+		_update_status_bar_transform()
 		return
 
 	var offset_to_player: Vector2 = player_ship.global_position - global_position
@@ -49,10 +52,15 @@ func _physics_process(delta: float) -> void:
 
 	rotation = offset_to_player.angle()
 	move_and_slide()
+	_update_status_bar_transform()
 
 	fire_cooldown_remaining = maxf(0.0, fire_cooldown_remaining - delta)
 	if distance_to_player < 550.0:
 		_fire_at_player()
+
+func _update_status_bar_transform() -> void:
+	status_bars.global_position = global_position + Vector2(0.0, -55.0)
+	status_bars.global_rotation = 0.0
 
 func _fire_at_player() -> void:
 	if fire_cooldown_remaining > 0.0:
