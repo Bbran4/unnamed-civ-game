@@ -1,365 +1,470 @@
-# The Last Archer
+# Untitled Space RPG
 
-A small active skill-based archery progression game for itch.io and Kongregate.
+A top-down 2D spacefaring action RPG inspired by the freedom and progression of classic space-trading games, with the added ability to leave the cockpit, explore stations and board other ships.
 
-The player is an archer living out of a growing Training Grounds hub. The Training Grounds is the player's home base: the Tent handles character customization, the kingdom map handles travel to cities, the Fletcher handles bow and arrow equipment, and the Practice Grounds provide the place to train. Cities are where new bows can be purchased. A bow can be owned before it can be equipped, but its stat requirements must be met before it can be used.
+The player is a pilot, traveller and opportunist. They can fight in space, travel between star systems, trade goods, gather salvage, accept missions, upgrade ships and equipment, explore stations on foot, and board hostile or disabled ships for contained ground encounters.
 
-## Core Loop
+The game uses a **hybrid world structure**. Space areas, stations, planetary locations and ship interiors are connected through transitions rather than requiring one fully seamless map. This keeps the project achievable while preserving the feeling of an interconnected world.
 
-**Training Grounds → Practice → Improve Strength & Accuracy → Equip Better Gear → Travel to Cities → Buy New Gear → Compete → Earn → Upgrade the Grounds → Explore More Activities**
+## Core Identity
 
-## Training Grounds Structure
+**Top-down 2D action RPG + twin-stick space combat + explorable stations + ship boarding.**
 
-The Training Grounds is the player's persistent home base and the central hub for the game.
+### Gameplay Modes
 
-| Location | Purpose |
-|---|---|
-| **Tent** | Customize the player's character. |
-| **Kingdom Map** | Travel from the Training Grounds to cities and other destinations as they become available. |
-| **Fletcher** | Modify and equip bows and arrows. |
-| **Practice Grounds** | Practice shooting, improve Strength and Accuracy, and earn practice income. |
+- **Space Mode:** Fly ships, fight enemies, travel, trade, salvage and interact with other vessels.
+- **Ground Mode:** Leave the ship, explore stations and ship interiors, speak to NPCs, accept missions, shop and fight on foot when necessary.
 
-Cities are the source of new equipment purchases. Players can buy bows even when they do not yet meet the required stats, but an unequipped bow cannot be equipped until its requirements are satisfied. This separates **ownership** from **equipment eligibility** and lets players purchase future upgrades before they are ready to use them.
+The ship should feel like both a vehicle and a home. Stations and boarded ships should provide places where stories, danger and opportunities unfold.
 
-The game combines player skill with character progression. Upgrades improve capability without turning shooting into an automatic process.
+## Design Pillars
 
-## Current Controls
+1. Give the player freedom to fight, trade, explore, salvage or complete missions.
+2. Make the world enterable. The player is not permanently attached to the cockpit.
+3. Use meaningful progression across ships, character equipment, cargo and reputation.
+4. Keep combat active and understandable. Progression should improve capability without removing player agency.
+5. Build the smallest convincing version first. Do not build a universe before proving the core loop.
+6. Every completed milestone must leave the project playable.
+
+## Core Gameplay Loop
+
+**Undock → Travel → Discover or Accept a Mission → Fight, Trade, Salvage or Explore → Return to a Station → Sell, Repair and Upgrade → Prepare for the Next Journey**
+
+A longer-term loop may include:
+
+**Receive Mission → Travel to Target → Fight or Board a Ship → Complete Objective → Escape or Return → Receive Payment → Upgrade Ship and Character → Unlock New Opportunities**
+
+## World Structure
+
+```text
+Star System
+├── Space Map
+│   ├── Player Ship
+│   ├── Enemy and Civilian Ships
+│   ├── Cargo and Salvage
+│   ├── Travel Points
+│   └── Docking and Boarding Interactions
+├── Orbital Station
+│   ├── Mission Office
+│   ├── Shipyard
+│   ├── Trade Market
+│   ├── Equipment Vendor
+│   ├── Social Area
+│   └── Docking Bay
+├── Planetary Location
+│   ├── Landing Area
+│   ├── NPCs and Services
+│   └── Missions and Activities
+└── Ship Interiors
+    ├── Player Ship
+    ├── Friendly Ships
+    └── Hostile or Disabled Ships
+```
+
+Actions should persist between modes. Examples include stolen cargo entering the inventory, ship damage remaining until repaired, purchases persisting after departure, and mission results updating shared world state.
+
+## Space Combat
+
+Space combat uses a **twin-stick control scheme**.
 
 | Input | Action |
 |---|---|
-| A / D or Left / Right | Walk |
-| Shift + movement | Run |
-| Space | Jump |
-| Ctrl / C | Crouch |
-| Mouse | Aim |
-| Right Mouse Button | Hold to draw bow |
-| Left Mouse Button | Fire current draw strength |
-| R | Reset practice session |
-| Ctrl + Shift + R | Reset saved progression and reload |
+| WASD / Left Stick | Move or thrust |
+| Mouse / Right Stick | Aim weapons |
+| Left Mouse Button / Right Trigger | Fire primary weapon |
+| Right Mouse Button / Left Trigger | Secondary weapon or ability |
+| Space / Button | Boost or evade |
+| E / Button | Interact, dock or begin boarding |
+| Tab | Cycle targets or view target information |
+| Esc | Pause or open the system menu |
 
-The archer faces the mouse cursor and the bow follows the facing direction. Moving while aiming introduces a small amount of bow wobble, while crouching extends the trajectory preview by 20%. The trajectory preview is disabled while airborne.
+The initial movement model should be arcade-based. A hybrid momentum model can be tested later if it improves combat without making basic movement frustrating.
 
-Right Mouse Button draws the bow and Left Mouse Button fires the current draw strength. Every shot starts a 1-second reload cooldown, shown as a circular timer above the player. Quick-shot behavior is reserved for the current firing system and does not grant Strength or Accuracy XP. Normal draw speed is doubled again, reaching 4x the original draw speed through the first 80% of the draw, then remaining at 1.3x the original speed for the final 20%. Holding Ctrl while drawing applies slow draw at 80% of the current normal draw speed for the entire draw. If the player continues holding draw during reload, drawing automatically begins when the reload completes.
+### Initial Ship Systems
+
+- Hull health
+- Optional shields or armour
+- Primary weapon
+- Secondary weapon or special ability
+- Movement and aiming
+- Damage and destruction or disabling
+- Cargo capacity
+- Repair cost
+- Ship ownership and identification
+
+Targeted components such as engines, weapons, cargo holds and power systems should be added only after basic combat is stable.
+
+### First Enemy
+
+The first enemy should be able to detect the player, approach or maintain combat distance, aim and fire, take damage, retreat or become disabled, and drop salvage or a mission item.
+
+## Stations and On-Foot Exploration
+
+Stations are safe or semi-safe hubs where the player can interact with the world outside the cockpit.
+
+| Location | Purpose |
+|---|---|
+| Mission Office | Accept contracts, quests and faction work |
+| Shipyard | Buy, sell, repair and upgrade ships |
+| Trade Market | Buy and sell goods and resources |
+| Equipment Vendor | Purchase weapons, armour, tools and consumables |
+| Social Area | Meet NPCs, discover rumours and access dialogue |
+| Docking Bay | Enter and leave the player's ship |
+
+### Initial Ground Mechanics
+
+- Top-down character movement
+- Interaction prompts
+- One NPC or mission terminal
+- Basic dialogue or interaction
+- Shop interface
+- Health and damage
+- Simple ranged weapon
+- Station and ship-interior transitions
+- Return to the player's ship
+
+On-foot gameplay is initially a supporting layer, not a second full-scale RPG. It should add variety and meaningful objectives without multiplying the project's scope.
+
+## Ship Boarding
+
+Boarding is one of the defining features of the project. The early implementation should use a **separate interior map** loaded through a boarding transition. Seamless boarding can be evaluated later.
+
+### Boarding Flow
+
+```text
+Encounter Ship
+→ Disable or Meet Boarding Requirement
+→ Initiate Boarding
+→ Load Ship Interior
+→ Complete Objective
+→ Extract
+→ Return to Space
+→ Apply Mission and World-State Changes
+```
+
+### Boarding Mission Types
+
+- **Cargo Theft:** Locate marked cargo and escape.
+- **Sabotage:** Reach a system and disable it.
+- **Rescue:** Find and escort an NPC to extraction.
+- **Capture:** Secure a target or hold a location.
+- **Technology Recovery:** Retrieve a specific item.
+- **Inspection:** Investigate a ship without necessarily destroying it.
+
+The first boarding prototype should contain one small interior, one enemy type, one clear objective and a reliable extraction flow.
+
+## Missions
+
+Missions connect combat, travel, stations, boarding and progression.
+
+| Mission | Core Activity |
+|---|---|
+| Cargo Delivery | Deliver goods to a destination |
+| Pirate Interception | Locate and defeat a hostile ship |
+| Salvage Recovery | Recover cargo or wreckage |
+| Emergency Rescue | Rescue an NPC |
+| Boarding Contract | Complete an interior objective |
+| Escort | Protect a travelling ship |
+| Investigation | Visit locations and collect information |
+
+Mission data may include title, description, issuer, destination, objective, requirements, reward, failure conditions and follow-up consequences.
+
+## Economy and Progression
+
+The initial economy should remain small and understandable:
+
+- Credits
+- Cargo items
+- Salvage
+- Repair costs
+- Ship and weapon costs
+- Mission rewards
+
+### Ship Progression
+
+- Hull durability
+- Shields or armour
+- Weapon damage and fire rate
+- Movement and handling
+- Cargo capacity
+- Utility slots
+- Special abilities
+- Ship class and size
+
+### Character Progression
+
+- Health
+- On-foot weapons
+- Armour
+- Inventory capacity
+- Boarding abilities
+- Utility tools
+- Dialogue or mission access
+
+### World Progression
+
+- Credits
+- Faction reputation
+- New systems and destinations
+- Better shops and missions
+- Ship and equipment ownership
+- Unlockable services
+
+Ownership and usability may be separate. A player can potentially purchase an item before meeting the requirements to use it effectively.
+
+## Technical Architecture
+
+Space combat, ground exploration, boarding and progression should be separate systems connected through shared world state.
+
+```text
+res://
+├── scenes/
+│   ├── main/game.tscn
+│   ├── space/space_map.tscn
+│   ├── space/player_ship.tscn
+│   ├── space/enemy_ship.tscn
+│   ├── ground/station.tscn
+│   ├── ground/player_character.tscn
+│   ├── boarding/boarding_map.tscn
+│   └── ui/
+├── scripts/
+│   ├── player_ship.gd
+│   ├── enemy_ship.gd
+│   ├── player_character.gd
+│   ├── mission_manager.gd
+│   ├── world_state.gd
+│   ├── scene_manager.gd
+│   └── save_manager.gd
+├── resources/
+│   ├── missions/
+│   ├── ships/
+│   ├── weapons/
+│   ├── items/
+│   └── factions/
+└── README.md
+```
+
+A minimal shared state may include:
+
+```gdscript
+extends Node
+
+var credits: int = 500
+var current_ship_id: String = "starter_shuttle"
+var inventory: Dictionary = {}
+var owned_ships: Array[String] = ["starter_shuttle"]
+var active_missions: Array = []
+var completed_missions: Array = []
+var faction_reputation: Dictionary = {}
+```
+
+This is a starting example, not a final architecture. Add systems only when they are needed.
 
 ## Development Roadmap
 
 ### Milestone 0 - Project Foundation
 
-- [x] Godot 4.7 project and display configuration
-- [x] Input configuration and main scene
-- [x] Clean project structure
-- [x] Reliable project launch
-
-### Milestone 1 - Archer & Practice Range
-
-- [x] Archer, bow, target, ground and practice environment
-- [x] Functional world layout and scaling
-
-### Milestone 2 - Bow Drawing & Firing
-
-- [x] Mouse hold/release shooting
-- [x] Draw strength and launch force
-- [x] Draw feedback and shot validation
-
-### Milestone 3 - Arrow Physics & Target Hits
-
-- [x] Arrow scene and projectile physics
-- [x] Gravity and flight rotation
-- [x] Target collision and embedded arrows
-- [x] Miss handling and reset support
-- [x] Arrow point, shaft and nock collision sections
-- [x] Flying-arrow collision and knock-away behavior
-- [x] Nock-hit arrow replacement behavior
-- [x] Training dummy collision and arrow embedding
-- [x] Training dummy nock replacement behavior
-
-### Milestone 4 - Scoring & Bullseye
-
-- [x] Target zones and bullseye detection
-- [x] Shot feedback and statistics
-- [x] Direct coin rewards now replace the original score economy
-
-### Milestone 5 - Strength Progression
-
-- [x] Strength stat and XP
-- [x] Draw/release progression
-- [x] Strength levels affect launch capability
-
-### Milestone 6 - Accuracy Progression
-
-- [x] Accuracy stat and XP
-- [x] Accuracy levels
-- [x] Accuracy affects aim assistance without auto-aim
-
-### Milestone 7 - Aim Assistance
-
-- [x] Live trajectory prediction
-- [x] Prediction reacts to aim, draw strength and shot distance
-- [x] Accuracy improves prediction quality
-- [x] No auto-aim or automatic target selection
-
-### Milestone 8 - First Playable Practice Loop
-
-- [x] Shooting, progression, feedback and reset loop
-- [x] Practice HUD
-- [x] Playtesting and early balance pass
-
-**Completion: Done.**
-
-### Milestone 9 - Economy & Money
-
-- [x] Dedicated economy system
-- [x] Coin display and purchases
-- [x] Training Manual upgrade
-- [x] Purchase validation and feedback
-- [x] Target hits provide practice income
-- [ ] Tournament rewards become the primary long-term money source
-
-The Training Manual has five levels. Each level increases Strength and Accuracy XP gains by 10%. The current development starting balance remains 250 coins so the practice systems can be tested without an artificial grind.
-
-Training Manual costs are now 125, 250, 375, 500 and 625 coins for levels 1 through 5.
-
-### Milestone 10 - Bows & Equipment
-
-- [x] Data-driven bow resources
-- [x] Training Bow
-- [x] Recurve Bow
-- [x] War Bow
-- [x] Bow prices and Strength requirements
-- [x] Purchase and equip flow foundation
-- [x] Switching between owned bows
-- [ ] Separate city purchases from Fletcher equipment management
-- [ ] Allow ownership of bows before their stat requirements are met
-- [ ] Prevent equipping bows when Strength requirements are not met
-- [ ] Establish arrow purchasing and equipment
-- [x] Equipped bow data drives shooting behavior
-
-Current practice-phase bow prices are 100 coins for the Recurve Bow and 250 coins for the War Bow. These remain subject to the later tournament economy pass.
-
-### Milestone 11 - Practice Range Expansion
-
-**Goal:** Make the practice range itself part of progression and income.
-
-- [x] Multiple target slots
-- [x] Target unlock costs
-- [x] Progressively smaller/farther targets
-- [x] Target reward tiers
-- [x] Special ring target worth 5 coins
-- [x] Range levels
-- [x] Range upgrade UI
-- [x] Side-scrolling movement
-- [x] Walking
-- [x] Running
-- [x] Jumping
-- [x] Crouching
-- [x] Mouse-facing character and bow
-- [x] Movement wobble while aiming
-- [x] Distance-based Accuracy XP
-- [x] 20% crouch trajectory bonus
-- [x] Tent is a standalone scene with editor-based visuals
-- [x] Range decoration and progression markers
-- [x] Training dummy at Range Level 3+
-- [x] Persist range upgrades between sessions
-- [x] Visual range evolution
-- [x] Practice economy and range-cost balance pass
-
-Current range progression:
-
-| Range Level | New Challenge | Unlock Cost | Reward |
-|---|---|---:|---:|
-| 1 | Large close target | Free | 1 coin |
-| 2 | Smaller target | 75 coins | 2 coins |
-| 3 | Smaller/farther target | 175 coins | 3 coins |
-| 4 | Ring Target | 350 coins | 5 coins |
-
-The first three targets stop arrows on impact. The Ring Target rewards an arrow that passes cleanly through its opening and lets the arrow continue flying. Ring rewards are limited to once per arrow, and a successful ring pass no longer produces a later false MISS when the arrow eventually reaches the ground.
-
-The training dummy uses the same embedded-arrow interaction model as targets. An arrow embedded in the dummy can be replaced by a new arrow striking its nock, while the old arrow is removed.
-
-Range progression initially used a small dedicated save file. It is now migrated into the unified player save data, while existing range-only saves are still read for compatibility.
-
-Accuracy XP now scales with the original shot distance. Point-blank hits provide the minimum XP, while shots reaching 1000 distance or more provide the base maximum of 25 XP. The Training Manual multiplier is then applied, with XP capped by the current progression rules.
-
-### Milestone 12 - Pre-Tournament Foundation
-
-**Goal:** Finish the practice experience and establish a stable foundation before introducing tournament rules. The tournament should be built on a polished, persistent practice loop rather than becoming a second unfinished system.**
-
-- [x] Persist player progression between sessions
-- [x] Save and load money, Strength, Accuracy, bows and range progression
-- [x] Add a deliberate reset-save flow for testing
-- [x] Visually evolve the practice range with each range level
-- [x] Make the training tent a proper practice-range hub and establish its future customization role
-- [x] Finalize practice income and equipment costs for the current practice phase
-- [x] Finalize Strength and Accuracy progression pacing
-- [x] Finalize range upgrade costs and target rewards for the current practice phase
-- [x] Confirm shooting, movement and trajectory behavior remain stable
-- [x] Clean up prototype-only UI and development feedback
-- [x] Complete a focused long-session playtest
-
-The unified save foundation uses `user://player_progress.cfg` and stores progression as versioned save data. Strength, Accuracy, economy, bow ownership/equipment and range progression now restore between sessions. `Ctrl + Shift + R` deliberately deletes saved progression and reloads a fresh game for testing.
-
-The training tent is now a functional practice-range hub. It can be approached and opened with `E`, providing the existing bow equipment flow while leaving room for future customization systems.
-
-The current practice economy deliberately creates choices between equipment, Training Manuals and range expansion. Range upgrades now cost 75, 175 and 350 coins, while the Recurve and War Bows cost 100 and 250 coins respectively. The target rewards remain 1, 2, 3 and 5 coins. These values are intended as the stable practice-phase baseline before tournament rewards are introduced.
-
-Recent stability work also hardened projectile interactions around the training dummy and ring target. Embedded dummy arrows are tracked explicitly, nock replacement works against both targets and the dummy, and successful ring passes no longer report a contradictory MISS after the reward has already been granted.
-
-The player-facing HUD has now been cleaned of prototype session telemetry. The temporary shots/hits/bullseyes counter and duplicate session coin counter have been removed from the visible interface. Persistent coins, Strength, Accuracy, shooting feedback, progression feedback, training upgrades, range upgrades and the tent interaction remain available.
-
-**Milestone 12 is now complete.**
-
-**Design rule:** No tournament-specific complexity should be added until the practice loop can be saved, resumed and balanced reliably.
-
-### Milestone 13 - Training Grounds Hub
-
-**Goal:** Make the Training Grounds the player's persistent home base and the central navigation layer for the game.**
-
-- [x] Dedicated Training Grounds hub scene
-- [x] Wide horizontal hub layout
-- [x] Tent positioned on the far left
-- [x] Kingdom map table positioned beside the tent
-- [x] Fletcher positioned near the center
-- [x] Archery range entrance positioned on the right
-- [x] Contextual interaction prompts
-- [x] Tent interaction foundation
-- [x] Map interface with future travel destinations
-- [x] Direct transition from the hub into the dedicated practice scene
-- [x] Distinct Tent, Map, Fletcher and Practice Grounds locations
-- [ ] Full character customization through the Tent
-- [ ] City travel through the kingdom map
-- [ ] Bow and arrow modification/equipment through the Fletcher
-- [ ] City bow purchasing
-- [ ] Allow purchased bows to remain owned while stat-locked
-- [ ] Enforce stat requirements when equipping bows
-- [x] Return from practice scene to the Training Grounds
-- [x] Preserve the existing persistent save/economy foundation
-- [ ] Replace placeholder hub art with final environment art
-- [ ] Add full character customization
-- [ ] Add persistent Training Grounds upgrades
-
-The hub is now the game's main scene. The practice range remains a separate scene and is entered physically from the right side of the grounds. The map is reserved for travel to cities and other future destinations, while the range remains physically connected to the Training Grounds rather than becoming a city destination. The Tent, Map, Fletcher and Practice Grounds each have a distinct role in the hub.
-
-### Milestone 14 - First Tournament
-
-**Goal:** Introduce the first structured competitive activity without replacing the core shooting mechanics.**
-
-- [ ] Tournament entry system from the kingdom map
-- [ ] Tournament requirements
-- [ ] Tournament rounds and attempt limits
-- [ ] Tournament-specific target layouts
-- [ ] Tournament scoring rules
-- [ ] Opponent score generation
-- [ ] Results and tournament UI
-- [ ] Entry/restart flow
-- [ ] Tournament rewards feed back into the existing economy
-
-### Milestone 15 - Tournament Rewards & Progression
-
-- [ ] Prize structures
-- [ ] Tournament money
-- [ ] Tournament progression
-- [ ] Harder tournaments
-- [ ] Entry/reward balancing
-- [ ] Clear relationship between practice progression and tournament progression
-
-### Milestone 16 - Advanced Targets & Challenges
-
-- [ ] Moving targets
-- [ ] Long-distance targets
-- [ ] Timed challenges
-- [ ] Multi-target challenges
-- [ ] Precision targets
-
-### Milestone 17 - Advanced Archery Systems
-
-- [ ] Evaluate wind
-- [ ] Evaluate arrow types
-- [ ] Evaluate Speed and Endurance
-- [ ] Add only systems that strengthen the core loop
-
-### Milestone 18 - Progression Balance
-
-- [ ] Balance Strength and Accuracy
-- [ ] Balance trajectory assistance
-- [ ] Balance bows and range costs
-- [ ] Balance tournaments and rewards
-- [ ] Balance overall pacing
-- [ ] Test early, mid and long-term progression
-
-### Milestone 19 - UI, Audio & Visual Polish
-
-- [ ] Polish HUD and menus
-- [ ] Improve archer, bow, arrow and target visuals
-- [ ] Improve practice range and hub visuals
-- [ ] Add animation and impact effects
-- [ ] Add sound effects and music where appropriate
-- [ ] Add settings and accessibility improvements
-
-### Milestone 20 - Additional Game Activities
-
-**Goal:** Expand the game beyond tournaments while keeping the Training Grounds as the player's home base.**
-
-- [ ] World activities accessed from the kingdom map
-- [ ] Non-tournament challenges
-- [ ] Quests or contracts
-- [ ] Special events
-- [ ] Additional progression systems only where they strengthen the core loop
-
-### Milestone 21 - Release Preparation
-
-- [ ] Finalize save system and migration handling
-- [ ] Reliable loading and reset-save support
-- [ ] Test fresh games and long-term progression
-- [ ] Test display resolutions
-- [ ] Fix release bugs and optimize
-- [ ] Prepare itch.io release
-- [ ] Prepare Kongregate-compatible build if supported
+- [ ] Confirm Godot version and project settings
+- [ ] Create clean project structure
+- [ ] Establish main scene and scene manager
+- [ ] Configure input actions
+- [ ] Confirm reliable project launch
+- [ ] Create basic shared world state
+
+### Milestone 1 - Twin-Stick Space Combat
+
+**Goal:** Prove that flying and fighting are enjoyable.
+
+- [ ] Space scene and camera
+- [ ] Player ship movement
+- [ ] Mouse or right-stick aiming
+- [ ] Primary weapon and projectiles
+- [ ] One enemy ship
+- [ ] Enemy movement and firing
+- [ ] Collision and damage
+- [ ] Ship destruction or disabling
+- [ ] Combat feedback
+- [ ] Salvage or reward drop
+
+**Completion test:** The player can enter space, fight an enemy and immediately understand the combat.
+
+### Milestone 2 - Docking and First Station
+
+- [ ] Station scene
+- [ ] Docking interaction
+- [ ] Space-to-station transition
+- [ ] Top-down character movement
+- [ ] Docking bay
+- [ ] One NPC
+- [ ] One shop or mission terminal
+- [ ] Station-to-space return
+
+**Completion test:** The player can fly to a station, leave the ship, walk around, interact and return to space.
+
+### Milestone 3 - Missions and Rewards
+
+- [ ] Mission data resource
+- [ ] Mission manager
+- [ ] Mission acceptance
+- [ ] One delivery or combat mission
+- [ ] Completion and failure states
+- [ ] Credits reward
+- [ ] Mission status UI
+
+### Milestone 4 - First Boarding Mission
+
+- [ ] Boarding requirement or interaction
+- [ ] Boarding transition
+- [ ] Small ship interior
+- [ ] One on-foot enemy
+- [ ] One boarding objective
+- [ ] Cargo or item interaction
+- [ ] Extraction point
+- [ ] Return to space
+- [ ] Apply results to world state
+
+**Recommended first mission:** Disable an enemy ship, board it, steal marked cargo and escape.
+
+### Milestone 5 - Basic Economy and Progression
+
+- [ ] Credits display
+- [ ] Cargo inventory
+- [ ] Salvage rewards
+- [ ] Ship repair costs
+- [ ] First weapon upgrade
+- [ ] Hull or cargo upgrade
+- [ ] Shop purchasing
+- [ ] Save and load progression
+- [ ] Balance rewards and costs
+
+### Milestone 6 - Expanded Stations
+
+- [ ] Shipyard
+- [ ] Trade market
+- [ ] Equipment vendor
+- [ ] Mission office
+- [ ] Multiple NPCs
+- [ ] Station identity and visual differentiation
+
+### Milestone 7 - More Content
+
+- [ ] Additional player ships
+- [ ] Additional enemy types
+- [ ] Delivery, salvage, rescue and escort missions
+- [ ] Boarding variations
+- [ ] Faction relationships
+
+### Milestone 8 - Star Systems and Travel
+
+- [ ] Star system structure
+- [ ] Travel points or jump routes
+- [ ] Multiple stations or planetary locations
+- [ ] System-specific encounters
+- [ ] Basic map interface
+- [ ] Unlockable destinations
+
+### Milestone 9 - Deeper RPG and Boarding Systems
+
+- [ ] Character equipment
+- [ ] On-foot weapon variety
+- [ ] Armour and consumables
+- [ ] Boarding hazards
+- [ ] Advanced ship interiors
+- [ ] Capture, rescue and sabotage variations
+- [ ] Reputation consequences
+
+### Milestone 10 - Balance and Release Polish
+
+- [ ] Balance ships, weapons, missions and repairs
+- [ ] Improve combat feedback
+- [ ] Improve station and interior visuals
+- [ ] Add audio and music
+- [ ] Improve HUD and menus
+- [ ] Finalize saving and migration handling
+- [ ] Test fresh and long-term progression
+- [ ] Optimize and fix release bugs
 
 ## MVP
 
-The first playable MVP ends at **Milestone 8**. The current game is now beyond the MVP and is being expanded from the practice range into a persistent Training Grounds hub.
+The first MVP is a vertical slice, not the complete space RPG.
 
-The MVP contains one archer, one bow, one target, mouse-controlled drawing, arrow physics, target collision, Strength progression, Accuracy progression, trajectory assistance, practice HUD and clear shot feedback.
+It should contain:
 
-Tournaments, economy, multiple bows, advanced targets, wind and saving are not required for the MVP.
+- One space area
+- One controllable ship
+- Twin-stick movement and aiming
+- One enemy ship
+- Basic space combat
+- One station
+- One playable character
+- Station movement and interaction
+- One NPC or mission terminal
+- One mission
+- One simple shop
+- One small ship interior
+- One on-foot enemy
+- One boarding objective
+- Basic credits and one upgrade
 
 ### The MVP Question
 
-> **Is firing an arrow fun?**
+> **Does moving between space combat, stations and boarding create a fun gameplay loop?**
 
-If the answer is not yes, improve the shooting experience before expanding the game.
+If not, improve the existing experience before adding more systems, factions, ships or crafting.
 
 ## Development Rules
 
 1. Build one milestone at a time.
-2. Do not build future systems early unless required.
-3. Keep shooting independent from progression and economy.
-4. Prefer simple systems over unnecessary abstractions.
-5. Every completed milestone should remain playable.
-6. Playtest major mechanics before expanding.
-7. If a feature makes the game less fun, reconsider or remove it.
-8. Do not add complexity simply because other idle games traditionally use it.
-9. Player skill must always matter.
-10. The README is the roadmap, but gameplay testing can change the design.
-11. Do not start tournament implementation until the Training Grounds hub can serve as the stable home base for practice, equipment and travel.
-12. Keep the Training Grounds extensible so future activities do not require rebuilding the hub.
+2. Keep the first playable version small enough to finish.
+3. Do not build a complete universe before proving the core loop.
+4. Prefer separate boarding interiors during early development.
+5. Keep systems modular without creating unnecessary abstractions.
+6. Introduce one new system at a time and test it in the playable build.
+7. Avoid large content pipelines before mechanics are stable.
+8. Use placeholder art to prove gameplay, then replace it deliberately.
+9. Progression should improve options without making the game play itself.
+10. Every milestone must leave the project playable.
+11. Do not add crafting, complex factions, procedural generation or multiplayer until the core single-player loop is reliable.
+12. Keep shared world state small and understandable.
+13. Design missions around actions that exist in the current build.
+14. When a feature becomes repetitive work, reduce its scope and test a smaller version rather than abandoning the whole project.
+15. The README is a living roadmap. Playtesting can change the design.
+16. Every feature must justify its complexity by improving the player's experience.
 
 ## Current Status
 
-**Current Stage: Milestone 13 - Training Grounds Hub**
+**Current Stage: Project Direction and Pre-Prototype Planning**
 
-Milestones 0 through 12 are now complete, and Milestone 13 is in active development. The practice foundation includes persistent progression, four range levels, multiple targets, target income, the ring challenge, side-scrolling movement, running, jumping, crouching, mouse-facing, movement wobble, distance-based Accuracy XP, the 20% crouch trajectory bonus, range decoration, the training dummy, the Training Grounds hub, bows and equipment, and stable projectile interactions. The hub is now organized around four clear functions: character customization at the Tent, travel through the kingdom map, equipment management at the Fletcher, and practice at the Practice Grounds.
+The project direction has shifted from the previous archery and idle-city concepts toward a top-down 2D spacefaring action RPG. The current design combines twin-stick space combat, explorable stations, ship upgrades, missions, trading, resources and varied ship-boarding encounters.
 
-The arrow system includes explicit point/shaft/nock sections, flying-arrow collisions, nock replacement, target embedding, dummy embedding and dummy nock replacement. Successful ring passes score normally without producing a later contradictory MISS.
+### Immediate Next Steps
 
-Strength and Accuracy progression has been finalized for the practice phase. The trajectory preview remains informational, follows the current bow aim and shot conditions, improves with Accuracy, becomes 20% longer while crouching, and disappears while airborne. It never rotates the bow, bends the arrow, or selects a target automatically.
+- [ ] Confirm project name and setting
+- [ ] Create the space prototype scene
+- [ ] Implement twin-stick ship movement
+- [ ] Implement aiming and primary fire
+- [ ] Add one enemy ship
+- [ ] Test combat feel and feedback
+- [ ] Add a basic station transition
+- [ ] Add a controllable ground character
+- [ ] Define the first boarding mission in detail
 
-The unified save foundation restores money, Strength, Accuracy, owned bows, equipped bow and range progression between sessions. Legacy range-only saves are migrated when the range is next saved. A deliberate `Ctrl + Shift + R` reset flow remains available for development testing.
+## Long-Term Possibilities
 
-The player-facing HUD has been cleaned up so prototype session telemetry is no longer presented as part of the game interface. The visible HUD now focuses on persistent progression, economy, active shooting feedback, upgrades and contextual interaction. Quick shots now use the right mouse button, while normal drawing and firing use the left mouse button. Quick shots do not grant Strength or Accuracy XP.
+These ideas are outside the first MVP:
 
-### Next Step
+- Multiple factions and reputation
+- Dynamic economy and supply chains
+- Ship capture and ownership
+- Procedural or semi-procedural star systems
+- Crew members and ship roles
+- Persistent ship interiors and damage
+- Smuggling and illegal goods
+- Bounty hunting
+- Fleet encounters
+- Crafting and resource processing
+- Player-owned stations or businesses
+- More complex character progression
+- Multiplayer or cooperative play
 
-**Finish the Training Grounds foundation before tournament implementation.**
-
-The next development phase is to turn the four hub locations into their intended systems: character customization at the Tent, city travel through the kingdom map, bow and arrow modification/equipment through the Fletcher, and practice at the Practice Grounds. Cities will handle bow purchases, including purchases of bows whose stat requirements the player has not yet reached. Tournament implementation follows once this hub and city foundation is stable.
+The long-term vision can be ambitious. The development process must remain small, testable and finishable.
