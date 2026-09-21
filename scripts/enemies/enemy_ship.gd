@@ -12,6 +12,7 @@ extends CharacterBody2D
 var current_hull: float = 50.0
 var fire_cooldown_remaining: float = 0.0
 var player_ship: Node2D
+var is_destroying: bool = false
 
 @onready var weapon_muzzle: Marker2D = $WeaponMuzzle
 @onready var visual: Polygon2D = $Visual
@@ -63,8 +64,9 @@ func take_damage(damage_amount: float) -> void:
 	current_hull = maxf(0.0, current_hull - damage_amount)
 	_flash_hit()
 
-	if current_hull <= 0.0:
-		_destroy()
+	if current_hull <= 0.0 and not is_destroying:
+		is_destroying = true
+		call_deferred("_destroy")
 
 func _flash_hit() -> void:
 	visual.modulate = Color(1.0, 1.0, 1.0, 1.0)
