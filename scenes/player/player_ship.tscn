@@ -31,4 +31,3 @@ position = Vector2(24, 0)
 position = Vector2.ZERO
 position_smoothing_enabled = true
 position_smoothing_speed = 6.0
-enabled = true
