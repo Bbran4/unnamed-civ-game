@@ -50,6 +50,8 @@ func _physics_process(delta: float) -> void:
         velocity = Vector2.ZERO
         return
 
+    var reference_velocity: Vector2 = get_space_reference_velocity()
+    var relative_velocity: Vector2 = velocity - reference_velocity
     var forward_direction: Vector2 = Vector2.RIGHT.rotated(rotation)
     var boost_active: bool = Input.is_action_pressed("boost")
     var current_max_speed: float = max_speed
@@ -68,32 +70,50 @@ func _physics_process(delta: float) -> void:
         var strafe_input: float = Input.get_axis("move_left", "move_right")
         if strafe_input != 0.0:
             var right_direction: Vector2 = Vector2.DOWN.rotated(rotation)
-            velocity += right_direction * strafe_input * forward_acceleration * delta
+            relative_velocity += right_direction * strafe_input * forward_acceleration * delta
 
     forward_direction = Vector2.RIGHT.rotated(rotation)
 
     if boost_active:
         current_max_speed = boost_max_speed
-        velocity += forward_direction * boost_acceleration * delta
+        relative_velocity += forward_direction * boost_acceleration * delta
 
     if Input.is_action_pressed("move_up"):
-        velocity += forward_direction * forward_acceleration * delta
+        relative_velocity += forward_direction * forward_acceleration * delta
 
     if Input.is_action_pressed("move_down"):
-        velocity -= forward_direction * reverse_acceleration * delta
+        relative_velocity -= forward_direction * reverse_acceleration * delta
     elif not Input.is_action_pressed("move_up"):
         var momentum_decay_acceleration: float = max_speed / momentum_decay_time
-        velocity = velocity.move_toward(Vector2.ZERO, momentum_decay_acceleration * delta)
+        relative_velocity = relative_velocity.move_toward(Vector2.ZERO, momentum_decay_acceleration * delta)
 
-    if velocity.length() > current_max_speed:
-        velocity = velocity.normalized() * current_max_speed
+    if relative_velocity.length() > current_max_speed:
+        relative_velocity = relative_velocity.normalized() * current_max_speed
 
+    velocity = reference_velocity + relative_velocity
     move_and_slide()
     camera.update_speed_zoom(boost_active, delta)
 
     fire_cooldown_remaining = maxf(0.0, fire_cooldown_remaining - delta)
     if Input.is_action_pressed("primary_fire"):
         _fire_primary()
+
+func get_space_reference_velocity() -> Vector2:
+    var space_system: Node = get_tree().get_first_node_in_group("space_system")
+    if space_system == null:
+        return Vector2.ZERO
+
+    if not space_system.has_method("get_reference_velocity_at_position"):
+        return Vector2.ZERO
+
+    var velocity_result: Variant = space_system.call(
+        "get_reference_velocity_at_position",
+        global_position
+    )
+    if velocity_result is Vector2:
+        return velocity_result as Vector2
+
+    return Vector2.ZERO
 
 func is_in_danger_zone() -> bool:
     if shield_regen_remaining > 0.0:
