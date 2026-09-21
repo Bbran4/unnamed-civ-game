@@ -43,15 +43,22 @@ const NAME_SUFFIXES: Array[String] = [
 ]
 
 func generate_station(station_index: int, planet: GeneratedPlanetData, rng: RandomNumberGenerator) -> GeneratedStationData:
-    var station_types: Array[StationTypeData] = load_station_types()
-    var factions: Array[FactionData] = load_factions()
+    var station_resources: Array[Resource] = load_station_types()
+    var faction_resources: Array[Resource] = load_factions()
 
-    if station_types.is_empty() or factions.is_empty():
+    if station_resources.is_empty() or faction_resources.is_empty():
         push_error("Station generation requires station types and factions.")
         return GeneratedStationData.new()
 
-    var station_type: StationTypeData = choose_station_type(planet, station_types, rng)
-    var faction: FactionData = choose_faction(station_type, factions, rng)
+    var station_type: StationTypeData = choose_station_type(planet, station_resources, rng)
+    if station_type == null:
+        push_error("No valid station type could be selected.")
+        return GeneratedStationData.new()
+
+    var faction: FactionData = choose_faction(station_type, faction_resources, rng)
+    if faction == null:
+        push_error("No valid faction could be selected.")
+        return GeneratedStationData.new()
 
     var generated_station: GeneratedStationData = GeneratedStationData.new()
     generated_station.id = "station_%d" % station_index
@@ -65,17 +72,18 @@ func generate_station(station_index: int, planet: GeneratedPlanetData, rng: Rand
 
     return generated_station
 
-func choose_station_type(planet: GeneratedPlanetData, station_types: Array[StationTypeData], rng: RandomNumberGenerator) -> StationTypeData:
+func choose_station_type(planet: GeneratedPlanetData, station_resources: Array[Resource], rng: RandomNumberGenerator) -> StationTypeData:
     var preferred_ids: Array[String] = get_preferred_station_ids(planet.planet_type.id)
 
     for attempt: int in range(4):
-        var candidate_index: int = rng.randi_range(0, station_types.size() - 1)
-        var candidate: StationTypeData = station_types[candidate_index]
-        if preferred_ids.has(candidate.id):
+        var candidate_index: int = rng.randi_range(0, station_resources.size() - 1)
+        var candidate: StationTypeData = station_resources[candidate_index] as StationTypeData
+        if candidate != null and preferred_ids.has(candidate.id):
             return candidate
 
-    var fallback_index: int = rng.randi_range(0, station_types.size() - 1)
-    return station_types[fallback_index]
+    var fallback_index: int = rng.randi_range(0, station_resources.size() - 1)
+    var fallback_station: StationTypeData = station_resources[fallback_index] as StationTypeData
+    return fallback_station
 
 func get_preferred_station_ids(planet_type_id: String) -> Array[String]:
     match planet_type_id:
@@ -98,12 +106,17 @@ func get_preferred_station_ids(planet_type_id: String) -> Array[String]:
 
     return ["trade"]
 
-func choose_faction(station_type: StationTypeData, factions: Array[FactionData], rng: RandomNumberGenerator) -> FactionData:
+func choose_faction(station_type: StationTypeData, faction_resources: Array[Resource], rng: RandomNumberGenerator) -> FactionData:
     var compatible_factions: Array[FactionData] = []
 
-    for faction: FactionData in factions:
-        for preferred_station: StationTypeData in faction.preferred_station_types:
-            if preferred_station.id == station_type.id:
+    for faction_resource: Resource in faction_resources:
+        var faction: FactionData = faction_resource as FactionData
+        if faction == null:
+            continue
+
+        for preferred_station_resource: Resource in faction.preferred_station_types:
+            var preferred_station: StationTypeData = preferred_station_resource as StationTypeData
+            if preferred_station != null and preferred_station.id == station_type.id:
                 compatible_factions.append(faction)
                 break
 
@@ -111,34 +124,32 @@ func choose_faction(station_type: StationTypeData, factions: Array[FactionData],
         var faction_index: int = rng.randi_range(0, compatible_factions.size() - 1)
         return compatible_factions[faction_index]
 
-    var fallback_index: int = rng.randi_range(0, factions.size() - 1)
-    return factions[fallback_index]
+    var fallback_index: int = rng.randi_range(0, faction_resources.size() - 1)
+    return faction_resources[fallback_index] as FactionData
 
-func load_station_types() -> Array[StationTypeData]:
-    var station_types: Array[StationTypeData] = []
+func load_station_types() -> Array[Resource]:
+    var station_types: Array[Resource] = []
 
     for station_path: String in STATION_TYPE_PATHS:
         var loaded_resource: Resource = ResourceLoader.load(station_path)
-        var station_type: StationTypeData = loaded_resource as StationTypeData
-        if station_type == null:
+        if loaded_resource == null:
             push_error("Failed to load station type: %s" % station_path)
             continue
 
-        station_types.append(station_type)
+        station_types.append(loaded_resource)
 
     return station_types
 
-func load_factions() -> Array[FactionData]:
-    var factions: Array[FactionData] = []
+func load_factions() -> Array[Resource]:
+    var factions: Array[Resource] = []
 
     for faction_path: String in FACTION_PATHS:
         var loaded_resource: Resource = ResourceLoader.load(faction_path)
-        var faction: FactionData = loaded_resource as FactionData
-        if faction == null:
+        if loaded_resource == null:
             push_error("Failed to load faction: %s" % faction_path)
             continue
 
-        factions.append(faction)
+        factions.append(loaded_resource)
 
     return factions
 
