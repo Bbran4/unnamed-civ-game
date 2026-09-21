@@ -27,6 +27,7 @@ const MAX_ORBIT_DISTANCE: float = 15400.0
 @onready var star_label: Label = $Panel/MapArea/OrbitMap/StarLabel
 @onready var status_label: Label = $Panel/Status
 @onready var warp_button: Button = $Panel/WarpButton
+@onready var hyperdrive_button: Button = $Panel/HyperdriveButton
 @onready var close_button: Button = $Panel/CloseButton
 @onready var system_buttons: Array[Button] = [
     $Panel/SystemList/AsterionButton,
@@ -64,6 +65,12 @@ const MAX_ORBIT_DISTANCE: float = 15400.0
     $Panel/MapArea/OrbitMap/Station3
 ]
 
+@onready var station_buttons: Array[Button] = [
+    $Panel/StationList/Station1Button,
+    $Panel/StationList/Station2Button,
+    $Panel/StationList/Station3Button
+]
+
 @onready var station_labels: Array[Label] = [
     $Panel/MapArea/OrbitMap/StationLabel1,
     $Panel/MapArea/OrbitMap/StationLabel2,
@@ -73,6 +80,7 @@ const MAX_ORBIT_DISTANCE: float = 15400.0
 var space_system: SpaceSystem
 var map_open: bool = false
 var selected_system_id: String = ""
+var selected_station_id: String = ""
 
 func _ready() -> void:
     space_system = get_parent() as SpaceSystem
@@ -81,6 +89,12 @@ func _ready() -> void:
 
     close_button.pressed.connect(close_map)
     warp_button.pressed.connect(_warp_to_selected_system)
+    hyperdrive_button.pressed.connect(_hyperdrive_to_selected_station)
+
+    for station_button_index: int in range(station_buttons.size()):
+        station_buttons[station_button_index].pressed.connect(
+            _select_station.bind(station_button_index)
+        )
 
     for button_index: int in range(system_buttons.size()):
         var system_id: String = SYSTEM_IDS[button_index]
@@ -174,6 +188,7 @@ func update_map() -> void:
         if station_index >= generated_system.stations.size():
             marker.visible = false
             label.visible = false
+            station_buttons[station_index].visible = false
             continue
 
         var station: GeneratedStationData = generated_system.stations[station_index]
@@ -187,6 +202,8 @@ func update_map() -> void:
         label.position = map_position + Vector2(8.0, 8.0)
         label.text = station.display_name
         label.visible = true
+        station_buttons[station_index].text = station.display_name
+        station_buttons[station_index].visible = true
 
 func build_map_circle_points(radius: float) -> PackedVector2Array:
     var points: PackedVector2Array = PackedVector2Array()
@@ -208,13 +225,40 @@ func update_warp_state() -> void:
     var is_dangerous: bool = space_system.is_player_in_danger_zone()
 
     warp_button.disabled = is_current_system or is_dangerous
+    hyperdrive_button.disabled = selected_station_id.is_empty() or is_dangerous
 
     if is_current_system:
         status_label.text = "Current system"
     elif is_dangerous:
-        status_label.text = "Warp unavailable: hostile activity detected"
+        status_label.text = "Travel unavailable: hostile activity detected"
     else:
-        status_label.text = "Ready to warp to %s" % get_system_name(selected_system_id)
+        status_label.text = "Ready to travel to %s" % get_system_name(selected_system_id)
+
+func _select_station(station_index: int) -> void:
+    if space_system == null:
+        return
+    if station_index < 0 or station_index >= space_system.generated_system.stations.size():
+        return
+
+    var station: GeneratedStationData = space_system.generated_system.stations[station_index]
+    selected_station_id = station.id
+    update_warp_state()
+
+func _hyperdrive_to_selected_station() -> void:
+    if selected_station_id.is_empty():
+        return
+    if space_system.is_player_in_danger_zone():
+        status_label.text = "Hyperdrive unavailable: hostile activity detected"
+        return
+
+    var station_position: Vector2 = space_system.get_station_position(selected_station_id)
+    var player_ship: CharacterBody2D = get_tree().get_first_node_in_group("player_ship") as CharacterBody2D
+    if player_ship == null:
+        return
+
+    player_ship.global_position = station_position + Vector2(-220.0, 0.0)
+    player_ship.velocity = Vector2.ZERO
+    close_map()
 
 func _warp_to_selected_system() -> void:
     if selected_system_id == WorldState.current_system_id:
