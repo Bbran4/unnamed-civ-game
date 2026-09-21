@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="PlanetTypeData" load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/planets/planet_type_data.gd" id="1_script"]
+[ext_resource type="Resource" path="res://data/economy/resources/water.tres" id="res_water"]
+[ext_resource type="Resource" path="res://data/economy/resources/organic_matter.tres" id="res_organic_matter"]
+[ext_resource type="Resource" path="res://data/economy/resources/carbon.tres" id="res_carbon"]
+[ext_resource type="Resource" path="res://data/economy/resources/iron.tres" id="res_iron"]
+[ext_resource type="Resource" path="res://data/economy/resources/copper.tres" id="res_copper"]
+[ext_resource type="Resource" path="res://data/economy/resources/silicates.tres" id="res_silicates"]
+
+[resource]
+script = ExtResource("1_script")
+id = "habitable"
+display_name = "Habitable"
+description = "Temperate worlds capable of supporting large populations and complex ecosystems."
+min_radius = 4500
+max_radius = 9000
+min_temperature = 250
+max_temperature = 315
+atmosphere = "Breathable"
+gravity_multiplier = 1
+available_resources = Array[ResourceData]([ExtResource("res_water"), ExtResource("res_organic_matter"), ExtResource("res_carbon"), ExtResource("res_iron"), ExtResource("res_copper"), ExtResource("res_silicates")])
