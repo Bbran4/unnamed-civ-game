@@ -74,18 +74,22 @@ An alternate mouse-aim control style exists for testing.
 
 ### Initial Ship Systems
 
-- Hull
-- Shields
-- Shield regeneration
-- Acceleration
-- Maximum speed
-- Reverse movement
-- Boost
-- Primary weapon
-- Projectiles
-- Damage and destruction
-- Salvage
-- Credits
+- [x] Hull
+- [x] Shields
+- [x] Shield regeneration
+- [x] Acceleration
+- [x] Maximum speed
+- [x] Reverse movement
+- [x] Boost
+- [x] Primary weapon
+- [x] Projectiles
+- [x] Damage and destruction
+- [x] Salvage
+- [x] Credits
+- [x] Enemy combat
+- [x] Warp danger detection
+- [x] Hyperdrive travel within a system
+- [x] Warp travel between systems
 
 The combat model should remain arcade-like and responsive. More detailed ship systems can be added only when they improve the game.
 
@@ -97,14 +101,14 @@ Stations are physical locations rather than menus.
 
 The player can:
 
-- Dock with a station
-- Leave the ship
-- Walk around
-- Talk to NPCs
-- Use terminals
-- Visit markets
-- Return to the ship
-- Launch back into space
+- [x] Dock with a station
+- [x] Leave the ship
+- [x] Walk around
+- [x] Talk to NPCs
+- [x] Use terminals
+- [x] Visit markets
+- [x] Return to the ship
+- [x] Launch back into space
 
 Station interiors are separate scenes.
 
@@ -146,15 +150,20 @@ Galaxy
 
 The first procedural test system targets:
 
-- **5 planets**
-- **3 stations**
-- **5 factions**
-- Multiple planet types
-- Raw resources
-- Processed goods
-- Production recipes
-- Dynamic supply and demand
-- Dynamic prices
+- [x] **5 planets** per generated test system
+- [x] **3 stations** per generated test system
+- [x] **5 factions**
+- [x] Multiple planet types
+- [x] Raw resources
+- [x] Processed goods
+- [x] Production recipes
+- [x] Dynamic supply and demand data
+- [x] Dynamic prices
+- [x] Multiple star types
+- [x] Planetary orbits
+- [x] System map
+- [x] Inter-system warp travel
+- [x] In-system hyperdrive to stations
 
 ---
 
@@ -634,7 +643,7 @@ res://
 
 ## Milestone 3 - Procedural World Foundation
 
-**Status: IN PROGRESS**
+**Status: COMPLETE**
 
 ### Data Definitions
 
@@ -645,6 +654,7 @@ res://
 - [x] Planet type data
 - [x] Station type data
 - [x] Faction data
+- [x] Star data
 
 ### Initial Content
 
@@ -654,6 +664,7 @@ res://
 - [x] 8 planet types
 - [x] 8 station types
 - [x] 5 factions
+- [x] Multiple star types
 
 ### Generation
 
@@ -663,11 +674,14 @@ res://
 - [x] Station generator
 - [x] Generated system data
 - [x] System generator
-- [ ] Generate a complete test system in-game
-- [ ] Place generated planets in space
-- [ ] Place generated stations in space
-- [ ] Display generated names and types
-- [ ] Connect generated stations to their planets
+- [x] Generate a complete test system in-game
+- [x] Place generated planets in space
+- [x] Place generated stations in space
+- [x] Display generated names and types
+- [x] Connect generated stations to their planets
+- [x] Generate planetary orbits
+- [x] Display orbital paths
+- [x] Generate stars and display star properties
 
 ---
 
@@ -738,11 +752,13 @@ Missions should use the existing world rather than creating fake mission-only lo
 
 ## Milestone 8 - Multiple Systems
 
-- [ ] Multiple star systems
-- [ ] System travel
+**Status: IN PROGRESS**
+
+- [x] Multiple star systems
+- [x] System travel
 - [ ] Jump routes
 - [ ] System-specific economies
-- [ ] System map
+- [x] System map
 - [ ] Unlockable destinations
 - [ ] Inter-system trade
 
@@ -844,13 +860,12 @@ Prices
 
 ### Immediate Next Steps
 
-1. Generate one complete test system.
-2. Inspect the generated planets and stations.
-3. Place the generated world into the existing space scene.
-4. Give stations real markets.
-5. Simulate production and consumption.
-6. Let the player buy and sell cargo.
-7. Only then start building missions on top of the simulation.
+1. Simulate production and consumption.
+2. Let supply and demand change over time.
+3. Give the player real cargo trading.
+4. Connect player trading to the economy.
+5. Build station services around the working economy.
+6. Only then start building missions on top of the simulation.
 
 ---
 
