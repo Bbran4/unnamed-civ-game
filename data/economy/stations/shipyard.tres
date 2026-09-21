@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="StationTypeData" load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/economy/station_type_data.gd" id="1_script"]
+[ext_resource type="Resource" path="res://data/economy/goods/steel.tres" id="good_steel"]
+[ext_resource type="Resource" path="res://data/economy/goods/electronics.tres" id="good_electronics"]
+[ext_resource type="Resource" path="res://data/economy/goods/titanium.tres" id="good_titanium"]
+[ext_resource type="Resource" path="res://data/economy/goods/fuel.tres" id="good_fuel"]
+[ext_resource type="Resource" path="res://data/economy/goods/ship_components.tres" id="good_ship_components"]
+[ext_resource type="Resource" path="res://data/economy/goods/advanced_components.tres" id="good_advanced_components"]
+
+[resource]
+script = ExtResource("1_script")
+id = "shipyard"
+display_name = "Shipyard"
+description = "Builds and repairs spacecraft using specialised industrial components."
+population_multiplier = 0.9
+industries = Array[String](["Shipbuilding", "Repair"])
+imports = Array[GoodData]([ExtResource("good_steel"), ExtResource("good_electronics"), ExtResource("good_titanium"), ExtResource("good_fuel")])
+exports = Array[GoodData]([ExtResource("good_ship_components"), ExtResource("good_advanced_components")])
