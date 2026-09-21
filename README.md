@@ -264,14 +264,20 @@ This is a starting example, not a final architecture. Add systems only when they
 
 ### Milestone 0 - Project Foundation
 
-- [ ] Confirm Godot version and project settings
-- [ ] Create clean project structure
-- [ ] Establish main scene and scene manager
-- [ ] Configure input actions
-- [ ] Confirm reliable project launch
-- [ ] Create basic shared world state
+**Status: COMPLETE**
+
+- [x] Confirm Godot version and project settings
+- [x] Create clean project structure
+- [x] Establish main scene and scene manager
+- [x] Configure input actions
+- [x] Confirm reliable project launch
+- [x] Create basic shared world state
+
+**Completion result:** The project has a working Godot 2D foundation using GDScript and is ready for gameplay prototyping.
 
 ### Milestone 1 - Twin-Stick Space Combat
+
+**Status: NEXT**
 
 **Goal:** Prove that flying and fighting are enjoyable.
 
@@ -433,21 +439,19 @@ If not, improve the existing experience before adding more systems, factions, sh
 
 ## Current Status
 
-**Current Stage: Project Direction and Pre-Prototype Planning**
+**Current Stage: Milestone 1 - Twin-Stick Space Combat**
 
-The project direction has shifted from the previous archery and idle-city concepts toward a top-down 2D spacefaring action RPG. The current design combines twin-stick space combat, explorable stations, ship upgrades, missions, trading, resources and varied ship-boarding encounters.
+Milestone 0 is complete. The project foundation is established in Godot 2D using GDScript, and development can now move into the first playable space-combat prototype.
 
 ### Immediate Next Steps
 
-- [ ] Confirm project name and setting
 - [ ] Create the space prototype scene
+- [ ] Add the player ship
 - [ ] Implement twin-stick ship movement
-- [ ] Implement aiming and primary fire
+- [ ] Implement aiming
+- [ ] Implement primary fire and projectiles
 - [ ] Add one enemy ship
 - [ ] Test combat feel and feedback
-- [ ] Add a basic station transition
-- [ ] Add a controllable ground character
-- [ ] Define the first boarding mission in detail
 
 ## Long-Term Possibilities
 
