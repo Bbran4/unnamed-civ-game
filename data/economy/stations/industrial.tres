@@ -5,6 +5,7 @@
 [ext_resource type="Resource" path="res://data/economy/resources/copper.tres" id="resource_copper"]
 [ext_resource type="Resource" path="res://data/economy/resources/titanium.tres" id="resource_titanium"]
 [ext_resource type="Resource" path="res://data/economy/resources/rare_earths.tres" id="resource_rare_earths"]
+[ext_resource type="Resource" path="res://data/economy/resources/carbon.tres" id="resource_carbon"]
 [ext_resource type="Resource" path="res://data/economy/goods/fuel.tres" id="good_fuel"]
 [ext_resource type="Resource" path="res://data/economy/goods/steel.tres" id="good_steel"]
 [ext_resource type="Resource" path="res://data/economy/goods/electronics.tres" id="good_electronics"]
@@ -22,7 +23,7 @@ display_name = "Industrial Station"
 description = "Converts raw materials into machinery, electronics, and construction goods."
 population_multiplier = 1.4
 industries = Array[String](["Manufacturing"])
-resource_imports = Array[ResourceData]([ExtResource("resource_iron"), ExtResource("resource_copper"), ExtResource("resource_titanium"), ExtResource("resource_rare_earths")])
+resource_imports = Array[ResourceData]([ExtResource("resource_iron"), ExtResource("resource_copper"), ExtResource("resource_titanium"), ExtResource("resource_rare_earths"), ExtResource("resource_carbon")])
 resource_exports = Array[ResourceData]([])
 good_imports = Array[GoodData]([ExtResource("good_fuel")])
 good_exports = Array[GoodData]([ExtResource("good_steel"), ExtResource("good_electronics"), ExtResource("good_machinery"), ExtResource("good_construction_materials")])
