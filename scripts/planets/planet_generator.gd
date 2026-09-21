@@ -52,6 +52,7 @@ func generate_planet(planet_index: int, rng: RandomNumberGenerator) -> Generated
     var radius_ratio: float = generated_planet.radius / 5000.0
     generated_planet.gravity = planet_type.gravity_multiplier * radius_ratio
     generated_planet.temperature = rng.randf_range(planet_type.min_temperature, planet_type.max_temperature)
+    generated_planet.atmosphere = planet_type.atmosphere
 
     var population_base: int = calculate_population_base(planet_type)
     generated_planet.population = population_base
