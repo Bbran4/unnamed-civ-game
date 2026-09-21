@@ -1,0 +1,16 @@
+[gd_scene format=3]
+
+[node name="FirstSpaceStation" type="Node2D" groups=["space_station"]]
+
+[node name="StationBody" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-90, -45, 90, -45, 120, -15, 120, 15, 90, 45, -90, 45, -120, 15, -120, -15)
+color = Color(0.42, 0.45, 0.5, 1)
+
+[node name="CentralSpine" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-25, -85, 25, -85, 25, 85, -25, 85)
+color = Color(0.65, 0.68, 0.72, 1)
+
+[node name="DockingLights" type="Line2D" parent="."]
+points = PackedVector2Array(-70, -25, 70, -25, 70, 25, -70, 25, -70, -25)
+width = 4.0
+default_color = Color(0.2, 0.8, 1, 1)
