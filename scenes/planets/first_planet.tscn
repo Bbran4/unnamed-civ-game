@@ -1,6 +1,9 @@
-[gd_scene format=3]
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/planets/generated_planet_visual.gd" id="1_visual"]
 
 [node name="FirstPlanet" type="Node2D" groups=["planet"]]
+script = ExtResource("1_visual")
 
 [node name="PlanetBody" type="Polygon2D" parent="."]
 polygon = PackedVector2Array(180, 0, 166, 70, 127, 127, 70, 166, 0, 180, -70, 166, -127, 127, -166, 70, -180, 0, -166, -70, -127, -127, -70, -166, 0, -180, 70, -166, 127, -127, 166, -70)
@@ -14,3 +17,12 @@ color = Color(0.25, 0.65, 0.9, 0.16)
 points = PackedVector2Array(-240, -55, -160, -80, 0, -95, 160, -80, 240, -55)
 width = 5.0
 default_color = Color(0.45, 0.65, 0.75, 0.65)
+
+[node name="PlanetLabel" type="Label" parent="."]
+offset_left = -140.0
+offset_top = 200.0
+offset_right = 140.0
+offset_bottom = 250.0
+text = "Planet"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 14
