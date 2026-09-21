@@ -128,6 +128,18 @@ func update_map() -> void:
     system_name_label.text = generated_system.display_name
     star_label.text = generated_system.star.display_name
 
+    for orbit_index: int in range(orbit_lines.size()):
+        var orbit_line: Line2D = orbit_lines[orbit_index]
+
+        if orbit_index >= generated_system.planets.size():
+            orbit_line.visible = false
+            continue
+
+        var orbit_planet: GeneratedPlanetData = generated_system.planets[orbit_index]
+        orbit_line.points = build_map_circle_points(orbit_planet.orbital_distance)
+        orbit_line.position = MAP_CENTER
+        orbit_line.visible = true
+
     for planet_index: int in range(planet_markers.size()):
         var marker: Polygon2D = planet_markers[planet_index]
         var label: Label = planet_labels[planet_index]
@@ -175,6 +187,17 @@ func update_map() -> void:
         label.position = map_position + Vector2(8.0, 8.0)
         label.text = station.display_name
         label.visible = true
+
+func build_map_circle_points(radius: float) -> PackedVector2Array:
+    var points: PackedVector2Array = PackedVector2Array()
+    var point_count: int = 72
+    var position_scale: float = MAP_RADIUS / MAX_ORBIT_DISTANCE
+
+    for point_index: int in range(point_count + 1):
+        var angle: float = TAU * float(point_index) / float(point_count)
+        points.append(Vector2(cos(angle), sin(angle)) * radius * position_scale)
+
+    return points
 
 func update_warp_state() -> void:
     if space_system == null:
