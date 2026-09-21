@@ -5,6 +5,7 @@ extends CharacterBody2D
 @export var max_hull: float = 50.0
 @export var preferred_distance: float = 300.0
 @export var fire_cooldown: float = 0.8
+@export var projectile_scene: PackedScene
 @export var salvage_scene: PackedScene
 @export var salvage_reward: int = 50
 
