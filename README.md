@@ -264,16 +264,18 @@ This is a starting example, not a final architecture. Add systems only when they
 
 ### Milestone 0 - Project Foundation
 
-**Status: COMPLETE**
+**Status: IN PROGRESS**
 
 - [x] Confirm Godot version and project settings
 - [x] Create clean project structure
 - [x] Establish main scene and scene manager
 - [x] Configure input actions
-- [x] Confirm reliable project launch
+- [ ] Confirm reliable project launch
 - [x] Create basic shared world state
 
-**Completion result:** The project has a working Godot 2D foundation using GDScript and is ready for gameplay prototyping.
+**Foundation implemented:** The project now has a main scene, centralized scene transitions, persistent shared world state, and the initial keyboard/mouse input actions.
+
+**Launch verification:** A GitHub Actions validation workflow has been added to check the project with Godot 4.7.2 and launch the main scene headlessly. Milestone 0 remains incomplete until that launch check passes.
 
 ### Milestone 1 - Twin-Stick Space Combat
 
@@ -439,19 +441,15 @@ If not, improve the existing experience before adding more systems, factions, sh
 
 ## Current Status
 
-**Current Stage: Milestone 1 - Twin-Stick Space Combat**
+**Current Stage: Milestone 0 - Project Foundation**
 
-Milestone 0 is complete. The project foundation is established in Godot 2D using GDScript, and development can now move into the first playable space-combat prototype.
+The foundation is being implemented directly in the repository. The remaining Milestone 0 requirement is to verify that Godot can launch the configured main scene successfully.
 
 ### Immediate Next Steps
 
-- [ ] Create the space prototype scene
-- [ ] Add the player ship
-- [ ] Implement twin-stick ship movement
-- [ ] Implement aiming
-- [ ] Implement primary fire and projectiles
-- [ ] Add one enemy ship
-- [ ] Test combat feel and feedback
+- [ ] Verify the Godot project launches successfully
+- [ ] Confirm the validation workflow passes
+- [ ] Then begin Milestone 1: Twin-Stick Space Combat
 
 ## Long-Term Possibilities
 
