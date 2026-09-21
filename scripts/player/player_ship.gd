@@ -1,7 +1,9 @@
 extends CharacterBody2D
 
-@export var move_speed: float = 280.0
-@export var acceleration: float = 1400.0
+@export var thrust_acceleration: float = 650.0
+@export var strafe_acceleration: float = 450.0
+@export var braking_acceleration: float = 850.0
+@export var max_speed: float = 700.0
 @export var max_hull: float = 100.0
 @export var primary_fire_cooldown: float = 0.18
 @export var projectile_scene: PackedScene
@@ -19,13 +21,24 @@ func _physics_process(delta: float) -> void:
 	if aim_direction.length_squared() > 0.0:
 		rotation = aim_direction.angle()
 
-	var movement_input: Vector2 = Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	var forward_direction: Vector2 = Vector2.RIGHT.rotated(rotation)
 	var right_direction: Vector2 = forward_direction.rotated(PI * 0.5)
-	var movement_direction: Vector2 = (forward_direction * -movement_input.y) + (right_direction * -movement_input.x)
-	var target_velocity: Vector2 = movement_direction * move_speed
 
-	velocity = velocity.move_toward(target_velocity, acceleration * delta)
+	if Input.is_action_pressed("move_up"):
+		velocity += forward_direction * thrust_acceleration * delta
+
+	if Input.is_action_pressed("move_down"):
+		velocity = velocity.move_toward(Vector2.ZERO, braking_acceleration * delta)
+
+	if Input.is_action_pressed("move_left"):
+		velocity += -right_direction * strafe_acceleration * delta
+
+	if Input.is_action_pressed("move_right"):
+		velocity += right_direction * strafe_acceleration * delta
+
+	if velocity.length() > max_speed:
+		velocity = velocity.normalized() * max_speed
+
 	move_and_slide()
 
 	fire_cooldown_remaining = maxf(0.0, fire_cooldown_remaining - delta)
