@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="StationTypeData" load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/economy/station_type_data.gd" id="1_script"]
+[ext_resource type="Resource" path="res://data/economy/goods/fuel.tres" id="good_fuel"]
+[ext_resource type="Resource" path="res://data/economy/goods/machinery.tres" id="good_machinery"]
+[ext_resource type="Resource" path="res://data/economy/goods/fertilizer.tres" id="good_fertilizer"]
+[ext_resource type="Resource" path="res://data/economy/goods/water.tres" id="good_water"]
+[ext_resource type="Resource" path="res://data/economy/goods/food.tres" id="good_food"]
+[ext_resource type="Resource" path="res://data/economy/goods/organic_matter.tres" id="good_organic_matter"]
+
+[resource]
+script = ExtResource("1_script")
+id = "agricultural"
+display_name = "Agricultural Station"
+description = "Produces food and biological goods using controlled agriculture."
+population_multiplier = 1.8
+industries = Array[String](["Agriculture"])
+imports = Array[GoodData]([ExtResource("good_fuel"), ExtResource("good_machinery"), ExtResource("good_fertilizer"), ExtResource("good_water")])
+exports = Array[GoodData]([ExtResource("good_food"), ExtResource("good_organic_matter")])
