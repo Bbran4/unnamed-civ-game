@@ -17,7 +17,7 @@ The game is deliberately built as a **hybrid world**. Space, stations, planetary
 - **Boarding Mode:** Enter ship interiors and complete contained objectives.
 - **World Simulation:** Planets, stations, factions, resources, production and prices create the underlying world.
 
-The player should feel like they are moving through a place that exists independently of whatever mission they currently have.
+The player should feel like they are moving through a place that exists independently of whatever mission they currently have. Space itself should feel physical: stars have mass, planets follow stable orbits, moons and stations orbit planets, and ships inherit the motion of the bodies they are near.
 
 ---
 
@@ -164,8 +164,41 @@ The first procedural test system targets:
 - [x] System map
 - [x] Inter-system warp travel
 - [x] In-system hyperdrive to stations
+- [x] Hierarchical orbital simulation
+- [x] Player inherits nearby planetary or station orbital velocity
+- [x] Planetary moons
+- [x] Procedural asteroid belts
 
 ---
+
+# Space Simulation
+
+The space simulation uses a hierarchical orbital model.
+
+```text
+Star
+  ↓ gravity
+Planets
+  ↓ gravity
+Moons
+  ↓ gravity
+Stations
+```
+
+The simulation currently provides:
+
+- [x] Stable star-to-planet orbits
+- [x] Planet-to-moon orbits
+- [x] Planet-to-station orbits
+- [x] Orbital periods derived from parent mass and orbital distance
+- [x] Multiple moons per planet
+- [x] Planets with no moons
+- [x] Asteroid belts with independently orbiting asteroids
+- [x] Player ship inherits the orbital velocity of nearby planets or stations
+
+This is a **hierarchical Keplerian simulation**, rather than a full N-body physics simulation. The parent body's mass and orbital distance determine the orbital period, giving the system stable and predictable motion without requiring every object to calculate gravitational forces against every other object.
+
+The player therefore does not sit motionless relative to the universe when stopped beside a planet. If the ship is stationary relative to that planet or its station, it travels through the star system with the same orbital motion.
 
 # Planets
 
@@ -682,6 +715,8 @@ res://
 - [x] Generate planetary orbits
 - [x] Display orbital paths
 - [x] Generate stars and display star properties
+- [x] Generate 0 to 5 moons per planet
+- [x] Generate asteroid belts
 
 ---
 
