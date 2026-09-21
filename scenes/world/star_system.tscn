@@ -1,7 +1,10 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/space_system.gd" id="1_system"]
 [ext_resource type="PackedScene" path="res://scenes/stars/generated_star.tscn" id="2_star"]
+[ext_resource type="PackedScene" path="res://scenes/ui/system_map.tscn" id="3_map"]
+[ext_resource type="PackedScene" path="res://scenes/ui/control_style_selector.tscn" id="4_controls"]
+[ext_resource type="PackedScene" path="res://scenes/ui/offscreen_indicators.tscn" id="5_indicators"]
 
 [node name="StarSystem" type="Node2D"]
 script = ExtResource("1_system")
@@ -35,3 +38,9 @@ default_color = Color(0.3, 0.4, 0.5, 0.3)
 [node name="GeneratedObjects" type="Node2D" parent="."]
 
 [node name="Star" parent="." instance=ExtResource("2_star")]
+
+[node name="ControlStyleSelector" parent="." instance=ExtResource("4_controls")]
+
+[node name="OffscreenIndicators" parent="." instance=ExtResource("5_indicators")]
+
+[node name="SystemMap" parent="." instance=ExtResource("3_map")]
