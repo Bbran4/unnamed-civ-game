@@ -49,6 +49,12 @@ func generate_planet(planet_index: int, rng: RandomNumberGenerator) -> Generated
     generated_planet.planet_type = planet_type
     generated_planet.radius = rng.randf_range(planet_type.min_radius, planet_type.max_radius)
 
+    var density_multiplier: float = get_density_multiplier(planet_type.id)
+    generated_planet.mass = maxf(
+        0.0001,
+        pow(generated_planet.radius / 5000.0, 3.0) * density_multiplier
+    )
+
     var radius_ratio: float = generated_planet.radius / 5000.0
     generated_planet.gravity = planet_type.gravity_multiplier * radius_ratio
     generated_planet.temperature = rng.randf_range(planet_type.min_temperature, planet_type.max_temperature)
@@ -102,3 +108,25 @@ func generate_name(rng: RandomNumberGenerator) -> String:
     var prefix_index: int = rng.randi_range(0, NAME_PREFIXES.size() - 1)
     var suffix_index: int = rng.randi_range(0, NAME_SUFFIXES.size() - 1)
     return "%s %s" % [NAME_PREFIXES[prefix_index], NAME_SUFFIXES[suffix_index]]
+
+
+func get_density_multiplier(planet_type_id: String) -> float:
+    match planet_type_id:
+        "gas_giant":
+            return 0.35
+        "ice_giant":
+            return 0.55
+        "ocean":
+            return 1.0
+        "habitable":
+            return 1.0
+        "desert":
+            return 0.9
+        "frozen":
+            return 0.85
+        "volcanic":
+            return 1.1
+        "barren":
+            return 0.8
+
+    return 1.0
