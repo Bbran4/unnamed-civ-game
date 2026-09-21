@@ -1,0 +1,31 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/player/player_ship.gd" id="1_player"]
+[ext_resource type="PackedScene" path="res://scenes/ships/projectile.tscn" id="2_projectile"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape_player"]
+radius = 12.0
+height = 38.0
+
+[sub_resource type="Gradient" id="Gradient_player"]
+colors = PackedColorArray(0.2, 0.75, 1, 1, 0.08, 0.18, 0.35, 1)
+
+[node name="PlayerShip" type="CharacterBody2D" groups=["player_ship"]]
+script = ExtResource("1_player")
+projectile_scene = ExtResource("2_projectile")
+collision_layer = 1
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape_player")
+
+[node name="Visual" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(24, 0, -14, -12, -8, 0, -14, 12)
+color = Color(0.25, 0.75, 1, 1)
+
+[node name="Core" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(8, 0, -4, -4, -4, 4)
+color = Color(0.8, 0.95, 1, 1)
+
+[node name="WeaponMuzzle" type="Marker2D" parent="."]
+position = Vector2(24, 0)
