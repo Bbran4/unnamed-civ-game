@@ -15,14 +15,18 @@ func _ready() -> void:
 	current_hull = max_hull
 
 func _physics_process(delta: float) -> void:
-	var movement_input: Vector2 = Input.get_vector("move_left", "move_right", "move_up", "move_down")
-	var target_velocity: Vector2 = movement_input * move_speed
-	velocity = velocity.move_toward(target_velocity, acceleration * delta)
-	move_and_slide()
-
 	var aim_direction: Vector2 = get_global_mouse_position() - global_position
 	if aim_direction.length_squared() > 0.0:
 		rotation = aim_direction.angle()
+
+	var movement_input: Vector2 = Input.get_vector("move_left", "move_right", "move_up", "move_down")
+	var forward_direction: Vector2 = Vector2.RIGHT.rotated(rotation)
+	var right_direction: Vector2 = forward_direction.rotated(PI * 0.5)
+	var movement_direction: Vector2 = (forward_direction * movement_input.y) + (right_direction * movement_input.x)
+	var target_velocity: Vector2 = movement_direction * move_speed
+
+	velocity = velocity.move_toward(target_velocity, acceleration * delta)
+	move_and_slide()
 
 	fire_cooldown_remaining = maxf(0.0, fire_cooldown_remaining - delta)
 	if Input.is_action_pressed("primary_fire"):
