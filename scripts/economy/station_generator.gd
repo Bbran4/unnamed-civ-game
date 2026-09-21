@@ -43,8 +43,8 @@ const NAME_SUFFIXES: Array[String] = [
 ]
 
 func generate_station(station_index: int, planet: GeneratedPlanetData, rng: RandomNumberGenerator) -> GeneratedStationData:
-    var station_resources: Array[Resource] = load_station_types()
-    var faction_resources: Array[Resource] = load_factions()
+    var station_resources: Array = load_station_types()
+    var faction_resources: Array = load_factions()
 
     if station_resources.is_empty() or faction_resources.is_empty():
         push_error("Station generation requires station types and factions.")
@@ -72,7 +72,7 @@ func generate_station(station_index: int, planet: GeneratedPlanetData, rng: Rand
 
     return generated_station
 
-func choose_station_type(planet: GeneratedPlanetData, station_resources: Array[Resource], rng: RandomNumberGenerator) -> StationTypeData:
+func choose_station_type(planet: GeneratedPlanetData, station_resources: Array, rng: RandomNumberGenerator) -> StationTypeData:
     var preferred_ids: Array[String] = get_preferred_station_ids(planet.planet_type.id)
 
     for attempt: int in range(4):
@@ -106,7 +106,7 @@ func get_preferred_station_ids(planet_type_id: String) -> Array[String]:
 
     return ["trade"]
 
-func choose_faction(station_type: StationTypeData, faction_resources: Array[Resource], rng: RandomNumberGenerator) -> FactionData:
+func choose_faction(station_type: StationTypeData, faction_resources: Array, rng: RandomNumberGenerator) -> FactionData:
     var compatible_factions: Array[FactionData] = []
 
     for faction_resource: Resource in faction_resources:
@@ -127,8 +127,8 @@ func choose_faction(station_type: StationTypeData, faction_resources: Array[Reso
     var fallback_index: int = rng.randi_range(0, faction_resources.size() - 1)
     return faction_resources[fallback_index] as FactionData
 
-func load_station_types() -> Array[Resource]:
-    var station_types: Array[Resource] = []
+func load_station_types() -> Array:
+    var station_types: Array = []
 
     for station_path: String in STATION_TYPE_PATHS:
         var loaded_resource: Resource = ResourceLoader.load(station_path)
@@ -140,8 +140,8 @@ func load_station_types() -> Array[Resource]:
 
     return station_types
 
-func load_factions() -> Array[Resource]:
-    var factions: Array[Resource] = []
+func load_factions() -> Array:
+    var factions: Array = []
 
     for faction_path: String in FACTION_PATHS:
         var loaded_resource: Resource = ResourceLoader.load(faction_path)
