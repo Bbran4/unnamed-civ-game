@@ -1,20 +1,25 @@
-[gd_resource type="Resource" script_class="StationTypeData" load_steps=9 format=3]
+[gd_resource type="Resource" script_class="StationTypeData" load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/economy/station_type_data.gd" id="1_script"]
-[ext_resource type="Resource" path="res://data/economy/goods/food.tres" id="good_food"]
-[ext_resource type="Resource" path="res://data/economy/goods/water.tres" id="good_water"]
-[ext_resource type="Resource" path="res://data/economy/goods/fuel.tres" id="good_fuel"]
-[ext_resource type="Resource" path="res://data/economy/goods/machinery.tres" id="good_machinery"]
+[ext_resource type="Resource" path="res://data/economy/resources/food.tres" id="resource_food"]
+[ext_resource type="Resource" path="res://data/economy/resources/water.tres" id="resource_water"]
+[ext_resource type="Resource" path="res://data/economy/resources/fuel.tres" id="resource_fuel"]
+[ext_resource type="Resource" path="res://data/economy/resources/machinery.tres" id="resource_machinery"]
+[ext_resource type="Resource" path="res://data/economy/resources/iron.tres" id="resource_iron"]
+[ext_resource type="Resource" path="res://data/economy/resources/titanium.tres" id="resource_titanium"]
+[ext_resource type="Resource" path="res://data/economy/resources/rare_earths.tres" id="resource_rare_earths"]
 [ext_resource type="Resource" path="res://data/economy/goods/steel.tres" id="good_steel"]
-[ext_resource type="Resource" path="res://data/economy/goods/titanium.tres" id="good_titanium"]
-[ext_resource type="Resource" path="res://data/economy/goods/rare_earths.tres" id="good_rare_earths"]
+[ext_resource type="Resource" path="res://data/economy/recipes/steelmaking.tres" id="recipe_steelmaking"]
 
 [resource]
 script = ExtResource("1_script")
 id = "mining"
 display_name = "Mining Station"
-description = "Extracts and processes raw minerals from nearby worlds and asteroid fields."
+description = "Extracts raw minerals from nearby worlds and asteroid fields."
 population_multiplier = 0.6
 industries = Array[String](["Mining"])
-imports = Array[GoodData]([ExtResource("good_food"), ExtResource("good_water"), ExtResource("good_fuel"), ExtResource("good_machinery")])
-exports = Array[GoodData]([ExtResource("good_steel"), ExtResource("good_titanium"), ExtResource("good_rare_earths")])
+resource_imports = Array[ResourceData]([ExtResource("resource_food"), ExtResource("resource_water"), ExtResource("resource_fuel"), ExtResource("resource_machinery")])
+resource_exports = Array[ResourceData]([ExtResource("resource_iron"), ExtResource("resource_titanium"), ExtResource("resource_rare_earths")])
+good_imports = Array[GoodData]([])
+good_exports = Array[GoodData]([ExtResource("good_steel")])
+production_recipes = Array[ProductionRecipeData]([ExtResource("recipe_steelmaking")])
