@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="StationTypeData" load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/economy/station_type_data.gd" id="1_script"]
+[ext_resource type="Resource" path="res://data/economy/goods/food.tres" id="good_food"]
+[ext_resource type="Resource" path="res://data/economy/goods/water.tres" id="good_water"]
+[ext_resource type="Resource" path="res://data/economy/goods/fuel.tres" id="good_fuel"]
+[ext_resource type="Resource" path="res://data/economy/goods/electronics.tres" id="good_electronics"]
+[ext_resource type="Resource" path="res://data/economy/goods/machinery.tres" id="good_machinery"]
+[ext_resource type="Resource" path="res://data/economy/goods/construction_materials.tres" id="good_construction_materials"]
+
+[resource]
+script = ExtResource("1_script")
+id = "trade"
+display_name = "Trade Hub"
+description = "A commercial station that aggregates cargo from many sources and redistributes it across the region."
+population_multiplier = 2.2
+industries = Array[String](["Trade"])
+imports = Array[GoodData]([ExtResource("good_food"), ExtResource("good_water"), ExtResource("good_fuel"), ExtResource("good_electronics"), ExtResource("good_machinery")])
+exports = Array[GoodData]([ExtResource("good_food"), ExtResource("good_electronics"), ExtResource("good_machinery"), ExtResource("good_construction_materials")])
