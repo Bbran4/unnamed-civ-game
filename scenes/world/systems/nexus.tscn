@@ -8,6 +8,7 @@
 
 [node name="StarSystem" parent="." instance=ExtResource("1_system")]
 system_id = "nexus"
+system_display_name = "Nexus"
 system_seed = 41826359
 system_scene_path = "res://scenes/world/systems/nexus.tscn"
 
