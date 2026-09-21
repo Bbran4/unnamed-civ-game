@@ -481,17 +481,17 @@ If an industrial station runs short of copper:
 
 ```text
 Copper shortage
-      ↓
+	  ↓
 Electronics production falls
-      ↓
+	  ↓
 Electronics supply falls
-      ↓
+	  ↓
 Electronics price rises
-      ↓
+	  ↓
 Trading copper becomes more attractive
-      ↓
+	  ↓
 Copper arrives
-      ↓
+	  ↓
 Electronics production recovers
 ```
 
@@ -529,7 +529,7 @@ scripts/
 ├── economy/
 │   └── station_generator.gd
 └── world/
-    └── system_generator.gd
+	└── system_generator.gd
 ```
 
 ### Simulation
@@ -588,17 +588,17 @@ res://
 │   └── world/
 │
 └── scripts/
-    ├── player/
-    ├── enemies/
-    ├── planets/
-    ├── ships/
-    ├── managers/
-    ├── economy/
-    ├── missions/
-    ├── factions/
-    ├── boarding/
-    ├── ui/
-    └── world/
+	├── player/
+	├── enemies/
+	├── planets/
+	├── ships/
+	├── managers/
+	├── economy/
+	├── missions/
+	├── factions/
+	├── boarding/
+	├── ui/
+	└── world/
 ```
 
 ### Architecture Rules
@@ -869,27 +869,27 @@ The project now has the first layer of the world simulation:
 
 ```text
 Planet Types
-     ↓
+	 ↓
 Generated Planets
-     ↓
+	 ↓
 Resources
 
 Station Types
-     ↓
+	 ↓
 Generated Stations
-     ↓
+	 ↓
 Factions
-     ↓
+	 ↓
 Markets
 
 Resources
-     ↓
+	 ↓
 Production Recipes
-     ↓
+	 ↓
 Goods
-     ↓
+	 ↓
 Supply + Demand
-     ↓
+	 ↓
 Prices
 ```
 
