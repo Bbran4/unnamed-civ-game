@@ -7,6 +7,9 @@ extends Node2D
 
 const PLANET_SCENE: PackedScene = preload("res://scenes/planets/first_planet.tscn")
 const STATION_SCENE: PackedScene = preload("res://scenes/stations/first_space_station.tscn")
+const PLANET_ORBIT_START_DISTANCE: float = 2200.0
+const PLANET_ORBIT_SPACING: float = 3000.0
+const STATION_DISTANCE_FROM_PLANET: float = 500.0
 
 @onready var generated_objects: Node2D = $GeneratedObjects
 
@@ -56,7 +59,8 @@ func build_system_visuals() -> void:
         station_instance.name = station.id
 
         var planet_position: Vector2 = get_planet_position_by_id(station.planet_id)
-        station_instance.position = planet_position + get_station_offset(station_index)
+        var planet_data: GeneratedPlanetData = get_planet_by_id(station.planet_id)
+        station_instance.position = planet_position + get_station_offset(planet_data)
 
         var station_label: Label = station_instance.get_node("StationLabel") as Label
         if station_label != null:
@@ -71,7 +75,7 @@ func get_planet_position(planet_index: int, total_planets: int) -> Vector2:
         return Vector2.ZERO
 
     var angle: float = -PI * 0.5 + (TAU * float(planet_index) / float(total_planets))
-    var orbit_radius: float = 300.0 + (220.0 * float(planet_index))
+    var orbit_radius: float = PLANET_ORBIT_START_DISTANCE + (PLANET_ORBIT_SPACING * float(planet_index))
     return Vector2(cos(angle), sin(angle)) * orbit_radius
 
 func get_planet_position_by_id(planet_id: String) -> Vector2:
@@ -82,9 +86,20 @@ func get_planet_position_by_id(planet_id: String) -> Vector2:
 
     return Vector2.ZERO
 
-func get_station_offset(station_index: int) -> Vector2:
-    var angle: float = float(station_index) * TAU / maxf(float(station_count), 1.0)
-    return Vector2(cos(angle), sin(angle)) * 250.0
+func get_planet_by_id(planet_id: String) -> GeneratedPlanetData:
+    for planet: GeneratedPlanetData in generated_system.planets:
+        if planet.id == planet_id:
+            return planet
+
+    return null
+
+func get_station_offset(planet: GeneratedPlanetData) -> Vector2:
+    if planet == null:
+        return Vector2(STATION_DISTANCE_FROM_PLANET, 0.0)
+
+    var visual_radius: float = GeneratedPlanetVisual.new().get_visual_radius(planet.radius)
+    var station_distance: float = visual_radius + STATION_DISTANCE_FROM_PLANET
+    return Vector2(station_distance, 0.0)
 
 func print_system_summary() -> void:
     print("Generated system: %s" % generated_system.display_name)
