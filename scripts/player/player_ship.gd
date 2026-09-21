@@ -1,5 +1,10 @@
 extends CharacterBody2D
 
+enum ControlStyle {
+	ROTATION_KEYS,
+	MOUSE_AIM
+}
+
 @export var forward_acceleration: float = 600.0
 @export var reverse_acceleration: float = 350.0
 @export var turn_speed: float = 3.5
@@ -18,6 +23,7 @@ var current_hull: float = 100.0
 var current_shield: float = 50.0
 var shield_regen_remaining: float = 0.0
 var fire_cooldown_remaining: float = 0.0
+var control_style: ControlStyle = ControlStyle.ROTATION_KEYS
 
 @onready var weapon_muzzle: Marker2D = $WeaponMuzzle
 @onready var camera: Camera2D = $Camera2D
@@ -26,19 +32,34 @@ var fire_cooldown_remaining: float = 0.0
 func _ready() -> void:
 	current_hull = max_hull
 	current_shield = max_shield
+	control_style = WorldState.control_style as ControlStyle
 	_update_status_bars()
 
 func _physics_process(delta: float) -> void:
 	_shield_regeneration(delta)
 
-	var turn_input: float = Input.get_axis("move_left", "move_right")
-
-	if turn_input != 0.0:
-		rotation += turn_input * turn_speed * delta
-
 	var forward_direction: Vector2 = Vector2.RIGHT.rotated(rotation)
 	var boost_active: bool = Input.is_action_pressed("boost") and Input.is_action_pressed("move_up")
 	var current_max_speed: float = max_speed
+
+	if control_style == ControlStyle.ROTATION_KEYS:
+		var turn_input: float = Input.get_axis("move_left", "move_right")
+
+		if turn_input != 0.0:
+			rotation += turn_input * turn_speed * delta
+	else:
+		var mouse_position: Vector2 = get_global_mouse_position()
+		var direction_to_mouse: Vector2 = mouse_position - global_position
+
+		if direction_to_mouse.length_squared() > 0.0:
+			rotation = direction_to_mouse.angle()
+
+		var strafe_input: float = Input.get_axis("move_left", "move_right")
+		if strafe_input != 0.0:
+			var right_direction: Vector2 = Vector2.UP.rotated(rotation)
+			velocity += right_direction * strafe_input * forward_acceleration * delta
+
+	forward_direction = Vector2.RIGHT.rotated(rotation)
 
 	if boost_active:
 		current_max_speed = boost_max_speed
@@ -66,6 +87,10 @@ func _physics_process(delta: float) -> void:
 	fire_cooldown_remaining = maxf(0.0, fire_cooldown_remaining - delta)
 	if Input.is_action_pressed("primary_fire"):
 		_fire_primary()
+
+func set_control_style(new_control_style: ControlStyle) -> void:
+	control_style = new_control_style
+	WorldState.control_style = new_control_style as int
 
 func _fire_primary() -> void:
 	if fire_cooldown_remaining > 0.0:
