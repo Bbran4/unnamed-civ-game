@@ -8,6 +8,7 @@
 
 [node name="StarSystem" parent="." instance=ExtResource("1_system")]
 system_id = "asterion"
+system_display_name = "Asterion"
 system_seed = 18472931
 system_scene_path = "res://scenes/world/systems/asterion.tscn"
 
