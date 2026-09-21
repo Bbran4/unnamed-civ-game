@@ -7,6 +7,7 @@ extends Node2D
 @export var planet_count: int = 5
 @export var station_count: int = 3
 @export var system_scene_path: String = "res://scenes/world/systems/asterion.tscn"
+@export var orbit_time_scale: float = 0.05
 
 const PLANET_SCENE: PackedScene = preload("res://scenes/planets/first_planet.tscn")
 const MOON_SCENE: PackedScene = preload("res://scenes/planets/moon.tscn")
@@ -31,7 +32,7 @@ func _ready() -> void:
     generate_and_build_system()
 
 func _process(delta: float) -> void:
-    simulation_time += delta
+    simulation_time += delta * orbit_time_scale
     update_orbits()
 
 func generate_and_build_system() -> void:
@@ -232,7 +233,7 @@ func get_planet_velocity_by_id(planet_id: String) -> Vector2:
     if planet == null:
         return Vector2.ZERO
 
-    var orbital_speed: float = TAU / maxf(planet.orbital_period, 1.0)
+    var orbital_speed: float = (TAU / maxf(planet.orbital_period, 1.0)) * orbit_time_scale
     var angle: float = get_orbit_angle(
         planet.orbital_angle,
         planet.orbital_period
@@ -263,7 +264,7 @@ func get_station_position(station_id: String) -> Vector2:
 
 func get_station_velocity(station: GeneratedStationData) -> Vector2:
     var planet_velocity: Vector2 = get_planet_velocity_by_id(station.planet_id)
-    var orbital_speed: float = TAU / maxf(station.orbital_period, 1.0)
+    var orbital_speed: float = (TAU / maxf(station.orbital_period, 1.0)) * orbit_time_scale
     var station_angle: float = get_orbit_angle(
         station.orbital_angle,
         station.orbital_period
