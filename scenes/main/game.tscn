@@ -1,15 +1,9 @@
 [gd_scene format=3 uid="uid://bet08okbfea60"]
 
 [ext_resource type="Script" uid="uid://ccxvq4njig7ld" path="res://scripts/game.gd" id="1_game"]
-[ext_resource type="PackedScene" path="res://scenes/world/space_prototype.tscn" id="2_space"]
-[ext_resource type="PackedScene" path="res://scenes/ui/control_style_selector.tscn" id="3_controls"]
-[ext_resource type="PackedScene" path="res://scenes/ui/offscreen_indicators.tscn" id="4_indicators"]
+[ext_resource type="PackedScene" path="res://scenes/world/systems/asterion.tscn" id="2_system"]
 
 [node name="Game" type="Node2D" unique_id=828467067]
 script = ExtResource("1_game")
 
-[node name="SpacePrototype" parent="." unique_id=1008856966 instance=ExtResource("2_space")]
-
-[node name="ControlStyleSelector" parent="." unique_id=1772250440 instance=ExtResource("3_controls")]
-
-[node name="OffscreenIndicators" parent="." unique_id=1669240002 instance=ExtResource("4_indicators")]
+[node name="AsterionSystem" parent="." unique_id=1008856966 instance=ExtResource("2_system")]
