@@ -67,6 +67,22 @@ func generate_station(station_index: int, planet: GeneratedPlanetData, rng: Rand
 	generated_station.faction = faction
 	generated_station.planet_id = planet.id
 
+	var planet_visual_radius: float = remap(
+		clampf(planet.radius, 2500.0, 80000.0),
+		2500.0,
+		80000.0,
+		160.0,
+		1200.0
+	)
+	generated_station.orbital_distance = planet_visual_radius + 650.0
+	generated_station.orbital_angle = rng.randf_range(0.0, TAU)
+
+	var safe_planet_mass: float = maxf(planet.mass, 0.01)
+	generated_station.orbital_period = maxf(
+		12.0,
+		18.0 * pow(generated_station.orbital_distance / 650.0, 1.5) / sqrt(safe_planet_mass)
+	)
+
 	var station_population: float = float(planet.population) * station_type.population_multiplier * 0.01
 	generated_station.population = maxi(50, int(station_population))
 
