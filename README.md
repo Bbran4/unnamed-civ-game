@@ -285,22 +285,20 @@ Space combat, ground exploration, boarding and progression should remain separat
 
 ### Milestone 0 - Project Foundation
 
-**Status: IN PROGRESS**
+**Status: COMPLETE**
 
 - [x] Confirm Godot version and project settings
 - [x] Create clean project structure
 - [x] Establish main scene and scene manager
 - [x] Configure input actions
-- [ ] Confirm reliable project launch
+- [x] Confirm reliable project launch
 - [x] Create basic shared world state
 
-**Foundation implemented:** The project now has a main scene, centralized scene transitions, persistent shared world state, and the initial keyboard/mouse input actions.
-
-**Launch verification:** A GitHub Actions validation workflow has been added to check the project with Godot 4.7.2 and launch the main scene headlessly. Milestone 0 remains incomplete until that launch check passes.
+**Completion result:** The project foundation and folder architecture are established. Development can now move into the first playable space-combat prototype.
 
 ### Milestone 1 - Twin-Stick Space Combat
 
-**Status: NEXT**
+**Status: IN PROGRESS**
 
 **Goal:** Prove that flying and fighting are enjoyable.
 
@@ -462,15 +460,19 @@ If not, improve the existing experience before adding more systems, factions, sh
 
 ## Current Status
 
-**Current Stage: Milestone 0 - Project Foundation**
+**Current Stage: Milestone 1 - Twin-Stick Space Combat**
 
-The foundation is being implemented directly in the repository. The remaining Milestone 0 requirement is to verify that Godot can launch the configured main scene successfully.
+Milestone 0 is complete. The project foundation, shared state, input actions and domain-based folder structure are established.
 
 ### Immediate Next Steps
 
-- [ ] Verify the Godot project launches successfully
-- [ ] Confirm the validation workflow passes
-- [ ] Then begin Milestone 1: Twin-Stick Space Combat
+- [ ] Create the first space prototype scene
+- [ ] Add the player ship
+- [ ] Implement twin-stick ship movement
+- [ ] Implement aiming
+- [ ] Implement primary fire and projectiles
+- [ ] Add one enemy ship
+- [ ] Test combat feel and feedback
 
 ## Long-Term Possibilities
 
