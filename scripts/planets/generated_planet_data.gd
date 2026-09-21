@@ -7,5 +7,6 @@ extends Resource
 @export var radius: float = 0.0
 @export var gravity: float = 0.0
 @export var temperature: float = 0.0
+@export var atmosphere: String = ""
 @export var population: int = 0
 @export var resource_abundance: Dictionary = {}
