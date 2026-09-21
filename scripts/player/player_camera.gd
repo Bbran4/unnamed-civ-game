@@ -1,7 +1,7 @@
 extends Camera2D
 
 @export var normal_zoom: float = 1.0
-@export var speed_zoom_out: float = 0.78
+@export var boost_zoom: float = 0.62
 @export var zoom_response: float = 5.0
 @export var shake_decay: float = 10.0
 
@@ -22,13 +22,12 @@ func _process(delta: float) -> void:
 	else:
 		offset = Vector2.ZERO
 
-func update_speed_zoom(speed: float, current_max_speed: float) -> void:
-	var speed_ratio: float = 0.0
+func update_speed_zoom(boost_active: bool) -> void:
+	var target_zoom_value: float = normal_zoom
 
-	if current_max_speed > 0.0:
-		speed_ratio = clampf(speed / current_max_speed, 0.0, 1.0)
+	if boost_active:
+		target_zoom_value = boost_zoom
 
-	var target_zoom_value: float = lerpf(normal_zoom, speed_zoom_out, speed_ratio)
 	var target_zoom: Vector2 = Vector2(target_zoom_value, target_zoom_value)
 	zoom = zoom.lerp(target_zoom, get_process_delta_time() * zoom_response)
 
