@@ -10,12 +10,10 @@ config_version=5
 
 [application]
 
-config/name="The Last Archer"
+config/name="Unnamed Space Game"
 run/main_scene="uid://hubscene001"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://icon.svg"
-
-[autoload]
 
 [display]
 
@@ -25,8 +23,6 @@ window/size/window_width_override=1280
 window/size/window_height_override=720
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
-
-[input]
 
 [rendering]
 
