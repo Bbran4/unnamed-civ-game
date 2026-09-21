@@ -60,7 +60,7 @@ func _physics_process(delta: float) -> void:
 
 func _update_status_bar_transform() -> void:
 	status_bars.global_position = global_position + Vector2(0.0, -55.0)
-	status_bars.global_rotation = 0.0
+	status_bars.rotation = -global_rotation
 
 func _fire_at_player() -> void:
 	if fire_cooldown_remaining > 0.0:
