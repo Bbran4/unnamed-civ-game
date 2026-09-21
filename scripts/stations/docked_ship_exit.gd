@@ -32,4 +32,5 @@ func _leave_station() -> void:
 		push_error("Station exit destination scene is not configured.")
 		return
 
+	WorldState.returning_from_station = true
 	SceneManager.change_scene(destination_scene)
