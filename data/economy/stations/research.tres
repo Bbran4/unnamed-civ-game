@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="StationTypeData" load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/economy/station_type_data.gd" id="1_script"]
+[ext_resource type="Resource" path="res://data/economy/goods/electronics.tres" id="good_electronics"]
+[ext_resource type="Resource" path="res://data/economy/goods/crystals.tres" id="good_crystals"]
+[ext_resource type="Resource" path="res://data/economy/goods/organic_matter.tres" id="good_organic_matter"]
+[ext_resource type="Resource" path="res://data/economy/goods/helium.tres" id="good_helium"]
+[ext_resource type="Resource" path="res://data/economy/goods/medical_supplies.tres" id="good_medical_supplies"]
+[ext_resource type="Resource" path="res://data/economy/goods/advanced_components.tres" id="good_advanced_components"]
+
+[resource]
+script = ExtResource("1_script")
+id = "research"
+display_name = "Research Station"
+description = "Conducts scientific research and produces advanced components and medical goods."
+population_multiplier = 0.8
+industries = Array[String](["Research", "Medicine"])
+imports = Array[GoodData]([ExtResource("good_electronics"), ExtResource("good_crystals"), ExtResource("good_organic_matter"), ExtResource("good_helium")])
+exports = Array[GoodData]([ExtResource("good_medical_supplies"), ExtResource("good_advanced_components")])
