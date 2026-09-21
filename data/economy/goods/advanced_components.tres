@@ -1,1 +1,12 @@
-[gd_resource type="Resource" script_class="GoodData" load_steps=2 format=3]\n\n[ext_resource type="Script" path="res://scripts/economy/good_data.gd" id="1_good"]\n\n[resource]\nscript = ExtResource("1_good")\nid = "advanced_components"\ndisplay_name = "Advanced Components"\ndescription = "High-value precision components used in advanced spacecraft and research equipment."\nbase_value = 320\nmass = 0.6\ncategory = "Advanced"\n
+[gd_resource type="Resource" script_class="GoodData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/economy/good_data.gd" id="1_good"]
+
+[resource]
+script = ExtResource("1_good")
+id = "advanced_components"
+display_name = "Advanced Components"
+description = "High-value precision components used in advanced spacecraft and research equipment."
+base_value = 320
+mass = 0.6
+category = "Advanced"

@@ -1,1 +1,12 @@
-[gd_resource type="Resource" script_class="ResourceData" load_steps=2 format=3]\n\n[ext_resource type="Script" path="res://scripts/economy/resource_data.gd" id="1_resource"]\n\n[resource]\nscript = ExtResource("1_resource")\nid = "carbon"\ndisplay_name = "Carbon"\ndescription = "A versatile industrial element used in alloys, polymers, fuels, and life-support products."\nbase_value = 14\nmass = 1.5\ncategory = "Mineral"\n
+[gd_resource type="Resource" script_class="ResourceData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/economy/resource_data.gd" id="1_resource"]
+
+[resource]
+script = ExtResource("1_resource")
+id = "carbon"
+display_name = "Carbon"
+description = "A versatile industrial element used in alloys, polymers, fuels, and life-support products."
+base_value = 14
+mass = 1.5
+category = "Mineral"

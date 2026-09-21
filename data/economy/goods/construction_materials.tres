@@ -1,1 +1,12 @@
-[gd_resource type="Resource" script_class="GoodData" load_steps=2 format=3]\n\n[ext_resource type="Script" path="res://scripts/economy/good_data.gd" id="1_good"]\n\n[resource]\nscript = ExtResource("1_good")\nid = "construction_materials"\ndisplay_name = "Construction Materials"\ndescription = "Processed materials used to build habitats, stations, and infrastructure."\nbase_value = 68\nmass = 2\ncategory = "Construction"\n
+[gd_resource type="Resource" script_class="GoodData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/economy/good_data.gd" id="1_good"]
+
+[resource]
+script = ExtResource("1_good")
+id = "construction_materials"
+display_name = "Construction Materials"
+description = "Processed materials used to build habitats, stations, and infrastructure."
+base_value = 68
+mass = 2
+category = "Construction"

@@ -1,1 +1,12 @@
-[gd_resource type="Resource" script_class="ResourceData" load_steps=2 format=3]\n\n[ext_resource type="Script" path="res://scripts/economy/resource_data.gd" id="1_resource"]\n\n[resource]\nscript = ExtResource("1_resource")\nid = "hydrogen"\ndisplay_name = "Hydrogen"\ndescription = "A common volatile used in fuel production and industrial processes."\nbase_value = 18\nmass = 0.2\ncategory = "Volatile"\n
+[gd_resource type="Resource" script_class="ResourceData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/economy/resource_data.gd" id="1_resource"]
+
+[resource]
+script = ExtResource("1_resource")
+id = "hydrogen"
+display_name = "Hydrogen"
+description = "A common volatile used in fuel production and industrial processes."
+base_value = 18
+mass = 0.2
+category = "Volatile"
