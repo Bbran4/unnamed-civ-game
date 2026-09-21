@@ -25,6 +25,7 @@ func apply_data(data: StarData, generated_radius: float) -> void:
         MIN_VISUAL_RADIUS,
         MAX_VISUAL_RADIUS
     )
+    visual_radius *= 5.0
     var visual_scale: float = visual_radius / BASE_SCENE_RADIUS
     scale = Vector2.ONE * visual_scale
 
