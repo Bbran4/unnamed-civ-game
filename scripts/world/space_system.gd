@@ -1,6 +1,7 @@
 class_name SpaceSystem
 extends Node2D
 
+@export var system_id: String = "asterion"
 @export var system_seed: int = 18472931
 @export var planet_count: int = 5
 @export var station_count: int = 3
@@ -21,6 +22,8 @@ var station_instances: Dictionary = {}
 
 func _ready() -> void:
     add_to_group("space_system")
+    WorldState.current_system_id = system_id
+    WorldState.current_system_scene = system_scene_path
     generate_and_build_system()
 
 func _process(delta: float) -> void:
@@ -174,6 +177,17 @@ func get_station_position(station_id: String) -> Vector2:
         return planet_position + get_station_offset(planet)
 
     return Vector2.ZERO
+
+func is_player_in_danger_zone() -> bool:
+    var player_ship: Node = get_tree().get_first_node_in_group("player_ship")
+    if player_ship == null:
+        return true
+
+    var danger_method: Callable = player_ship.get("is_in_danger_zone")
+    if not danger_method.is_valid():
+        return true
+
+    return danger_method.call()
 
 func print_system_summary() -> void:
     print("Generated system: %s" % generated_system.display_name)
