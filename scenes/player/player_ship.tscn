@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://qysded2rilet"]
 
 [ext_resource type="Script" uid="uid://dynqexf3jw4vq" path="res://scripts/player/player_ship.gd" id="1_player"]
-[ext_resource type="PackedScene" path="res://scenes/ships/projectile.tscn" id="2_projectile"]
-[ext_resource type="Script" path="res://scripts/player/player_camera.gd" id="3_camera"]
+[ext_resource type="PackedScene" uid="uid://c2nibcb783twg" path="res://scenes/ships/projectile.tscn" id="2_projectile"]
+[ext_resource type="Script" uid="uid://deu2xafkd4xq3" path="res://scripts/player/player_camera.gd" id="3_camera"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape_player"]
 radius = 12.0
@@ -11,6 +11,7 @@ height = 38.0
 [node name="PlayerShip" type="CharacterBody2D" unique_id=525073808 groups=["player_ship"]]
 collision_mask = 2
 script = ExtResource("1_player")
+boost_acceleration = 650.0
 projectile_scene = ExtResource("2_projectile")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1810472292]
@@ -29,5 +30,5 @@ position = Vector2(24, 0)
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1736432008]
 position_smoothing_enabled = true
-script = ExtResource("3_camera")
 position_smoothing_speed = 6.0
+script = ExtResource("3_camera")
