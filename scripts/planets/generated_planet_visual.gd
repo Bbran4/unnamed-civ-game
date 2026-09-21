@@ -29,6 +29,8 @@ func apply_data(data: GeneratedPlanetData) -> void:
         planet_data.display_name,
         planet_data.planet_type.display_name
     ]
+    planet_label.scale = Vector2.ONE / visual_scale
+    planet_label.position = Vector2(-140.0, visual_radius + 20.0)
 
 func get_visual_radius(planet_radius: float) -> float:
     var clamped_radius: float = clampf(
