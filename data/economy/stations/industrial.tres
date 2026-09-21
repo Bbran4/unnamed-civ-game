@@ -1,15 +1,19 @@
-[gd_resource type="Resource" script_class="StationTypeData" load_steps=11 format=3]
+[gd_resource type="Resource" script_class="StationTypeData" load_steps=15 format=3]
 
 [ext_resource type="Script" path="res://scripts/economy/station_type_data.gd" id="1_script"]
-[ext_resource type="Resource" path="res://data/economy/goods/iron.tres" id="good_iron"]
-[ext_resource type="Resource" path="res://data/economy/goods/copper.tres" id="good_copper"]
-[ext_resource type="Resource" path="res://data/economy/goods/titanium.tres" id="good_titanium"]
-[ext_resource type="Resource" path="res://data/economy/goods/rare_earths.tres" id="good_rare_earths"]
+[ext_resource type="Resource" path="res://data/economy/resources/iron.tres" id="resource_iron"]
+[ext_resource type="Resource" path="res://data/economy/resources/copper.tres" id="resource_copper"]
+[ext_resource type="Resource" path="res://data/economy/resources/titanium.tres" id="resource_titanium"]
+[ext_resource type="Resource" path="res://data/economy/resources/rare_earths.tres" id="resource_rare_earths"]
 [ext_resource type="Resource" path="res://data/economy/goods/fuel.tres" id="good_fuel"]
 [ext_resource type="Resource" path="res://data/economy/goods/steel.tres" id="good_steel"]
 [ext_resource type="Resource" path="res://data/economy/goods/electronics.tres" id="good_electronics"]
 [ext_resource type="Resource" path="res://data/economy/goods/machinery.tres" id="good_machinery"]
 [ext_resource type="Resource" path="res://data/economy/goods/construction_materials.tres" id="good_construction_materials"]
+[ext_resource type="Resource" path="res://data/economy/recipes/steelmaking.tres" id="recipe_steelmaking"]
+[ext_resource type="Resource" path="res://data/economy/recipes/electronics_manufacturing.tres" id="recipe_electronics_manufacturing"]
+[ext_resource type="Resource" path="res://data/economy/recipes/machinery_manufacturing.tres" id="recipe_machinery_manufacturing"]
+[ext_resource type="Resource" path="res://data/economy/recipes/construction_material_production.tres" id="recipe_construction_material_production"]
 
 [resource]
 script = ExtResource("1_script")
@@ -18,5 +22,8 @@ display_name = "Industrial Station"
 description = "Converts raw materials into machinery, electronics, and construction goods."
 population_multiplier = 1.4
 industries = Array[String](["Manufacturing"])
-imports = Array[GoodData]([ExtResource("good_iron"), ExtResource("good_copper"), ExtResource("good_titanium"), ExtResource("good_rare_earths"), ExtResource("good_fuel")])
-exports = Array[GoodData]([ExtResource("good_steel"), ExtResource("good_electronics"), ExtResource("good_machinery"), ExtResource("good_construction_materials")])
+resource_imports = Array[ResourceData]([ExtResource("resource_iron"), ExtResource("resource_copper"), ExtResource("resource_titanium"), ExtResource("resource_rare_earths")])
+resource_exports = Array[ResourceData]([])
+good_imports = Array[GoodData]([ExtResource("good_fuel")])
+good_exports = Array[GoodData]([ExtResource("good_steel"), ExtResource("good_electronics"), ExtResource("good_machinery"), ExtResource("good_construction_materials")])
+production_recipes = Array[ProductionRecipeData]([ExtResource("recipe_steelmaking"), ExtResource("recipe_electronics_manufacturing"), ExtResource("recipe_machinery_manufacturing"), ExtResource("recipe_construction_material_production")])
