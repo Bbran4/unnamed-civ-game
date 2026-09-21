@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="FactionData" load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/factions/faction_data.gd" id="1_script"]
+[ext_resource type="Resource" path="res://data/economy/stations/trade.tres" id="station_trade"]
+[ext_resource type="Resource" path="res://data/economy/stations/industrial.tres" id="station_industrial"]
+[ext_resource type="Resource" path="res://data/economy/stations/military.tres" id="station_military"]
+[ext_resource type="Resource" path="res://data/economy/goods/food.tres" id="good_food"]
+[ext_resource type="Resource" path="res://data/economy/goods/electronics.tres" id="good_electronics"]
+[ext_resource type="Resource" path="res://data/economy/goods/construction_materials.tres" id="good_construction_materials"]
+
+[resource]
+script = ExtResource("1_script")
+id = "colonial_authority"
+display_name = "Colonial Authority"
+description = "A large administrative power responsible for established colonies, infrastructure, and regulated trade."
+preferred_station_types = Array[StationTypeData]([ExtResource("station_trade"), ExtResource("station_industrial"), ExtResource("station_military")])
+preferred_goods = Array[GoodData]([ExtResource("good_food"), ExtResource("good_electronics"), ExtResource("good_construction_materials")])
