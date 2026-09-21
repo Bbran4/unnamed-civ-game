@@ -1,9 +1,12 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/game.gd" id="1_game"]
 [ext_resource type="PackedScene" path="res://scenes/world/space_prototype.tscn" id="2_space"]
+[ext_resource type="PackedScene" path="res://scenes/ui/control_style_selector.tscn" id="3_controls"]
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_game")
 
 [node name="SpacePrototype" parent="." instance=ExtResource("2_space")]
+
+[node name="ControlStyleSelector" parent="." instance=ExtResource("3_controls")]
