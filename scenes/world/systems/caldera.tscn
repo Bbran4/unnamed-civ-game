@@ -8,6 +8,7 @@
 
 [node name="StarSystem" parent="." instance=ExtResource("1_system")]
 system_id = "caldera"
+system_display_name = "Caldera"
 system_seed = 29485177
 system_scene_path = "res://scenes/world/systems/caldera.tscn"
 
