@@ -1,4 +1,13 @@
-[gd_scene format=3]
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/player/station_character.tscn" id="1_character"]
+[ext_resource type="Script" path="res://scripts/stations/docked_ship_exit.gd" id="2_exit"]
+
+[sub_resource type="CircleShape2D" id="CircleShape_ship_exit"]
+radius = 70.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape_ship"]
+size = Vector2(150, 70)
 
 [node name="FirstStationInterior" type="Node2D"]
 
@@ -14,6 +23,37 @@ color = Color(0.16, 0.18, 0.22, 1)
 polygon = PackedVector2Array(-90, -300, 90, -300, 90, 300, -90, 300)
 color = Color(0.22, 0.25, 0.3, 1)
 
+[node name="DockingBay" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-300, -180, -100, -180, -100, -80, -300, -80)
+color = Color(0.1, 0.32, 0.38, 1)
+
+[node name="DockedShip" type="Area2D" parent="."]
+position = Vector2(-200, -130)
+script = ExtResource("2_exit")
+
+[node name="Visual" type="Polygon2D" parent="DockedShip"]
+polygon = PackedVector2Array(75, 0, -45, -28, -65, 0, -45, 28)
+color = Color(0.25, 0.75, 1, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DockedShip"]
+shape = SubResource("RectangleShape_ship")
+
+[node name="ExitPrompt" type="Label" parent="DockedShip"]
+offset_left = -120.0
+offset_top = 45.0
+offset_right = 120.0
+offset_bottom = 80.0
+text = "Press E to undock"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 20
+
+[node name="StationCharacter" parent="." instance=ExtResource("1_character")]
+position = Vector2(0, 120)
+
+[node name="Camera2D" type="Camera2D" parent="StationCharacter"]
+position_smoothing_enabled = true
+position_smoothing_speed = 6.0
+
 [node name="Title" type="Label" parent="."]
 offset_left = -190.0
 offset_top = -260.0
@@ -28,6 +68,6 @@ offset_left = -300.0
 offset_top = 330.0
 offset_right = 300.0
 offset_bottom = 370.0
-text = "Docking complete. Station interior prototype."
+text = "Walk to your ship to leave the station."
 horizontal_alignment = 1
 theme_override_font_sizes/font_size = 18
