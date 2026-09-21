@@ -1,12 +1,14 @@
-[gd_resource type="Resource" script_class="StationTypeData" load_steps=8 format=3]
+[gd_resource type="Resource" script_class="StationTypeData" load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scripts/economy/station_type_data.gd" id="1_script"]
+[ext_resource type="Resource" path="res://data/economy/resources/titanium.tres" id="resource_titanium"]
 [ext_resource type="Resource" path="res://data/economy/goods/steel.tres" id="good_steel"]
 [ext_resource type="Resource" path="res://data/economy/goods/electronics.tres" id="good_electronics"]
-[ext_resource type="Resource" path="res://data/economy/goods/titanium.tres" id="good_titanium"]
 [ext_resource type="Resource" path="res://data/economy/goods/fuel.tres" id="good_fuel"]
 [ext_resource type="Resource" path="res://data/economy/goods/ship_components.tres" id="good_ship_components"]
 [ext_resource type="Resource" path="res://data/economy/goods/advanced_components.tres" id="good_advanced_components"]
+[ext_resource type="Resource" path="res://data/economy/recipes/ship_component_manufacturing.tres" id="recipe_ship_component_manufacturing"]
+[ext_resource type="Resource" path="res://data/economy/recipes/advanced_component_manufacturing.tres" id="recipe_advanced_component_manufacturing"]
 
 [resource]
 script = ExtResource("1_script")
@@ -15,5 +17,8 @@ display_name = "Shipyard"
 description = "Builds and repairs spacecraft using specialised industrial components."
 population_multiplier = 0.9
 industries = Array[String](["Shipbuilding", "Repair"])
-imports = Array[GoodData]([ExtResource("good_steel"), ExtResource("good_electronics"), ExtResource("good_titanium"), ExtResource("good_fuel")])
-exports = Array[GoodData]([ExtResource("good_ship_components"), ExtResource("good_advanced_components")])
+resource_imports = Array[ResourceData]([ExtResource("resource_titanium")])
+resource_exports = Array[ResourceData]([])
+good_imports = Array[GoodData]([ExtResource("good_steel"), ExtResource("good_electronics"), ExtResource("good_fuel")])
+good_exports = Array[GoodData]([ExtResource("good_ship_components"), ExtResource("good_advanced_components")])
+production_recipes = Array[ProductionRecipeData]([ExtResource("recipe_ship_component_manufacturing"), ExtResource("recipe_advanced_component_manufacturing")])
