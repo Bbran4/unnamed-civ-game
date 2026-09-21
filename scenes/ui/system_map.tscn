@@ -180,10 +180,17 @@ text = "Station"
 custom_minimum_size = Vector2(0, 32)
 text = "Station"
 
+[node name="HyperdriveButton" type="Button" parent="Panel"]
+offset_left = 820.0
+offset_top = 395.0
+offset_right = 1100.0
+offset_bottom = 445.0
+text = "HYPERDRIVE TO STATION"
+
 [node name="CloseButton" type="Button" parent="Panel"]
 offset_left = 820.0
-offset_top = 400.0
+offset_top = 625.0
 offset_right = 1100.0
-offset_bottom = 450.0
+offset_bottom = 665.0
 text = "CLOSE MAP"
 
