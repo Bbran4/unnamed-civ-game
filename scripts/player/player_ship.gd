@@ -3,7 +3,7 @@ extends CharacterBody2D
 @export var forward_acceleration: float = 650.0
 @export var reverse_acceleration: float = 350.0
 @export var turn_speed: float = 3.5
-@export var braking_acceleration: float = 850.0
+@export var momentum_decay_time: float = 1.0
 @export var max_speed: float = 700.0
 @export var max_hull: float = 100.0
 @export var primary_fire_cooldown: float = 0.18
@@ -31,7 +31,12 @@ func _physics_process(delta: float) -> void:
 	if Input.is_action_pressed("move_down"):
 		velocity = velocity.move_toward(
 			Vector2.ZERO,
-			braking_acceleration * delta
+			(forward_acceleration / momentum_decay_time) * delta
+		)
+	else:
+		velocity = velocity.move_toward(
+			Vector2.ZERO,
+			(max_speed / momentum_decay_time) * delta
 		)
 
 	if velocity.length() > max_speed:
@@ -52,13 +57,8 @@ func _fire_primary() -> void:
 	var projectile_instance: Node = projectile_scene.instantiate()
 	if projectile_instance is Node2D:
 		var projectile_2d: Node2D = projectile_instance
-		var aim_direction: Vector2 = get_global_mouse_position() - weapon_muzzle.global_position
-
-		if aim_direction.length_squared() <= 0.0:
-			return
-
 		projectile_2d.global_position = weapon_muzzle.global_position
-		projectile_2d.global_rotation = aim_direction.angle()
+		projectile_2d.global_rotation = global_rotation
 		projectile_2d.set("owner_group", "player_projectile")
 		get_tree().current_scene.add_child(projectile_2d)
 		fire_cooldown_remaining = primary_fire_cooldown
