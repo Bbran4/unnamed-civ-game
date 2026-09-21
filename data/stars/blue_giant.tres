@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="StarData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/star_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+id = "blue_giant"
+display_name = "Blue Giant"
+description = "A massive, hot star whose intense radiation dominates a huge system."
+min_radius = 1100
+max_radius = 1700
+min_mass = 5.0
+max_mass = 15.0
+min_temperature = 10000
+max_temperature = 30000
+color = Color(0.30, 0.58, 1, 1)
