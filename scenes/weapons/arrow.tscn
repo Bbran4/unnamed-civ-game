@@ -1,9 +1,0 @@
-[gd_scene load_steps=3 format=3]
-
-[ext_resource type="Script" path="res://scripts/weapons/arrow.gd" id="1_arrow"]
-[ext_resource type="PackedScene" path="res://scenes/weapons/arrow_parts.tscn" id="2_parts"]
-
-[node name="Arrow" type="Node2D"]
-script = ExtResource("1_arrow")
-
-[node name="Parts" parent="." instance=ExtResource("2_parts")]
