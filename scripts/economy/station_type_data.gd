@@ -8,3 +8,4 @@ extends Resource
 @export var industries: Array[String] = []
 @export var imports: Array[GoodData] = []
 @export var exports: Array[GoodData] = []
+@export var production_recipes: Array[ProductionRecipeData] = []
