@@ -125,22 +125,22 @@ The world is built around a simple hierarchy:
 ```text
 Galaxy
 └── Star System
-    ├── Planets
-    │   ├── Type
-    │   ├── Size
-    │   ├── Gravity
-    │   ├── Temperature
-    │   ├── Population
-    │   └── Resources
-    │
-    └── Stations
-        ├── Type
-        ├── Faction
-        ├── Population
-        ├── Industries
-        ├── Imports
-        ├── Exports
-        └── Market
+	├── Planets
+	│   ├── Type
+	│   ├── Size
+	│   ├── Gravity
+	│   ├── Temperature
+	│   ├── Population
+	│   └── Resources
+	│
+	└── Stations
+		├── Type
+		├── Faction
+		├── Population
+		├── Industries
+		├── Imports
+		├── Exports
+		└── Market
 ```
 
 The first procedural test system targets:
@@ -252,23 +252,23 @@ Examples:
 
 ```text
 Iron + Carbon
-      ↓
-    Steel
+	  ↓
+	Steel
 
 Copper + Rare Earths + Crystals
-      ↓
+	  ↓
   Electronics
 
 Steel + Electronics
-      ↓
+	  ↓
    Machinery
 
 Hydrogen + Carbon
-      ↓
-     Fuel
+	  ↓
+	 Fuel
 
 Steel + Titanium + Electronics
-      ↓
+	  ↓
  Ship Components
 ```
 
