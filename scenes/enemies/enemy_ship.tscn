@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://scripts/enemies/enemy_ship.gd" id="1_enemy"]
 [ext_resource type="PackedScene" path="res://scenes/ships/projectile.tscn" id="2_projectile"]
 [ext_resource type="PackedScene" path="res://scenes/economy/salvage_pickup.tscn" id="3_salvage"]
+[ext_resource type="PackedScene" path="res://scenes/ui/enemy_status_bars.tscn" id="4_status"]
 
 [sub_resource type="CircleShape2D" id="CircleShape_enemy"]
 radius = 18.0
@@ -20,6 +21,8 @@ shape = SubResource("CircleShape_enemy")
 [node name="Visual" type="Polygon2D" parent="."]
 polygon = PackedVector2Array(20, 0, -12, -16, -6, 0, -12, 16)
 color = Color(1, 0.3, 0.25, 1)
+
+[node name="EnemyStatusBars" parent="." instance=ExtResource("4_status")]
 
 [node name="WeaponMuzzle" type="Marker2D" parent="."]
 position = Vector2(20, 0)
