@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ShipWeaponData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ships/ship_weapon_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+id = "civilian_laser"
+display_name = "Civilian Laser"
+description = "A dependable civilian energy weapon with moderate damage and a steady firing rate."
+weapon_type = "energy"
+price = 1800
+damage = 10.0
+fire_rate = 5.0
+projectile_speed = 1400.0
+range = 2800.0
