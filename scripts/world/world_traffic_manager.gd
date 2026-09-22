@@ -5,7 +5,7 @@ const CIVILIAN_SCENE: PackedScene = preload("res://scenes/world/civilian_ship.ts
 const FREIGHTER_SCENE: PackedScene = preload("res://scenes/world/freighter_ship.tscn")
 
 @export var civilian_ship_count: int = 28
-@export var freighter_ship_count: int = 7
+@export var freighter_ship_count: int = 7	
 
 var space_system: SpaceSystem
 var civilian_ships: Array[CivilianShip] = []
