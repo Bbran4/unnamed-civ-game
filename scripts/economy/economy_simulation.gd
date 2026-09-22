@@ -86,7 +86,7 @@ func _process_resource_extraction(
 	var simulated_hours: float = simulated_delta / 3600.0
 	var extracted_units: float = 0.0
 
-	for resource_data: ResourceData in station.station_type.resource_exports:
+	for resource_data: ResourceData in station.station_type.resource_extraction:
 		if resource_data == null:
 			continue
 
@@ -129,10 +129,7 @@ func _consume_station_demand(
 		var current_supply: float = float(station.market.supply.get(resource_data.id, 0.0))
 		var actual_units: float = minf(current_supply, maxf(requested_units, 0.0))
 
-		station.market.supply[resource_data.id] = maxf(
-			0.0,
-			current_supply - actual_units
-		)
+		station.market.supply[resource_data.id] = maxf(0.0, current_supply - actual_units)
 		consumed_units += actual_units
 
 	for good_data: GoodData in station.station_type.good_imports:
@@ -144,10 +141,7 @@ func _consume_station_demand(
 		var current_supply: float = float(station.market.supply.get(good_data.id, 0.0))
 		var actual_units: float = minf(current_supply, maxf(requested_units, 0.0))
 
-		station.market.supply[good_data.id] = maxf(
-			0.0,
-			current_supply - actual_units
-		)
+		station.market.supply[good_data.id] = maxf(0.0, current_supply - actual_units)
 		consumed_units += actual_units
 
 	return consumed_units
@@ -167,11 +161,7 @@ func _process_station_production(
 		if recipe.production_time <= 0.0:
 			continue
 
-		var station_progress: Dictionary = production_progress.get(
-			station.id,
-			{}
-		) as Dictionary
-
+		var station_progress: Dictionary = production_progress.get(station.id, {}) as Dictionary
 		var progress: float = float(station_progress.get(recipe.id, 0.0))
 
 		if _has_recipe_inputs(station, recipe):
@@ -191,10 +181,7 @@ func _process_station_production(
 
 	return completed_batches
 
-func _has_recipe_inputs(
-	station: GeneratedStationData,
-	recipe: ProductionRecipeData
-) -> bool:
+func _has_recipe_inputs(station: GeneratedStationData, recipe: ProductionRecipeData) -> bool:
 	if station.market == null:
 		return false
 
@@ -212,10 +199,7 @@ func _has_recipe_inputs(
 
 	return true
 
-func _consume_recipe_inputs(
-	station: GeneratedStationData,
-	recipe: ProductionRecipeData
-) -> void:
+func _consume_recipe_inputs(station: GeneratedStationData, recipe: ProductionRecipeData) -> void:
 	if station.market == null:
 		return
 
@@ -228,15 +212,9 @@ func _consume_recipe_inputs(
 			continue
 
 		var current_supply: float = float(station.market.supply.get(item_id, 0.0))
-		station.market.supply[item_id] = maxf(
-			0.0,
-			current_supply - ingredient.quantity
-		)
+		station.market.supply[item_id] = maxf(0.0, current_supply - ingredient.quantity)
 
-func _add_recipe_output(
-	station: GeneratedStationData,
-	recipe: ProductionRecipeData
-) -> void:
+func _add_recipe_output(station: GeneratedStationData, recipe: ProductionRecipeData) -> void:
 	if station.market == null or recipe.output == null:
 		return
 
@@ -247,10 +225,8 @@ func _add_recipe_output(
 func _get_ingredient_id(ingredient: RecipeIngredientData) -> String:
 	if ingredient.resource != null:
 		return ingredient.resource.id
-
 	if ingredient.good != null:
 		return ingredient.good.id
-
 	return ""
 
 func _update_station_prices(station: GeneratedStationData) -> void:
@@ -262,49 +238,29 @@ func _update_station_prices(station: GeneratedStationData) -> void:
 	for resource_data: ResourceData in station.station_type.resource_imports:
 		if resource_data == null:
 			continue
-
 		_update_price_for_resource(station.market, market, resource_data)
 
 	for resource_data: ResourceData in station.station_type.resource_exports:
 		if resource_data == null:
 			continue
-
 		_update_price_for_resource(station.market, market, resource_data)
 
 	for good_data: GoodData in station.station_type.good_imports:
 		if good_data == null:
 			continue
-
 		_update_price_for_good(station.market, market, good_data)
 
 	for good_data: GoodData in station.station_type.good_exports:
 		if good_data == null:
 			continue
-
 		_update_price_for_good(station.market, market, good_data)
 
-func _update_price_for_resource(
-	market_data: MarketData,
-	market: Market,
-	resource_data: ResourceData
-) -> void:
+func _update_price_for_resource(market_data: MarketData, market: Market, resource_data: ResourceData) -> void:
 	var supply: float = float(market_data.supply.get(resource_data.id, 0.0))
 	var demand: float = float(market_data.demand.get(resource_data.id, 0.0))
-	market_data.current_prices[resource_data.id] = market.calculate_price(
-		resource_data.base_value,
-		supply,
-		demand
-	)
+	market_data.current_prices[resource_data.id] = market.calculate_price(resource_data.base_value, supply, demand)
 
-func _update_price_for_good(
-	market_data: MarketData,
-	market: Market,
-	good_data: GoodData
-) -> void:
+func _update_price_for_good(market_data: MarketData, market: Market, good_data: GoodData) -> void:
 	var supply: float = float(market_data.supply.get(good_data.id, 0.0))
 	var demand: float = float(market_data.demand.get(good_data.id, 0.0))
-	market_data.current_prices[good_data.id] = market.calculate_price(
-		good_data.base_value,
-		supply,
-		demand
-	)
+	market_data.current_prices[good_data.id] = market.calculate_price(good_data.base_value, supply, demand)
