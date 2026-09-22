@@ -133,17 +133,17 @@ func _fire_at_player() -> void:
 	if lowest_fire_interval < INF:
 		fire_cooldown_remaining = lowest_fire_interval
 
-func take_damage(damage_amount: float) -> void:
+func take_damage(damage_amount: float, damage_type: String = "energy", shield_multiplier: float = 1.0, hull_multiplier: float = 1.0) -> void:
 	shield_regen_remaining = shield_regen_delay
 	var remaining_damage: float = damage_amount
 
 	if current_shield > 0.0:
-		var shield_damage: float = minf(current_shield, remaining_damage)
+		var shield_damage: float = minf(current_shield, remaining_damage * shield_multiplier)
 		current_shield -= shield_damage
 		remaining_damage -= shield_damage
 
 	if remaining_damage > 0.0:
-		var hull_damage: float = _calculate_hull_damage(remaining_damage)
+		var hull_damage: float = _calculate_hull_damage(remaining_damage * hull_multiplier)
 		current_hull = maxf(0.0, current_hull - hull_damage)
 
 	_update_status_bars()
