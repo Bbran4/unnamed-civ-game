@@ -6,7 +6,6 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/control_style_selector.tscn" id="4_controls"]
 [ext_resource type="PackedScene" path="res://scenes/ui/offscreen_indicators.tscn" id="5_indicators"]
 [ext_resource type="Script" path="res://scripts/world/world_traffic_manager.gd" id="6_traffic"]
-[ext_resource type="PackedScene" path="res://scenes/economy/economy_simulation.tscn" id="7_economy"]
 
 [node name="StarSystem" type="Node2D"]
 script = ExtResource("1_system")
@@ -51,4 +50,3 @@ default_color = Color(0.3, 0.4, 0.5, 0.3)
 script = ExtResource("6_traffic")
 civilian_ship_count = 6
 
-[node name="EconomySimulation" parent="." instance=ExtResource("7_economy")]
