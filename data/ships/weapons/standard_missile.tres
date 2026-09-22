@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="ShipWeaponData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ships/ship_weapon_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+id = "standard_missile"
+display_name = "Standard Missile"
+description = "A compact guided missile with limited ammunition and high impact."
+weapon_type = "missile"
+price = 4200
+damage = 55.0
+fire_rate = 0.8
+projectile_speed = 650.0
+range = 4200.0
+shield_damage_multiplier = 1.0
+hull_damage_multiplier = 1.0
+ammo_capacity = 6
+tracking = true
+tracking_turn_speed = 2.5
