@@ -5,7 +5,7 @@ extends Node2D
 @export var system_display_name: String = "Asterion"
 @export var system_seed: int = 18472931
 @export var planet_count: int = 5
-@export var station_count: int = 3
+@export var station_count: int = 5
 @export var system_scene_path: String = "res://scenes/world/systems/asterion.tscn"
 @export var orbit_time_scale: float = 0.05
 
