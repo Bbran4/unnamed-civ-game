@@ -44,7 +44,7 @@ const NAME_SUFFIXES: Array[String] = [
 	"Hub"
 ]
 
-func generate_station(station_index: int, planet: GeneratedPlanetData, rng: RandomNumberGenerator) -> GeneratedStationData:
+func generate_station(station_index: int, planet: GeneratedPlanetData, rng: RandomNumberGenerator, forced_station_type_id: String = "") -> GeneratedStationData:
 	var station_resources: Array = load_station_types()
 	var faction_resources: Array = load_factions()
 
@@ -52,7 +52,11 @@ func generate_station(station_index: int, planet: GeneratedPlanetData, rng: Rand
 		push_error("Station generation requires station types and factions.")
 		return GeneratedStationData.new()
 
-	var station_type: StationTypeData = choose_station_type(planet, station_resources, rng)
+	var station_type: StationTypeData = null
+	if not forced_station_type_id.is_empty():
+		station_type = get_station_type_by_id(station_resources, forced_station_type_id)
+	if station_type == null:
+		station_type = choose_station_type(planet, station_resources, rng)
 	if station_type == null:
 		push_error("No valid station type could be selected.")
 		return GeneratedStationData.new()
@@ -89,6 +93,14 @@ func generate_station(station_index: int, planet: GeneratedPlanetData, rng: Rand
 	generated_station.population = maxi(50, int(station_population))
 
 	return generated_station
+
+func get_station_type_by_id(station_resources: Array, station_type_id: String) -> StationTypeData:
+	for station_resource: Resource in station_resources:
+		var station_type: StationTypeData = station_resource as StationTypeData
+		if station_type != null and station_type.id == station_type_id:
+			return station_type
+
+	return null
 
 func choose_station_type(planet: GeneratedPlanetData, station_resources: Array, rng: RandomNumberGenerator) -> StationTypeData:
 	var preferred_ids: Array[String] = get_preferred_station_ids(planet.planet_type.id)
