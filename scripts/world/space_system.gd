@@ -19,7 +19,6 @@ const ASTEROID_FIELD_SCENE: PackedScene = preload("res://scenes/world/asteroid_f
 @onready var star_visual: GeneratedStarVisual = $Star
 
 var generated_system: GeneratedSystemData = GeneratedSystemData.new()
-var simulation_time: float = 0.0
 var planet_instances: Dictionary = {}
 var moon_instances: Dictionary = {}
 var station_instances: Dictionary = {}
@@ -31,8 +30,7 @@ func _ready() -> void:
 	WorldState.current_system_scene = system_scene_path
 	generate_and_build_system()
 
-func _process(delta: float) -> void:
-	simulation_time += delta * orbit_time_scale
+func _process(_delta: float) -> void:
 	update_orbits()
 
 func generate_and_build_system() -> void:
@@ -164,109 +162,44 @@ func update_orbits() -> void:
 		if planet_instance == null:
 			continue
 
-		var planet_angle: float = get_orbit_angle(
+		var planet_angle: float = GalaxyState.get_orbit_angle(
+			generated_system,
 			planet.orbital_angle,
 			planet.orbital_period
 		)
 		var planet_position: Vector2 = Vector2(cos(planet_angle), sin(planet_angle)) * planet.orbital_distance
 		planet_instance.position = planet_position
 
-		update_moons_for_planet(planet, planet_position, planet_angle)
-		update_stations_for_planet(planet, planet_position)
+		update_moons_for_planet(planet, planet_position)
 
 func update_moons_for_planet(
 	planet: GeneratedPlanetData,
-	_planet_position: Vector2,
-	_planet_angle: float
+	planet_position: Vector2
 ) -> void:
 	for moon: GeneratedMoonData in planet.moons:
 		var moon_instance: Node2D = moon_instances.get(moon.id) as Node2D
 		if moon_instance == null:
 			continue
 
-		var moon_angle: float = get_orbit_angle(
+		var moon_angle: float = GalaxyState.get_orbit_angle(
+			generated_system,
 			moon.orbital_angle,
 			moon.orbital_period
 		)
-		moon_instance.position = Vector2(cos(moon_angle), sin(moon_angle)) * moon.orbital_distance
+		moon_instance.position = planet_position + Vector2(cos(moon_angle), sin(moon_angle)) * moon.orbital_distance
 
-func update_stations_for_planet(
-	planet: GeneratedPlanetData,
-	planet_position: Vector2
-) -> void:
-	for station: GeneratedStationData in generated_system.stations:
-		if station.planet_id != planet.id:
-			continue
-
-		var station_instance: Node2D = station_instances.get(station.id) as Node2D
-		if station_instance == null:
-			continue
-
-		var station_angle: float = get_orbit_angle(
-			station.orbital_angle,
-			station.orbital_period
-		)
-		var station_offset: Vector2 = Vector2(cos(station_angle), sin(station_angle)) * station.orbital_distance
-		station_instance.position = planet_position + station_offset
-
-func get_orbit_angle(initial_angle: float, period: float) -> float:
-	var orbital_speed: float = TAU / maxf(period, 1.0)
-	return initial_angle + (orbital_speed * simulation_time)
 
 func get_planet_position_by_id(planet_id: String) -> Vector2:
-	var planet: GeneratedPlanetData = get_planet_by_id(planet_id)
-	if planet == null:
-		return Vector2.ZERO
-
-	var angle: float = get_orbit_angle(
-		planet.orbital_angle,
-		planet.orbital_period
-	)
-	return Vector2(cos(angle), sin(angle)) * planet.orbital_distance
+	return GalaxyState.get_planet_position(generated_system.id, planet_id)
 
 func get_planet_velocity_by_id(planet_id: String) -> Vector2:
-	var planet: GeneratedPlanetData = get_planet_by_id(planet_id)
-	if planet == null:
-		return Vector2.ZERO
-
-	var orbital_speed: float = (TAU / maxf(planet.orbital_period, 1.0)) * orbit_time_scale
-	var angle: float = get_orbit_angle(
-		planet.orbital_angle,
-		planet.orbital_period
-	)
-	return Vector2(-sin(angle), cos(angle)) * planet.orbital_distance * orbital_speed
-
-func get_planet_by_id(planet_id: String) -> GeneratedPlanetData:
-	for planet: GeneratedPlanetData in generated_system.planets:
-		if planet.id == planet_id:
-			return planet
-
-	return null
+	return GalaxyState.get_planet_velocity(generated_system.id, planet_id, orbit_time_scale)
 
 func get_station_position(station_id: String) -> Vector2:
-	for station: GeneratedStationData in generated_system.stations:
-		if station.id != station_id:
-			continue
-
-		var planet_position: Vector2 = get_planet_position_by_id(station.planet_id)
-		var station_angle: float = get_orbit_angle(
-			station.orbital_angle,
-			station.orbital_period
-		)
-		var station_offset: Vector2 = Vector2(cos(station_angle), sin(station_angle)) * station.orbital_distance
-		return planet_position + station_offset
-
-	return Vector2.ZERO
+	return GalaxyState.get_station_position(generated_system.id, station_id)
 
 func get_station_velocity(station: GeneratedStationData) -> Vector2:
-	var planet_velocity: Vector2 = get_planet_velocity_by_id(station.planet_id)
-	var orbital_speed: float = (TAU / maxf(station.orbital_period, 1.0)) * orbit_time_scale
-	var station_angle: float = get_orbit_angle(
-		station.orbital_angle,
-		station.orbital_period
-	)
-	var local_velocity: Vector2 = Vector2(-sin(station_angle), cos(station_angle)) * station.orbital_distance * orbital_speed
-	return planet_velocity + local_velocity
+	return GalaxyState.get_station_velocity(generated_system.id, station, orbit_time_scale)
 
 func get_reference_velocity_at_position(world_position: Vector2) -> Vector2:
 	var nearest_station_distance: float = INF
