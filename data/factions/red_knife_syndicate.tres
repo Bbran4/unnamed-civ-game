@@ -12,3 +12,6 @@ description = "A loose network of pirates, smugglers, and raiders operating from
 faction_category = "bandit"
 preferred_station_types = Array[StationTypeData]([ExtResource("station_mining"), ExtResource("station_trade")])
 preferred_goods = Array[GoodData]([])
+relations = {
+"sol_system_authority": -100
+}
