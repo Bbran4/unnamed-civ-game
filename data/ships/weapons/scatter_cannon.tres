@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ShipWeaponData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ships/ship_weapon_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+id = "scatter_cannon"
+display_name = "Scatter Cannon"
+description = "A short-range ballistic cannon that delivers punishing damage when fired from close range."
+weapon_type = "ballistic"
+price = 5600
+damage = 38.0
+fire_rate = 1.8
+projectile_speed = 900.0
+range = 1800.0
+shield_damage_multiplier = 0.85
+hull_damage_multiplier = 1.35
