@@ -155,8 +155,13 @@ func _fire_primary() -> void:
 
 	var weapon_mount_count: int = ship_data.get_weapon_mounts() if ship_data != null else 1
 	var active_mount_count: int = mini(weapon_mount_count, weapon_muzzles.size())
+	var lowest_fire_interval: float = INF
 
 	for mount_index: int in range(active_mount_count):
+		var weapon: ShipWeaponData = ship_data.get_weapon(mount_index) if ship_data != null else null
+		if weapon == null:
+			continue
+
 		var projectile_instance: Node = projectile_scene.instantiate()
 		if projectile_instance is Node2D:
 			var projectile_2d: Node2D = projectile_instance
@@ -164,9 +169,15 @@ func _fire_primary() -> void:
 			projectile_2d.global_position = weapon_muzzle.global_position
 			projectile_2d.global_rotation = global_rotation
 			projectile_2d.set("owner_group", "player_projectile")
+			projectile_2d.set("damage", weapon.damage)
+			projectile_2d.set("speed", weapon.projectile_speed)
+			projectile_2d.set("lifetime", weapon.range / maxf(weapon.projectile_speed, 1.0))
 			get_tree().current_scene.add_child(projectile_2d)
+			var fire_interval: float = 1.0 / maxf(weapon.fire_rate, 0.01)
+			lowest_fire_interval = minf(lowest_fire_interval, fire_interval)
 
-	fire_cooldown_remaining = primary_fire_cooldown
+	if lowest_fire_interval < INF:
+		fire_cooldown_remaining = lowest_fire_interval
 
 func take_damage(damage_amount: float) -> void:
 	shield_regen_remaining = shield_regen_delay
