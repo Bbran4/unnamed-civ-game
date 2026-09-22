@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="ShipData" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/ships/ship_data.gd" id="1_script"]
+[ext_resource type="Resource" path="res://data/ships/bodies/freighter.tres" id="2_body"]
+[ext_resource type="Resource" path="res://data/ships/wings/freighter_wings.tres" id="3_wings"]
+[ext_resource type="Resource" path="res://data/ships/tails/freighter_tail.tres" id="4_tail"]
+
+[resource]
+script = ExtResource("1_script")
+id = "bandit_freighter"
+display_name = "Black Mule"
+description = "A modified freighter used to move stolen cargo through poorly patrolled space."
+faction_id = "red_knife_syndicate"
+ship_class = "freighter"
+configuration_type = "standard"
+body = ExtResource("2_body")
+wings = ExtResource("3_wings")
+tail = ExtResource("4_tail")
+shield_capacity = 120
+shield_regeneration = 4
