@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="ShipWeaponData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ships/ship_weapon_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+id = "torpedo"
+display_name = "Heavy Torpedo"
+description = "A powerful guided warhead with limited ammunition, intended for slow or heavily armored targets."
+weapon_type = "missile"
+price = 7200
+damage = 100.0
+fire_rate = 0.35
+projectile_speed = 500.0
+range = 5000.0
+shield_damage_multiplier = 0.9
+hull_damage_multiplier = 1.25
+ammo_capacity = 3
+tracking = true
+tracking_turn_speed = 1.8
