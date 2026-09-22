@@ -169,6 +169,11 @@ The first procedural test system targets:
 - [x] Player inherits nearby planetary or station orbital velocity
 - [x] Planetary moons
 - [x] Procedural asteroid belts
+- [x] Asteroid collision damage
+- [x] Player location shown on system map
+- [x] Player remains in orbital motion while map is open
+- [x] Civilian ship state machine
+- [x] Same-system civilian station-to-station traffic
 
 ---
 
@@ -970,7 +975,7 @@ If not, improve the systems that already exist before adding more content.
 
 # Current Status
 
-**Current Stage: Milestones 4 and 5 - Living Economy and Ship Equipment**
+**Current Stage: Living World Foundation**
 
 Milestones 0, 1, 2 and 3 are complete. Milestones 4 and 5 are currently in progress.
 
@@ -1004,7 +1009,10 @@ Prices
 
 ### Immediate Next Steps
 
-1. Complete production and consumption simulation.
+1. Expand the living world with law enforcement and civilian/freighter behaviour.
+2. Add bandit behaviour and cargo theft.
+3. Connect hostile encounters to the living traffic system.
+4. Complete production and consumption simulation.
 2. Connect supply and demand changes to the economy.
 3. Implement real player cargo trading.
 4. Build the ship equipment/shipyard fitting flow around `OwnedShipData`.
