@@ -161,6 +161,9 @@ func update_map() -> void:
         return
 
     var generated_system: GeneratedSystemData = space_system.generated_system
+    var map_transform: Node2D = $Panel/MapArea/OrbitMap
+    map_transform.position = MAP_CENTER * (1.0 - map_zoom)
+    map_transform.scale = Vector2.ONE * map_zoom
     system_name_label.text = generated_system.display_name
     star_label.text = generated_system.star.display_name
 
@@ -186,7 +189,7 @@ func update_map() -> void:
             continue
 
         var planet: GeneratedPlanetData = generated_system.planets[planet_index]
-        var position_scale: float = MAP_RADIUS * map_zoom / MAX_ORBIT_DISTANCE
+        var position_scale: float = MAP_RADIUS / MAX_ORBIT_DISTANCE
         var map_position: Vector2 = MAP_CENTER + (
             Vector2(cos(
                 planet.orbital_angle
@@ -295,7 +298,7 @@ func _update_traffic_markers() -> void:
         freighter_index += 1
 
 func _world_to_map_position(world_position: Vector2) -> Vector2:
-    var position_scale: float = MAP_RADIUS * map_zoom / MAX_ORBIT_DISTANCE
+    var position_scale: float = MAP_RADIUS / MAX_ORBIT_DISTANCE
     var map_offset: Vector2 = world_position * position_scale
     var maximum_radius: float = MAP_RADIUS - 8.0
 
