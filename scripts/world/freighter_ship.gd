@@ -6,25 +6,97 @@ extends CivilianShip
 var cargo_manifest: Dictionary = {}
 var cargo_units: int = 0
 var cargo_good_id: String = ""
+var cargo_resource_id: String = ""
+var cargo_is_resource: bool = false
 
 func setup(start_station_id: String) -> void:
 	super.setup(start_station_id)
 	cargo_manifest.clear()
 	cargo_units = 0
 	cargo_good_id = ""
+	cargo_resource_id = ""
+	cargo_is_resource = false
 
 func _select_destination() -> void:
-	super._select_destination()
-	if destination_station_id.is_empty():
+	if space_system == null:
 		return
 
-	_load_cargo_from_origin()
+	var origin_station: GeneratedStationData = _get_station_by_id(origin_station_id)
+	if origin_station == null or origin_station.market == null:
+		super._select_destination()
+		return
 
-func _load_cargo_from_origin() -> void:
+	var best_destination: GeneratedStationData = null
+	var best_profit: float = 0.0
+	var best_is_resource: bool = false
+	var best_item_id: String = ""
+
+	for station: GeneratedStationData in space_system.generated_system.stations:
+		if station == null or station.id == origin_station_id:
+			continue
+		if station.market == null or station.station_type == null:
+			continue
+
+		for resource_data: ResourceData in origin_station.station_type.resource_exports:
+			if resource_data == null:
+				continue
+			if not _station_imports_resource(station, resource_data.id):
+				continue
+
+			var available_supply: float = float(origin_station.market.supply.get(resource_data.id, 0.0))
+			if available_supply <= 0.0:
+				continue
+
+			var origin_price: float = float(origin_station.market.current_prices.get(resource_data.id, resource_data.base_value))
+			var destination_price: float = float(station.market.current_prices.get(resource_data.id, resource_data.base_value))
+			var profit: float = destination_price - origin_price
+
+			if profit > best_profit:
+				best_profit = profit
+				best_destination = station
+				best_is_resource = true
+				best_item_id = resource_data.id
+
+		for good_data: GoodData in origin_station.station_type.good_exports:
+			if good_data == null:
+				continue
+			if not _station_imports_good(station, good_data.id):
+				continue
+
+			var available_supply: float = float(origin_station.market.supply.get(good_data.id, 0.0))
+			if available_supply <= 0.0:
+				continue
+
+			var origin_price: float = float(origin_station.market.current_prices.get(good_data.id, good_data.base_value))
+			var destination_price: float = float(station.market.current_prices.get(good_data.id, good_data.base_value))
+			var profit: float = destination_price - origin_price
+
+			if profit > best_profit:
+				best_profit = profit
+				best_destination = station
+				best_is_resource = false
+				best_item_id = good_data.id
+
+	if best_destination == null:
+		super._select_destination()
+		return
+
+	destination_station_id = best_destination.id
+	journey_type = JourneyType.TRADE_RUN
+	journey_time = 0.0
+	travel_state = TravelState.TRAVEL
+	velocity = Vector2.ZERO
+
+	_load_cargo_from_origin(best_is_resource, best_item_id)
+
+func _load_cargo_from_origin(is_resource: bool, item_id: String) -> void:
 	cargo_manifest.clear()
 	cargo_units = 0
+	cargo_good_id = ""
+	cargo_resource_id = ""
+	cargo_is_resource = is_resource
 
-	if ship_data == null:
+	if ship_data == null or item_id.is_empty():
 		return
 
 	var cargo_capacity: int = ship_data.get_total_cargo_capacity()
@@ -32,33 +104,28 @@ func _load_cargo_from_origin() -> void:
 		return
 
 	var origin_station: GeneratedStationData = _get_station_by_id(origin_station_id)
-	var destination_station: GeneratedStationData = _get_station_by_id(destination_station_id)
-	if origin_station == null or origin_station.station_type == null or destination_station == null or destination_station.station_type == null:
+	if origin_station == null or origin_station.market == null:
 		return
 
-	var export_candidates: Array[GoodData] = []
-	for good: GoodData in origin_station.station_type.good_exports:
-		if good == null:
-			continue
-		if _station_imports_good(destination_station, good.id):
-			export_candidates.append(good)
-
-	if export_candidates.is_empty():
+	var available_supply: float = float(origin_station.market.supply.get(item_id, 0.0))
+	var units: int = mini(cargo_capacity, maxi(1, int(floor(available_supply))))
+	if units <= 0:
 		return
 
-	var remaining_capacity: int = cargo_capacity
-	var cargo_index: int = randi_range(0, export_candidates.size() - 1)
-	var selected_good: GoodData = export_candidates[cargo_index]
-	var units: int = mini(remaining_capacity, maxi(1, int(float(cargo_capacity) * randf_range(0.25, 0.75))))
-
-	cargo_manifest[selected_good.id] = units
+	cargo_manifest[item_id] = units
 	cargo_units = units
-	cargo_good_id = selected_good.id
 
-	if origin_station.market != null:
-		var origin_supply: float = float(origin_station.market.supply.get(cargo_good_id, 0.0))
-		origin_station.market.supply[cargo_good_id] = maxf(0.0, origin_supply - float(units))
-		_update_market_price(origin_station.market, selected_good)
+	if is_resource:
+		cargo_resource_id = item_id
+	else:
+		cargo_good_id = item_id
+
+	origin_station.market.supply[item_id] = maxf(
+		0.0,
+		available_supply - float(units)
+	)
+
+	_update_market_price_for_item(origin_station.market, item_id, is_resource)
 
 func _remain_docked(delta: float) -> void:
 	var was_docked: bool = travel_state == TravelState.DOCKED
@@ -69,46 +136,107 @@ func _remain_docked(delta: float) -> void:
 		cargo_manifest.clear()
 		cargo_units = 0
 		cargo_good_id = ""
+		cargo_resource_id = ""
+		cargo_is_resource = false
 
 func _unload_cargo() -> void:
 	var destination_station: GeneratedStationData = _get_station_by_id(destination_station_id)
 	if destination_station == null or destination_station.market == null:
 		return
-	if cargo_good_id.is_empty():
+
+	var item_id: String = cargo_resource_id if cargo_is_resource else cargo_good_id
+	if item_id.is_empty():
 		return
 
-	var current_supply: float = float(destination_station.market.supply.get(cargo_good_id, 0.0))
-	destination_station.market.supply[cargo_good_id] = current_supply + float(cargo_units)
+	var current_supply: float = float(destination_station.market.supply.get(item_id, 0.0))
+	destination_station.market.supply[item_id] = current_supply + float(cargo_units)
+	_update_market_price_for_item(destination_station.market, item_id, cargo_is_resource)
 
-	var good: GoodData = _get_good_from_station(destination_station, cargo_good_id)
-	if good != null:
-		_update_market_price(destination_station.market, good)
+func _update_market_price_for_item(
+	market_data: MarketData,
+	item_id: String,
+	is_resource: bool
+) -> void:
+	var base_value: float = _get_item_base_value(item_id, is_resource)
+	if base_value <= 0.0:
+		return
 
-func _get_good_from_station(station: GeneratedStationData, good_id: String) -> GoodData:
+	var supply: float = float(market_data.supply.get(item_id, 0.0))
+	var demand: float = float(market_data.demand.get(item_id, 0.0))
+	market_data.current_prices[item_id] = Market.new().calculate_price(
+		base_value,
+		supply,
+		demand
+	)
+
+func _get_item_base_value(item_id: String, is_resource: bool) -> float:
+	if is_resource:
+		for resource_data: ResourceData in _get_current_station_resource_exports():
+			if resource_data != null and resource_data.id == item_id:
+				return resource_data.base_value
+		for resource_data: ResourceData in _get_current_station_resource_imports():
+			if resource_data != null and resource_data.id == item_id:
+				return resource_data.base_value
+	else:
+		for good_data: GoodData in _get_current_station_good_exports():
+			if good_data != null and good_data.id == item_id:
+				return good_data.base_value
+		for good_data: GoodData in _get_current_station_good_imports():
+			if good_data != null and good_data.id == item_id:
+				return good_data.base_value
+
+	return 0.0
+
+func _get_current_station_resource_exports() -> Array[ResourceData]:
+	var station: GeneratedStationData = _get_station_by_id(origin_station_id)
+	if station == null or station.station_type == null:
+		return []
+	return station.station_type.resource_exports
+
+func _get_current_station_resource_imports() -> Array[ResourceData]:
+	var station: GeneratedStationData = _get_station_by_id(origin_station_id)
+	if station == null or station.station_type == null:
+		return []
+	return station.station_type.resource_imports
+
+func _get_current_station_good_exports() -> Array[GoodData]:
+	var station: GeneratedStationData = _get_station_by_id(origin_station_id)
+	if station == null or station.station_type == null:
+		return []
+	return station.station_type.good_exports
+
+func _get_current_station_good_imports() -> Array[GoodData]:
+	var station: GeneratedStationData = _get_station_by_id(origin_station_id)
+	if station == null or station.station_type == null:
+		return []
+	return station.station_type.good_imports
+
+func _station_imports_resource(station: GeneratedStationData, resource_id: String) -> bool:
 	if station.station_type == null:
-		return null
+		return false
 
-	for good: GoodData in station.station_type.good_imports:
-		if good != null and good.id == good_id:
-			return good
+	for resource_data: ResourceData in station.station_type.resource_imports:
+		if resource_data != null and resource_data.id == resource_id:
+			return true
 
-	for good: GoodData in station.station_type.good_exports:
-		if good != null and good.id == good_id:
-			return good
-
-	return null
-
-func _update_market_price(market: MarketData, good: GoodData) -> void:
-	var supply: float = float(market.supply.get(good.id, 0.0))
-	var demand: float = float(market.demand.get(good.id, 0.0))
-	market.current_prices[good.id] = Market.new().calculate_price(good.base_value, supply, demand)
+	return false
 
 func _station_imports_good(station: GeneratedStationData, good_id: String) -> bool:
 	if station.station_type == null:
 		return false
 
-	for good: GoodData in station.station_type.good_imports:
-		if good != null and good.id == good_id:
+	for good_data: GoodData in station.station_type.good_imports:
+		if good_data != null and good_data.id == good_id:
 			return true
 
 	return false
+
+func _get_station_by_id(station_id: String) -> GeneratedStationData:
+	if space_system == null:
+		return null
+
+	for station: GeneratedStationData in space_system.generated_system.stations:
+		if station.id == station_id:
+			return station
+
+	return null
