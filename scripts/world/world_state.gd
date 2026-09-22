@@ -57,3 +57,13 @@ func load_save_data(data: Dictionary) -> void:
 	civilizations = data.get("civilizations", {})
 	world_data = data.get("world_data", {})
 	legacy_data = data.get("legacy_data", {})
+
+	if not _has_generated_map():
+		var generator := WorldGenerator.new()
+		world_data = generator.generate(world_seed)
+
+func _has_generated_map() -> bool:
+	var width := int(world_data.get("width", 0))
+	var height := int(world_data.get("height", 0))
+	var terrain: Array = world_data.get("terrain", [])
+	return width > 0 and height > 0 and terrain.size() == width * height
