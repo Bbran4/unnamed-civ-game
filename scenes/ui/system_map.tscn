@@ -40,6 +40,13 @@ position = Vector2(350, 270)
 polygon = PackedVector2Array(0, -18, 13, -13, 18, 0, 13, 13, 0, 18, -13, 13, -18, 0, -13, -13)
 color = Color(1, 0.75, 0.3, 1)
 
+[node name="PlayerMarker" type="Polygon2D" parent="Panel/MapArea/OrbitMap"]
+polygon = PackedVector2Array(0, -8, 7, 7, 0, 3, -7, 7)
+color = Color(0.35, 0.9, 1, 1)
+
+[node name="PlayerLabel" type="Label" parent="Panel/MapArea/OrbitMap"]
+text = "PLAYER"
+
 [node name="StarLabel" type="Label" parent="Panel/MapArea/OrbitMap"]
 offset_left = 370.0
 offset_top = 250.0
