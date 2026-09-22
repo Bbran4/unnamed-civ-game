@@ -1,5 +1,6 @@
 extends CharacterBody2D
 
+@export var ship_data: ShipData
 @export var move_speed: float = 130.0
 @export var acceleration: float = 500.0
 @export var max_hull: float = 50.0
@@ -26,6 +27,7 @@ var is_destroying: bool = false
 @onready var status_bars: Control = $EnemyStatusBars
 
 func _ready() -> void:
+	_apply_ship_data()
 	current_hull = max_hull
 	current_shield = max_shield
 	_update_status_bars()
@@ -59,6 +61,16 @@ func _physics_process(delta: float) -> void:
 	fire_cooldown_remaining = maxf(0.0, fire_cooldown_remaining - delta)
 	if distance_to_player < 550.0:
 		_fire_at_player()
+
+func _apply_ship_data() -> void:
+	if ship_data == null:
+		return
+
+	max_hull = float(ship_data.get_total_hull_points())
+	max_shield = float(ship_data.get_total_shield_capacity())
+	armor = float(ship_data.get_total_armor())
+	move_speed = ship_data.get_max_speed() * 0.5
+	acceleration = ship_data.get_acceleration()
 
 func _update_status_bar_transform() -> void:
 	status_bars.global_position = global_position + Vector2(0.0, -55.0)
