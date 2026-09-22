@@ -18,6 +18,7 @@ description = "Produces food and agricultural materials."
 population_multiplier = 1.8
 industries = Array[String](["Agriculture"])
 resource_extraction_rate = 30.0
+resource_extraction = Array[ResourceData]([ExtResource("resource_organic_matter")])
 resource_imports = Array[ResourceData]([ExtResource("resource_water")])
 resource_exports = Array[ResourceData]([ExtResource("resource_organic_matter")])
 good_imports = Array[GoodData]([ExtResource("good_fuel"), ExtResource("good_machinery"), ExtResource("good_fertilizer")])
