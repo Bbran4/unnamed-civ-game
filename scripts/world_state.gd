@@ -14,6 +14,7 @@ var returning_from_station: bool = false
 var station_exit_position: Vector2 = Vector2(950.0, 120.0)
 var current_system_scene: String = "res://scenes/world/systems/asterion.tscn"
 var current_system_id: String = "asterion"
+var current_station_id: String = ""
 var system_entry_position: Vector2 = Vector2(0.0, -1400.0)
 var map_open: bool = false
 
@@ -30,5 +31,6 @@ func reset_to_defaults() -> void:
     station_exit_position = Vector2(950.0, 120.0)
     current_system_scene = "res://scenes/world/systems/asterion.tscn"
     current_system_id = "asterion"
+    current_station_id = ""
     system_entry_position = Vector2(0.0, -1400.0)
     map_open = false
