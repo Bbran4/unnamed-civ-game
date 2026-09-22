@@ -81,6 +81,8 @@ func _select_destination() -> void:
 		_enter_docked_state()
 		return
 
+	fuel_units = maxf(0.0, fuel_units - fuel_required_for_best_route)
+
 	if not _load_cargo_from_manifest(origin_station, best_manifest):
 		_enter_docked_state()
 		return
