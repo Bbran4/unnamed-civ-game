@@ -6,6 +6,7 @@ extends Resource
 @export_multiline var description: String = ""
 @export var population_multiplier: float = 1.0
 @export var industries: Array[String] = []
+@export var resource_extraction_rate: float = 0.0
 @export var resource_imports: Array[ResourceData] = []
 @export var resource_exports: Array[ResourceData] = []
 @export var good_imports: Array[GoodData] = []
