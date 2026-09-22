@@ -37,6 +37,10 @@ var weapon_ammo: Dictionary = {}
 @onready var status_bars: Control = $PlayerStatusBars/Bars
 
 func _ready() -> void:
+	if ship_data == null:
+		push_error("Player ship template is not configured.")
+		return
+
 	if WorldState.current_owned_ship == null or WorldState.current_owned_ship.ship_template == null or WorldState.current_owned_ship.ship_template.id != ship_data.id:
 		WorldState.current_owned_ship = OwnedShipData.create_from_template(ship_data)
 	owned_ship_data = WorldState.current_owned_ship
