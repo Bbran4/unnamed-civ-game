@@ -9,5 +9,7 @@ func _ready() -> void:
 		WorldState.new_world(randi())
 		SaveManager.save_game()
 
+	$World.queue_redraw()
+
 func _process(delta: float) -> void:
 	WorldState.tick(delta)
