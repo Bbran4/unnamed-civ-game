@@ -28,6 +28,7 @@ offset_bottom = 82.0
 text = "Current system"
 
 [node name="MapArea" type="Panel" parent="Panel"]
+mouse_filter = 1
 clip_contents = true
 offset_left = 25.0
 offset_top = 95.0
