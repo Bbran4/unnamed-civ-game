@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ShipWingsData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ships/ship_wings_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+id = "heavy_wings"
+display_name = "Heavy Weapon Wings"
+description = "Reinforced wings capable of mounting a heavy weapon loadout."
+weapon_mounts = 4
+cargo_capacity = 15
