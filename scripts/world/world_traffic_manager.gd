@@ -4,109 +4,78 @@ extends Node2D
 const CIVILIAN_SCENE: PackedScene = preload("res://scenes/world/civilian_ship.tscn")
 const FREIGHTER_SCENE: PackedScene = preload("res://scenes/world/freighter_ship.tscn")
 
-@export var civilian_ship_count: int = 28
-@export var freighter_ship_count: int = 7	
-
 var space_system: SpaceSystem
-var civilian_ships: Array[CivilianShip] = []
+var visual_ships: Dictionary = {}
 
 func _ready() -> void:
 	space_system = get_tree().get_first_node_in_group("space_system") as SpaceSystem
-	if space_system == null:
-		return
-
-	call_deferred("_spawn_initial_traffic")
+	call_deferred("_refresh_visuals")
 
 func _process(_delta: float) -> void:
-	_remove_invalid_ships()
-
 	if space_system == null:
 		space_system = get_tree().get_first_node_in_group("space_system") as SpaceSystem
 		if space_system == null:
 			return
+	_refresh_visuals()
 
-	if civilian_ships.is_empty():
-		_spawn_initial_traffic()
+func _refresh_visuals() -> void:
+	var active_records: Array[Dictionary] = GalaxySimulation.get_traffic_for_system(space_system.system_id)
+	var active_ids: Dictionary = {}
+
+	for record: Dictionary in active_records:
+		var traffic_id: String = String(record.get("id", ""))
+		if traffic_id.is_empty():
+			continue
+		active_ids[traffic_id] = true
+
+		var ship: CivilianShip = visual_ships.get(traffic_id) as CivilianShip
+		if ship == null or not is_instance_valid(ship):
+			ship = _create_visual_ship(record)
+			if ship == null:
+				continue
+			visual_ships[traffic_id] = ship
+
+		_apply_record_to_visual(ship, record)
+
+	for traffic_id: String in visual_ships.keys():
+		if active_ids.has(traffic_id):
+			continue
+		var ship_to_remove: CivilianShip = visual_ships[traffic_id] as CivilianShip
+		if is_instance_valid(ship_to_remove):
+			ship_to_remove.queue_free()
+		visual_ships.erase(traffic_id)
+
+func _create_visual_ship(record: Dictionary) -> CivilianShip:
+	var scene: PackedScene = FREIGHTER_SCENE if bool(record.get("is_freighter", false)) else CIVILIAN_SCENE
+	var ship: CivilianShip = scene.instantiate() as CivilianShip
+	if ship == null:
+		return null
+	add_child(ship)
+	ship.simulation_visual_only = true
+	return ship
+
+func _apply_record_to_visual(ship: CivilianShip, record: Dictionary) -> void:
+	ship.simulation_visual_only = true
+
+	var state: String = String(record.get("state", "docked"))
+	var system_id: String = String(record.get("system_id", ""))
+	var origin_station_id: String = String(record.get("origin_station_id", ""))
+	var destination_station_id: String = String(record.get("destination_station_id", ""))
+	var progress: float = float(record.get("progress", 0.0))
+
+	if state == "inter_system_travel":
+		ship.visible = false
 		return
 
-	while _count_civilian_ships() < civilian_ship_count:
-		_spawn_civilian()
+	ship.visible = true
 
-	while _count_freighter_ships() < freighter_ship_count:
-		_spawn_freighter()
-
-func _spawn_initial_traffic() -> void:
-	if space_system == null:
+	if state == "docked" or destination_station_id.is_empty():
+		ship.global_position = GalaxyState.get_station_position(system_id, origin_station_id)
 		return
 
-	for _index: int in range(civilian_ship_count):
-		_spawn_civilian()
+	var origin_position: Vector2 = GalaxyState.get_station_position(system_id, origin_station_id)
+	var destination_position: Vector2 = GalaxyState.get_station_position(system_id, destination_station_id)
+	ship.global_position = origin_position.lerp(destination_position, progress)
 
-	for _index: int in range(freighter_ship_count):
-		_spawn_freighter()
-
-	print("Traffic spawned: %d civilians, %d freighters" % [
-		_count_civilian_ships(),
-		_count_freighter_ships()
-	])
-
-func _spawn_civilian() -> void:
-	if space_system == null:
-		return
-
-	var stations: Array[GeneratedStationData] = space_system.generated_system.stations
-	if stations.is_empty():
-		return
-
-	var station_index: int = randi_range(0, stations.size() - 1)
-	var station: GeneratedStationData = stations[station_index]
-	var civilian_ship: CivilianShip = CIVILIAN_SCENE.instantiate() as CivilianShip
-	if civilian_ship == null:
-		return
-
-	add_child(civilian_ship)
-	civilian_ship.global_position = space_system.get_station_position(station.id)
-	civilian_ship.setup(station.id)
-	civilian_ships.append(civilian_ship)
-
-func _remove_invalid_ships() -> void:
-	var valid_ships: Array[CivilianShip] = []
-
-	for civilian_ship: CivilianShip in civilian_ships:
-		if is_instance_valid(civilian_ship):
-			valid_ships.append(civilian_ship)
-
-	civilian_ships = valid_ships
-
-func _spawn_freighter() -> void:
-	if space_system == null:
-		return
-
-	var stations: Array[GeneratedStationData] = space_system.generated_system.stations
-	if stations.is_empty():
-		return
-
-	var station_index: int = randi_range(0, stations.size() - 1)
-	var station: GeneratedStationData = stations[station_index]
-	var freighter_ship: FreighterShip = FREIGHTER_SCENE.instantiate() as FreighterShip
-	if freighter_ship == null:
-		return
-
-	add_child(freighter_ship)
-	freighter_ship.global_position = space_system.get_station_position(station.id)
-	freighter_ship.setup(station.id)
-	civilian_ships.append(freighter_ship)
-
-func _count_civilian_ships() -> int:
-	var count: int = 0
-	for ship: CivilianShip in civilian_ships:
-		if is_instance_valid(ship) and ship is not FreighterShip:
-			count += 1
-	return count
-
-func _count_freighter_ships() -> int:
-	var count: int = 0
-	for ship: CivilianShip in civilian_ships:
-		if is_instance_valid(ship) and ship is FreighterShip:
-			count += 1
-	return count
+	if destination_position != origin_position:
+		ship.rotation = origin_position.direction_to(destination_position).angle()
