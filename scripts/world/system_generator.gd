@@ -2,7 +2,7 @@ class_name SystemGenerator
 extends RefCounted
 
 var planet_count: int = 5
-var station_count: int = 3
+var station_count: int = 5
 
 const STAR_TYPE_PATHS: Array[String] = [
     "res://data/stars/red_dwarf.tres",
@@ -59,19 +59,29 @@ func generate_system(system_seed: int) -> GeneratedSystemData:
 
     var station_generator: StationGenerator = StationGenerator.new()
     var generated_station_count: int = mini(station_count, generated_system.planets.size())
+    var required_station_types: Array[String] = ["mining", "agricultural", "industrial", "refinery", "trade"]
+    var used_planet_indices: Array[int] = []
+
     for station_index: int in range(generated_station_count):
         var planet_index: int = planet_indices[station_index]
-        var planet: GeneratedPlanetData = generated_system.planets[planet_index]
-        var station: GeneratedStationData = station_generator.generate_station(
-            station_index,
-            planet,
-            rng
-        )
-        var planet_for_market: GeneratedPlanetData = generated_system.planets[planet_index]
-        var market: Market = Market.new()
-        station.market = market.build_market(planet_for_market, station)
-        generated_system.stations.append(station)
+        var forced_station_type_id: String = ""
 
+        if station_index < required_station_types.size():
+            forced_station_type_id = required_station_types[station_index]
+            planet_index = _find_best_planet_for_station_type(
+                generated_system.planets,
+                forced_station_type_id,
+                used_planet_indices,
+                planet_index
+            )
+
+        used_planet_indices.append(planet_index)
+
+        var planet: GeneratedPlanetData = generated_system.planets[planet_index]
+        var station: GeneratedStationData = station_generator.generate_station(station_index, planet, rng, forced_station_type_id)
+        var market: Market = Market.new()
+        station.market = market.build_market(planet, station)
+        generated_system.stations.append(station)
     return generated_system
 
 func configure_orbit(
@@ -195,3 +205,28 @@ func roman_numeral(value: int) -> String:
             return "V"
 
     return str(value)
+
+func _find_best_planet_for_station_type(
+    planets: Array[GeneratedPlanetData],
+    station_type_id: String,
+    used_planet_indices: Array[int],
+    fallback_index: int
+) -> int:
+    var best_index: int = fallback_index
+    var best_score: int = -1
+
+    for planet_index: int in range(planets.size()):
+        if used_planet_indices.has(planet_index):
+            continue
+
+        var planet: GeneratedPlanetData = planets[planet_index]
+        var preferred_ids: Array[String] = StationGenerator.new().get_preferred_station_ids(planet.planet_type.id)
+        var score: int = 1
+        if preferred_ids.has(station_type_id):
+            score = 2
+
+        if score > best_score:
+            best_score = score
+            best_index = planet_index
+
+    return best_index
