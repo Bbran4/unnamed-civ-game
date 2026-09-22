@@ -168,86 +168,70 @@ func _build_trade_manifest(
 		var best_available_units: int = 0
 		var best_origin_price: float = 0.0
 
-		for resource_data: ResourceData in origin_station.station_type.resource_exports:
-			if resource_data == null:
-				continue
-			if selected_items.has(resource_data.id):
-				continue
-			if not _station_imports_resource(destination_station, resource_data.id):
+		for item_id: String in origin_station.market.supply.keys():
+			if selected_items.has(item_id):
 				continue
 
-			var available_supply: float = float(origin_station.market.supply.get(resource_data.id, 0.0))
+			var available_supply: float = float(
+				origin_station.market.supply.get(item_id, 0.0)
+			)
 			if available_supply < 1.0:
 				continue
 
-			var origin_price: float = float(
-				origin_station.market.current_prices.get(resource_data.id, resource_data.base_value)
+			var destination_demand: float = float(
+				destination_station.market.demand.get(item_id, 0.0)
 			)
+			if destination_demand <= 0.0:
+				continue
+
+			var origin_price: float = float(
+				origin_station.market.current_prices.get(item_id, 0.0)
+			)
+			var base_value: float = float(
+				origin_station.market.base_values.get(item_id, 0.0)
+			)
+			if origin_price <= 0.0 or base_value <= 0.0:
+				continue
+
 			var destination_price: float = _get_route_sale_price(
 				destination_station,
-				resource_data.id,
-				resource_data.base_value,
+				item_id,
+				base_value,
 				route_distance
 			)
 			var profit_per_unit: float = destination_price - origin_price
-			var affordable_units: int = _get_affordable_units(origin_price, remaining_credits)
+			var affordable_units: int = _get_affordable_units(
+				origin_price,
+				remaining_credits
+			)
 			var available_units: int = mini(
 				remaining_capacity,
 				mini(
 					maximum_units_per_cargo_type,
-					mini(int(floor(available_supply)), affordable_units)
+					mini(
+						int(floor(available_supply)),
+						affordable_units
+					)
 				)
 			)
 
 			if profit_per_unit > best_profit_per_unit and available_units > 0:
-				best_item_id = resource_data.id
-				best_item_is_resource = true
-				best_profit_per_unit = profit_per_unit
-				best_available_units = available_units
-				best_origin_price = origin_price
-
-		for good_data: GoodData in origin_station.station_type.good_exports:
-			if good_data == null:
-				continue
-			if selected_items.has(good_data.id):
-				continue
-			if not _station_imports_good(destination_station, good_data.id):
-				continue
-
-			var available_supply: float = float(origin_station.market.supply.get(good_data.id, 0.0))
-			if available_supply < 1.0:
-				continue
-
-			var origin_price: float = float(
-				origin_station.market.current_prices.get(good_data.id, good_data.base_value)
-			)
-			var destination_price: float = _get_route_sale_price(
-				destination_station,
-				good_data.id,
-				good_data.base_value,
-				route_distance
-			)
-			var profit_per_unit: float = destination_price - origin_price
-			var affordable_units: int = _get_affordable_units(origin_price, remaining_credits)
-			var available_units: int = mini(
-				remaining_capacity,
-				mini(
-					maximum_units_per_cargo_type,
-					mini(int(floor(available_supply)), affordable_units)
+				best_item_id = item_id
+				best_item_is_resource = ResourceLoader.exists(
+					"res://data/economy/resources/%s.tres" % item_id
 				)
-			)
-
-			if profit_per_unit > best_profit_per_unit and available_units > 0:
-				best_item_id = good_data.id
-				best_item_is_resource = false
 				best_profit_per_unit = profit_per_unit
 				best_available_units = available_units
 				best_origin_price = origin_price
 
-		if best_item_id.is_empty() or best_profit_per_unit <= 0.0 or best_available_units <= 0:
+		if best_item_id.is_empty() or best_profit_per_unit <= 0.0:
+			break
+		if best_available_units <= 0:
 			break
 
-		var best_base_value: float = _get_item_base_value(origin_station, best_item_id, best_item_is_resource)
+		var best_base_value: float = float(
+			origin_station.market.base_values.get(best_item_id, 0.0)
+		)
 		manifest[best_item_id] = {
 			"units": best_available_units,
 			"is_resource": best_item_is_resource,
@@ -477,21 +461,28 @@ func _get_station_distance(origin_id: String, destination_id: String) -> float:
 func _update_market_price_for_item(
 	market_data: MarketData,
 	item_id: String,
-	is_resource: bool,
+	_is_resource: bool,
 	station: GeneratedStationData
 ) -> void:
-	var base_value: float = _get_item_base_value(station, item_id, is_resource)
+	if station == null or market_data == null:
+		return
+
+	var base_value: float = float(
+		market_data.base_values.get(item_id, 0.0)
+	)
 	if base_value <= 0.0:
 		return
 
-	var supply: float = float(market_data.supply.get(item_id, 0.0))
-	var demand: float = float(market_data.demand.get(item_id, 0.0))
-	var is_exported: bool = _station_exports_item(station, item_id, is_resource)
+	var supply: float = float(
+		market_data.supply.get(item_id, 0.0)
+	)
+	var demand: float = float(
+		market_data.demand.get(item_id, 0.0)
+	)
 	market_data.current_prices[item_id] = Market.new().calculate_price(
 		base_value,
 		supply,
-		demand,
-		is_exported
+		demand
 	)
 
 func _station_exports_item(
@@ -516,27 +507,14 @@ func _station_exports_item(
 func _get_item_base_value(
 	station: GeneratedStationData,
 	item_id: String,
-	is_resource: bool
+	_is_resource: bool
 ) -> float:
-	if station == null or station.station_type == null:
+	if station == null or station.market == null:
 		return 0.0
 
-	if is_resource:
-		for resource_data: ResourceData in station.station_type.resource_exports:
-			if resource_data != null and resource_data.id == item_id:
-				return resource_data.base_value
-		for resource_data: ResourceData in station.station_type.resource_imports:
-			if resource_data != null and resource_data.id == item_id:
-				return resource_data.base_value
-	else:
-		for good_data: GoodData in station.station_type.good_exports:
-			if good_data != null and good_data.id == item_id:
-				return good_data.base_value
-		for good_data: GoodData in station.station_type.good_imports:
-			if good_data != null and good_data.id == item_id:
-				return good_data.base_value
-
-	return 0.0
+	return float(
+		station.market.base_values.get(item_id, 0.0)
+	)
 
 func _station_imports_resource(
 	station: GeneratedStationData,
