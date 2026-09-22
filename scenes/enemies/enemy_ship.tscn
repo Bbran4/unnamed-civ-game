@@ -1,15 +1,17 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/enemies/enemy_ship.gd" id="1_enemy"]
 [ext_resource type="PackedScene" path="res://scenes/ships/projectile.tscn" id="2_projectile"]
 [ext_resource type="PackedScene" path="res://scenes/economy/salvage_pickup.tscn" id="3_salvage"]
 [ext_resource type="PackedScene" path="res://scenes/ui/enemy_status_bars.tscn" id="4_status"]
+[ext_resource type="Resource" path="res://data/ships/enemies/razor_raider.tres" id="5_ship"]
 
 [sub_resource type="CircleShape2D" id="CircleShape_enemy"]
 radius = 18.0
 
 [node name="EnemyShip" type="CharacterBody2D" groups=["enemy_ship"]]
 script = ExtResource("1_enemy")
+ship_data = ExtResource("5_ship")
 projectile_scene = ExtResource("2_projectile")
 salvage_scene = ExtResource("3_salvage")
 collision_layer = 2
@@ -18,12 +20,28 @@ collision_mask = 1
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape_enemy")
 
-[node name="Visual" type="Polygon2D" parent="."]
-polygon = PackedVector2Array(20, 0, -12, -16, -6, 0, -12, 16)
-color = Color(1, 0.3, 0.25, 1)
+[node name="Hull" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(30, 0, 12, -10, -10, -15, -22, -7, -16, 0, -22, 7, -10, 15, 12, 10)
+color = Color(0.72, 0.12, 0.1, 1)
+
+[node name="LeftWing" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(9, -6, -5, -27, -18, -22, -12, -5)
+color = Color(0.42, 0.08, 0.07, 1)
+
+[node name="RightWing" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(9, 6, -5, 27, -18, 22, -12, 5)
+color = Color(0.42, 0.08, 0.07, 1)
+
+[node name="Cockpit" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(16, 0, 3, -6, -8, -4, -8, 4, 3, 6)
+color = Color(1, 0.72, 0.2, 1)
+
+[node name="Engine" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-17, -6, -29, -2, -29, 2, -17, 6)
+color = Color(1, 0.35, 0.12, 1)
+
+[node name="WeaponMuzzle" type="Marker2D" parent="."]
+position = Vector2(30, 0)
 
 [node name="EnemyStatusBars" parent="." instance=ExtResource("4_status")]
 rotation = 0.0
-
-[node name="WeaponMuzzle" type="Marker2D" parent="."]
-position = Vector2(20, 0)
