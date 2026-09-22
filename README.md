@@ -493,9 +493,9 @@ For example:
 Civilization A
 Rich in food
 Poor in stone
-       ↓
-     TRADE
-       ↓
+	   ↓
+	 TRADE
+	   ↓
 Civilization B
 Rich in stone
 Poor in food
