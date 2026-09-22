@@ -3,7 +3,9 @@
 [ext_resource type="Script" uid="uid://cmwe1wmd8bnyf" path="res://scripts/ships/ship_data.gd" id="1_script"]
 [ext_resource type="Resource" path="res://data/ships/bodies/light_fighter.tres" id="2_body"]
 [ext_resource type="Script" uid="uid://b2t2lmlgitgwj" path="res://scripts/ships/ship_module_data.gd" id="2_treke"]
+[ext_resource type="Resource" path="res://data/ships/modules/engine_booster.tres" id="3_2m2vj"]
 [ext_resource type="Resource" path="res://data/ships/wings/standard_wings.tres" id="3_wings"]
+[ext_resource type="Resource" path="res://data/ships/modules/standard_shield_generator.tres" id="4_qpa8q"]
 [ext_resource type="Resource" path="res://data/ships/tails/interceptor_tail.tres" id="4_tail"]
 [ext_resource type="Script" uid="uid://0cqbaj8iyi1a" path="res://scripts/ships/ship_weapon_data.gd" id="5_2m2vj"]
 [ext_resource type="Resource" path="res://data/ships/weapons/pirate_laser.tres" id="6_treke"]
@@ -18,4 +20,5 @@ faction_id = "red_knife_syndicate"
 body = ExtResource("2_body")
 wings = ExtResource("3_wings")
 tail = ExtResource("4_tail")
+modules = Array[ExtResource("2_treke")]([ExtResource("3_2m2vj"), ExtResource("4_qpa8q")])
 weapons = Array[ExtResource("5_2m2vj")]([ExtResource("6_treke"), ExtResource("7_gclqq")])

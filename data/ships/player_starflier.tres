@@ -3,6 +3,8 @@
 [ext_resource type="Script" uid="uid://cmwe1wmd8bnyf" path="res://scripts/ships/ship_data.gd" id="1_script"]
 [ext_resource type="Resource" path="res://data/ships/bodies/light_fighter.tres" id="2_body"]
 [ext_resource type="Script" uid="uid://b2t2lmlgitgwj" path="res://scripts/ships/ship_module_data.gd" id="2_u57gh"]
+[ext_resource type="Resource" path="res://data/ships/modules/basic_shield_generator.tres" id="3_module"]
+[ext_resource type="Resource" path="res://data/ships/modules/engine_booster.tres" id="4_urnkm"]
 [ext_resource type="Script" uid="uid://0cqbaj8iyi1a" path="res://scripts/ships/ship_weapon_data.gd" id="5_d4pkg"]
 [ext_resource type="Resource" path="res://data/ships/tails/standard_tail.tres" id="5_tail"]
 [ext_resource type="Resource" path="res://data/ships/weapons/micro_missile.tres" id="6_r1k6q"]
@@ -19,4 +21,5 @@ body = ExtResource("2_body")
 wings = ExtResource("8_r1k6q")
 tail = ExtResource("5_tail")
 shield_regeneration = 4.0
+modules = Array[ExtResource("2_u57gh")]([ExtResource("3_module"), ExtResource("4_urnkm")])
 weapons = Array[ExtResource("5_d4pkg")]([ExtResource("7_nsg10"), ExtResource("6_r1k6q")])
