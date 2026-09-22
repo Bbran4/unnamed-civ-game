@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/system_map.tscn" id="3_map"]
 [ext_resource type="PackedScene" path="res://scenes/ui/control_style_selector.tscn" id="4_controls"]
 [ext_resource type="PackedScene" path="res://scenes/ui/offscreen_indicators.tscn" id="5_indicators"]
+[ext_resource type="Script" path="res://scripts/world/world_traffic_manager.gd" id="6_traffic"]
 
 [node name="StarSystem" type="Node2D"]
 script = ExtResource("1_system")
@@ -44,3 +45,7 @@ default_color = Color(0.3, 0.4, 0.5, 0.3)
 [node name="OffscreenIndicators" parent="." instance=ExtResource("5_indicators")]
 
 [node name="SystemMap" parent="." instance=ExtResource("3_map")]
+
+[node name="WorldTrafficManager" type="Node2D" parent="."]
+script = ExtResource("6_traffic")
+civilian_ship_count = 6
