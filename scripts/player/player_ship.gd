@@ -109,7 +109,7 @@ func _physics_process(delta: float) -> void:
 
 func _initialize_weapon_ammo() -> void:
 	weapon_ammo.clear()
-	if ship_data == null:
+	if owned_ship_data == null:
 		return
 
 	for weapon_index: int in range(owned_ship_data.installed_weapons.size()):
@@ -127,6 +127,7 @@ func _apply_ship_data() -> void:
 	max_speed = owned_ship_data.get_max_speed()
 	forward_acceleration = owned_ship_data.get_acceleration()
 	boost_max_speed = max_speed * owned_ship_data.get_boost_multiplier()
+	shield_regen_rate = owned_ship_data.get_shield_regeneration()
 
 func get_space_reference_velocity() -> Vector2:
 	var space_system: Node = get_tree().get_first_node_in_group("space_system")
@@ -216,6 +217,8 @@ func take_damage(damage_amount: float, damage_type: String = "energy", shield_mu
 		var shield_damage: float = minf(current_shield, remaining_damage * shield_multiplier)
 		current_shield -= shield_damage
 		remaining_damage -= shield_damage
+		if owned_ship_data != null:
+			owned_ship_data.current_shield = current_shield
 
 	if remaining_damage > 0.0:
 		var hull_damage: float = _calculate_hull_damage(remaining_damage * hull_multiplier)
