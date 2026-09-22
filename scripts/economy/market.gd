@@ -173,6 +173,13 @@ func _initialize_production_demand(
 				+ demand_rate
 			)
 
+func _refresh_demands(market_data: MarketData) -> void:
+\tfor item_id: String in market_data.supply.keys():
+\t\tvar supply: float = float(market_data.supply.get(item_id, 0.0))
+\t\tvar demand_rate: float = float(market_data.demand_rate.get(item_id, 0.0))
+\t\tvar target_stock: float = maxf(demand_rate * PRICE_TARGET_SECONDS, 1.0)
+\t\tmarket_data.demand[item_id] = maxf(target_stock - supply, 0.0)
+
 func calculate_operational_demand(
 	category: String,
 	population: int
