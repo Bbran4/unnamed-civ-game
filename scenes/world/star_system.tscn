@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/space_system.gd" id="1_system"]
 [ext_resource type="PackedScene" path="res://scenes/stars/generated_star.tscn" id="2_star"]
@@ -48,5 +48,4 @@ default_color = Color(0.3, 0.4, 0.5, 0.3)
 
 [node name="WorldTrafficManager" type="Node2D" parent="."]
 script = ExtResource("6_traffic")
-civilian_ship_count = 6
 
