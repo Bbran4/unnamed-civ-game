@@ -16,46 +16,45 @@ script = ExtResource("1_player")
 ship_data = ExtResource("5_ship")
 projectile_scene = ExtResource("2_projectile")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1573684521]
 shape = SubResource("CapsuleShape_player")
 
-[node name="Hull" type="Polygon2D" parent="."]
-polygon = PackedVector2Array(28, 0, 13, -9, -10, -12, -19, -5, -15, 0, -19, 5, -10, 12, 13, 9)
+[node name="Hull" type="Polygon2D" parent="." unique_id=886970777]
 color = Color(0.25, 0.75, 1, 1)
+polygon = PackedVector2Array(28, 0, 13, -9, -10, -12, -19, -5, -15, 0, -19, 5, -10, 12, 13, 9)
 
-[node name="LeftWing" type="Polygon2D" parent="."]
+[node name="LeftWing" type="Polygon2D" parent="." unique_id=11139636]
+color = Color(0.12, 0.45, 0.75, 1)
 polygon = PackedVector2Array(8, -5, -5, -24, -15, -20, -10, -4)
-color = Color(0.12, 0.45, 0.75, 1)
 
-[node name="RightWing" type="Polygon2D" parent="."]
+[node name="RightWing" type="Polygon2D" parent="." unique_id=328749124]
+color = Color(0.12, 0.45, 0.75, 1)
 polygon = PackedVector2Array(8, 5, -5, 24, -15, 20, -10, 4)
-color = Color(0.12, 0.45, 0.75, 1)
 
-[node name="Cockpit" type="Polygon2D" parent="."]
-polygon = PackedVector2Array(14, 0, 2, -5, -7, -3, -7, 3, 2, 5)
+[node name="Cockpit" type="Polygon2D" parent="." unique_id=888982003]
 color = Color(0.8, 0.95, 1, 1)
+polygon = PackedVector2Array(14, 0, 2, -5, -7, -3, -7, 3, 2, 5)
 
-[node name="Engine" type="Polygon2D" parent="."]
-polygon = PackedVector2Array(-15, -5, -25, -2, -25, 2, -15, 5)
+[node name="Engine" type="Polygon2D" parent="." unique_id=235255490]
 color = Color(0.35, 0.9, 1, 1)
+polygon = PackedVector2Array(-15, -5, -25, -2, -25, 2, -15, 5)
 
-[node name="WeaponMuzzles" type="Node2D" parent="."]
+[node name="WeaponMuzzles" type="Node2D" parent="." unique_id=1709735936]
 
-[node name="Muzzle1" type="Marker2D" parent="WeaponMuzzles"]
+[node name="Muzzle1" type="Marker2D" parent="WeaponMuzzles" unique_id=613290556]
 position = Vector2(28, 0)
 
-[node name="Muzzle2" type="Marker2D" parent="WeaponMuzzles"]
+[node name="Muzzle2" type="Marker2D" parent="WeaponMuzzles" unique_id=1910785205]
 position = Vector2(12, -8)
 
-[node name="Muzzle3" type="Marker2D" parent="WeaponMuzzles"]
+[node name="Muzzle3" type="Marker2D" parent="WeaponMuzzles" unique_id=1310028910]
 position = Vector2(12, 8)
 
-[node name="Muzzle4" type="Marker2D" parent="WeaponMuzzles"]
-position = Vector2(0, 0)
+[node name="Muzzle4" type="Marker2D" parent="WeaponMuzzles" unique_id=1168194077]
 
-[node name="PlayerStatusBars" parent="." instance=ExtResource("4_status")]
+[node name="PlayerStatusBars" parent="." unique_id=1187215573 instance=ExtResource("4_status")]
 
-[node name="Camera2D" type="Camera2D" parent="."]
+[node name="Camera2D" type="Camera2D" parent="." unique_id=962009345]
 position_smoothing_enabled = true
 position_smoothing_speed = 6.0
 script = ExtResource("3_camera")

@@ -109,7 +109,7 @@ func _fire_at_player() -> void:
 			var weapon_muzzle: Marker2D = weapon_muzzles[mount_index]
 			projectile_2d.global_position = weapon_muzzle.global_position
 			projectile_2d.global_rotation = global_rotation
-			projectile_2d.set("owner_group", "enemy_projectile)
+			projectile_2d.set("owner_group", "enemy_projectile")
 			if weapon.ammo_capacity > 0:
 				var remaining_ammo: int = weapon_ammo.get(mount_index, weapon.ammo_capacity)
 				if remaining_ammo <= 0:
