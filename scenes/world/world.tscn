@@ -1,0 +1,9 @@
+[gd_scene format=3]
+
+[node name="World" type="Node2D"]
+
+[node name="Terrain" type="Node2D" parent="."]
+
+[node name="Civilizations" type="Node2D" parent="."]
+
+[node name="WorldUI" type="CanvasLayer" parent="."]
