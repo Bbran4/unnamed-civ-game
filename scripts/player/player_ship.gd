@@ -6,6 +6,8 @@ enum ControlStyle {
 }
 
 @export var ship_data: ShipData
+
+var owned_ship_data: OwnedShipData
 @export var forward_acceleration: float = 600.0
 @export var reverse_acceleration: float = 350.0
 @export var turn_speed: float = 3.5
@@ -35,9 +37,10 @@ var weapon_ammo: Dictionary = {}
 @onready var status_bars: Control = $PlayerStatusBars/Bars
 
 func _ready() -> void:
+	owned_ship_data = OwnedShipData.create_from_template(ship_data)
 	_apply_ship_data()
-	current_hull = max_hull
-	current_shield = max_shield
+	current_hull = owned_ship_data.current_hull
+	current_shield = owned_ship_data.current_shield
 	control_style = WorldState.control_style as ControlStyle
 
 	if WorldState.returning_from_station:
@@ -109,21 +112,21 @@ func _initialize_weapon_ammo() -> void:
 	if ship_data == null:
 		return
 
-	for weapon_index: int in range(ship_data.weapons.size()):
-		var weapon: ShipWeaponData = ship_data.get_weapon(weapon_index)
+	for weapon_index: int in range(owned_ship_data.installed_weapons.size()):
+		var weapon: ShipWeaponData = owned_ship_data.get_weapon(weapon_index)
 		if weapon != null and weapon.ammo_capacity > 0:
 			weapon_ammo[weapon_index] = weapon.ammo_capacity
 
 func _apply_ship_data() -> void:
-	if ship_data == null:
+	if owned_ship_data == null:
 		return
 
-	max_hull = float(ship_data.get_total_hull_points())
-	max_shield = float(ship_data.get_total_shield_capacity())
-	armor = float(ship_data.get_total_armor())
-	max_speed = ship_data.get_max_speed()
-	forward_acceleration = ship_data.get_acceleration()
-	boost_max_speed = max_speed * ship_data.get_boost_multiplier()
+	max_hull = float(owned_ship_data.get_total_hull_points())
+	max_shield = float(owned_ship_data.get_total_shield_capacity())
+	armor = float(owned_ship_data.get_total_armor())
+	max_speed = owned_ship_data.get_max_speed()
+	forward_acceleration = owned_ship_data.get_acceleration()
+	boost_max_speed = max_speed * owned_ship_data.get_boost_multiplier()
 
 func get_space_reference_velocity() -> Vector2:
 	var space_system: Node = get_tree().get_first_node_in_group("space_system")
@@ -165,12 +168,12 @@ func _fire_primary() -> void:
 	if fire_cooldown_remaining > 0.0 or projectile_scene == null:
 		return
 
-	var weapon_mount_count: int = ship_data.get_weapon_mounts() if ship_data != null else 1
+	var weapon_mount_count: int = owned_ship_data.get_weapon_mounts() if owned_ship_data != null else 1
 	var active_mount_count: int = mini(weapon_mount_count, weapon_muzzles.size())
 	var lowest_fire_interval: float = INF
 
 	for mount_index: int in range(active_mount_count):
-		var weapon: ShipWeaponData = ship_data.get_weapon(mount_index) if ship_data != null else null
+		var weapon: ShipWeaponData = owned_ship_data.get_weapon(mount_index) if owned_ship_data != null else null
 		if weapon == null:
 			continue
 
@@ -217,6 +220,8 @@ func take_damage(damage_amount: float, damage_type: String = "energy", shield_mu
 	if remaining_damage > 0.0:
 		var hull_damage: float = _calculate_hull_damage(remaining_damage * hull_multiplier)
 		current_hull = maxf(0.0, current_hull - hull_damage)
+		if owned_ship_data != null:
+			owned_ship_data.current_hull = current_hull
 
 	_update_status_bars()
 	camera.shake(0.06, 2.0)
@@ -241,6 +246,8 @@ func _shield_regeneration(delta: float) -> void:
 		return
 
 	current_shield = minf(max_shield, current_shield + shield_regen_rate * delta)
+	if owned_ship_data != null:
+		owned_ship_data.current_shield = current_shield
 	_update_status_bars()
 
 func _update_status_bars() -> void:
