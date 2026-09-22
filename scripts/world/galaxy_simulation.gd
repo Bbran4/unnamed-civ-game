@@ -444,13 +444,31 @@ func _select_traffic_destination(record: Dictionary) -> void:
 	var selected: Dictionary = candidates[0]
 	var best_score: float = -INF
 	for candidate: Dictionary in candidates:
+		var candidate_system: GeneratedSystemData = GalaxyState.get_system(
+			String(candidate["system_id"])
+		)
+		var candidate_distance: float = float(candidate["distance"])
 		var score: float = _calculate_traffic_destination_score(
 			origin_station,
-			GalaxyState.get_system(String(candidate["system_id"])),
+			candidate_system,
 			String(candidate["station_id"]),
-			float(candidate["distance"]),
+			candidate_distance,
 			bool(record.get("is_freighter", false))
 		)
+
+		if bool(record.get("is_freighter", false)):
+			var candidate_fuel_required: float = _get_freighter_trip_fuel_required(
+				system_id,
+				String(candidate["system_id"]),
+				candidate_distance
+			)
+			if not _can_freighter_fuel_trip(
+				record,
+				origin_station,
+				candidate_fuel_required
+			):
+				continue
+
 		if score > best_score:
 			best_score = score
 			selected = candidate
@@ -710,6 +728,39 @@ func _get_freighter_trip_fuel_required(
 		return GalaxyState.INTER_SYSTEM_FUEL_COST
 
 	return _calculate_freighter_fuel_required(distance)
+
+func _can_freighter_fuel_trip(
+	record: Dictionary,
+	origin_station: GeneratedStationData,
+	fuel_required: float
+) -> bool:
+	if fuel_required <= 0.0:
+		return true
+	if origin_station == null or origin_station.market == null:
+		return false
+
+	var current_fuel: float = float(
+		record.get("fuel", freighter_starting_fuel)
+	)
+	if current_fuel >= fuel_required:
+		return true
+
+	var fuel_shortfall: float = fuel_required - current_fuel
+	var fuel_supply: float = float(
+		origin_station.market.supply.get("fuel", 0.0)
+	)
+	var fuel_price: float = float(
+		origin_station.market.current_prices.get("fuel", 0.0)
+	)
+	var credits: float = float(
+		record.get("credits", freighter_starting_credits)
+	)
+
+	return (
+		fuel_supply >= fuel_shortfall
+		and fuel_price > 0.0
+		and credits >= fuel_shortfall * fuel_price
+	)
 
 func _ensure_freighter_fuel(
 	record: Dictionary,
