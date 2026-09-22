@@ -1,6 +1,6 @@
 extends Node
 
-const SAVE_VERSION := 1
+const SAVE_VERSION := 2
 
 var world_seed: int = 0
 var current_era: int = 0
@@ -16,13 +16,10 @@ func new_world(seed_value: int) -> void:
 	world_time = 0.0
 	player_civilization_id = ""
 	civilizations.clear()
-	world_data = {
-		"seed": world_seed,
-		"version": SAVE_VERSION,
-		"width": 64,
-		"height": 64,
-		"tiles": {}
-	}
+
+	var generator := WorldGenerator.new()
+	world_data = generator.generate(seed_value)
+
 	legacy_data = {
 		"research_points": 0,
 		"technologies": [],
