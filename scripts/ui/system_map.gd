@@ -22,8 +22,8 @@ const MAP_CENTER: Vector2 = Vector2(350.0, 270.0)
 const MAP_RADIUS: float = 230.0
 const MAX_ORBIT_DISTANCE: float = 15400.0
 const MIN_MAP_ZOOM: float = 0.5
-const MAX_MAP_ZOOM: float = 3.0
-const MAP_ZOOM_STEP: float = 0.15
+const MAX_MAP_ZOOM: float = 6.0
+const MAP_ZOOM_STEP: float = 0.3
 const TRAFFIC_REFRESH_INTERVAL: float = 0.05
 
 @onready var panel: Panel = $Panel
@@ -87,12 +87,19 @@ const TRAFFIC_REFRESH_INTERVAL: float = 0.05
     $Panel/MapArea/OrbitMap/Civilian1,
     $Panel/MapArea/OrbitMap/Civilian2,
     $Panel/MapArea/OrbitMap/Civilian3,
-    $Panel/MapArea/OrbitMap/Civilian4
+    $Panel/MapArea/OrbitMap/Civilian4,
+    $Panel/MapArea/OrbitMap/Civilian5,
+    $Panel/MapArea/OrbitMap/Civilian6
 ]
 
 @onready var freighter_markers: Array[Polygon2D] = [
     $Panel/MapArea/OrbitMap/Freighter1,
-    $Panel/MapArea/OrbitMap/Freighter2
+    $Panel/MapArea/OrbitMap/Freighter2,
+    $Panel/MapArea/OrbitMap/Freighter3,
+    $Panel/MapArea/OrbitMap/Freighter4,
+    $Panel/MapArea/OrbitMap/Freighter5,
+    $Panel/MapArea/OrbitMap/Freighter6,
+    $Panel/MapArea/OrbitMap/Freighter7
 ]
 
 var space_system: SpaceSystem
@@ -100,6 +107,10 @@ var map_open: bool = false
 var selected_system_id: String = ""
 var selected_station_id: String = ""
 var map_zoom: float = 1.0
+var map_pan: Vector2 = Vector2.ZERO
+var map_dragging: bool = false
+var map_drag_start: Vector2 = Vector2.ZERO
+var map_pan_start: Vector2 = Vector2.ZERO
 var traffic_refresh_timer: float = 0.0
 
 func _ready() -> void:
@@ -162,7 +173,7 @@ func update_map() -> void:
 
     var generated_system: GeneratedSystemData = space_system.generated_system
     var map_transform: Node2D = $Panel/MapArea/OrbitMap
-    map_transform.position = MAP_CENTER * (1.0 - map_zoom)
+    map_transform.position = MAP_CENTER * (1.0 - map_zoom) + map_pan
     map_transform.scale = Vector2.ONE * map_zoom
     system_name_label.text = generated_system.display_name
     star_label.text = generated_system.star.display_name
@@ -251,18 +262,26 @@ func update_map() -> void:
 func _on_map_gui_input(event: InputEvent) -> void:
     if not map_open:
         return
-    if event is not InputEventMouseButton:
+
+    if event is InputEventMouseButton:
+        var mouse_event: InputEventMouseButton = event as InputEventMouseButton
+
+        if mouse_event.button_index == MOUSE_BUTTON_WHEEL_UP and mouse_event.pressed:
+            map_zoom = minf(MAX_MAP_ZOOM, map_zoom + MAP_ZOOM_STEP)
+            update_map()
+        elif mouse_event.button_index == MOUSE_BUTTON_WHEEL_DOWN and mouse_event.pressed:
+            map_zoom = maxf(MIN_MAP_ZOOM, map_zoom - MAP_ZOOM_STEP)
+            update_map()
+        elif mouse_event.button_index == MOUSE_BUTTON_MIDDLE:
+            map_dragging = mouse_event.pressed
+            if map_dragging:
+                map_drag_start = mouse_event.position
+                map_pan_start = map_pan
         return
 
-    var mouse_event: InputEventMouseButton = event as InputEventMouseButton
-    if not mouse_event.pressed:
-        return
-
-    if mouse_event.button_index == MOUSE_BUTTON_WHEEL_UP:
-        map_zoom = minf(MAX_MAP_ZOOM, map_zoom + MAP_ZOOM_STEP)
-        update_map()
-    elif mouse_event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-        map_zoom = maxf(MIN_MAP_ZOOM, map_zoom - MAP_ZOOM_STEP)
+    if event is InputEventMouseMotion and map_dragging:
+        var motion_event: InputEventMouseMotion = event as InputEventMouseMotion
+        map_pan = map_pan_start + (motion_event.position - map_drag_start)
         update_map()
 
 func _update_traffic_markers() -> void:
