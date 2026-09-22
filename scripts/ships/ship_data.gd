@@ -13,11 +13,17 @@ extends Resource
 @export var shield_capacity: int = 100
 @export var shield_regeneration: float = 5.0
 @export var modules: Array[ShipModuleData] = []
+@export var weapons: Array[ShipWeaponData] = []
 
 func get_weapon_mounts() -> int:
 	if wings == null:
 		return 0
 	return mini(wings.weapon_mounts, 4)
+
+func get_weapon(index: int) -> ShipWeaponData:
+	if index < 0 or index >= weapons.size():
+		return null
+	return weapons[index]
 
 func get_module_slots() -> int:
 	if body == null:
