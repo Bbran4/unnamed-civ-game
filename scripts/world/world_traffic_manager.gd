@@ -8,12 +8,12 @@ var space_system: SpaceSystem
 var visual_ships: Dictionary = {}
 
 func _ready() -> void:
-	space_system = get_tree().get_first_node_in_group("space_system") as SpaceSystem
+	space_system = get_parent() as SpaceSystem
 	call_deferred("_refresh_visuals")
 
 func _process(_delta: float) -> void:
-	if space_system == null:
-		space_system = get_tree().get_first_node_in_group("space_system") as SpaceSystem
+	if space_system == null or not is_instance_valid(space_system):
+		space_system = get_parent() as SpaceSystem
 		if space_system == null:
 			return
 	_refresh_visuals()
