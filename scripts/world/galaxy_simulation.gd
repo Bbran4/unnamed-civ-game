@@ -335,14 +335,14 @@ func _update_station_prices(station: GeneratedStationData) -> void:
 		var supply: float = float(
 			station.market.supply.get(item_id, 0.0)
 		)
-		var demand: float = float(
-			station.market.demand.get(item_id, 0.0)
+		var demand_rate: float = float(
+			station.market.demand_rate.get(item_id, 0.0)
 		)
 
 		station.market.current_prices[item_id] = market.calculate_price(
 			base_value,
 			supply,
-			demand
+			demand_rate
 		)
 
 func _create_initial_traffic_for_system(system_id: String) -> void:
