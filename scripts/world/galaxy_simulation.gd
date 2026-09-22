@@ -60,26 +60,50 @@ func _advance_system_time(simulated_delta: float) -> void:
 
 func _print_station_market_report() -> void:
 	print("========== STATION MARKET REPORT ==========")
+
 	for system_id: String in GalaxyState.get_all_system_ids():
 		var system: GeneratedSystemData = GalaxyState.get_system(system_id)
+
 		for station: GeneratedStationData in system.stations:
 			if station == null or station.market == null:
 				continue
 
-			var demand_parts: Array[String] = []
-			var supply_parts: Array[String] = []
-			for item_id: String in station.market.demand.keys():
-				var demand_value: float = float(station.market.demand[item_id])
-				demand_parts.append("%s %.1f" % [item_id, demand_value])
-			for item_id: String in station.market.supply.keys():
-				var supply_value: float = float(station.market.supply[item_id])
-				supply_parts.append("%s %.1f" % [item_id, supply_value])
+			var market_lines: Array[String] = []
 
-			print("%s | Demands: %s | Supplies: %s" % [
-				station.display_name,
-				", ".join(demand_parts),
-				", ".join(supply_parts)
-			])
+			for item_id: String in station.market.supply.keys():
+				var supply_value: float = float(
+					station.market.supply.get(item_id, 0.0)
+				)
+				var demand_value: float = float(
+					station.market.demand.get(item_id, 0.0)
+				)
+
+				if supply_value <= 0.0 and demand_value <= 0.0:
+					continue
+
+				var price_value: float = float(
+					station.market.current_prices.get(item_id, 0.0)
+				)
+				market_lines.append(
+					"%s S=%.2f D=%.4f/s P=%.2f"
+					% [
+						item_id,
+						supply_value,
+						demand_value,
+						price_value
+					]
+				)
+
+			market_lines.sort()
+
+			print(
+				"%s | %s | System: %s"
+				% [
+					station.display_name,
+					" | ".join(market_lines),
+					system.display_name
+				]
+			)
 
 func _simulation_tick(simulated_delta: float) -> void:
 	var extracted_units: float = 0.0
