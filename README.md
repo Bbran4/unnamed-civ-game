@@ -160,6 +160,11 @@ The first procedural test system targets:
 - [x] Production recipes
 - [x] Dynamic supply and demand data
 - [x] Dynamic prices
+- [x] Civilian traffic
+- [x] Freighter traffic
+- [x] Same-system station-to-station traffic
+- [x] Freighter cargo selection based on station imports
+- [x] Freighter cargo delivery into destination markets
 - [x] Multiple star types
 - [x] Planetary orbits
 - [x] System map
@@ -172,8 +177,11 @@ The first procedural test system targets:
 - [x] Asteroid collision damage
 - [x] Player location shown on system map
 - [x] Player remains in orbital motion while map is open
+- [x] System map zoom
+- [x] System map panning inside the map area
 - [x] Civilian ship state machine
 - [x] Same-system civilian station-to-station traffic
+- [x] Freighter station-to-station trade traffic
 
 ---
 
@@ -803,12 +811,16 @@ res://
 
 ---
 
-## Milestone 4 - Living Economy
+## Milestone 4 - Living Economy and World Traffic
 
 - [x] Market data model
 - [x] Initial supply
 - [x] Initial demand
 - [x] Dynamic price calculation
+- [x] Civilian traffic simulation
+- [x] Freighter traffic simulation
+- [x] Freighter cargo loading from origin markets
+- [x] Freighter cargo unloading into destination markets
 - [ ] Production simulation
 - [ ] Consumption simulation
 - [ ] Supply changes over time
@@ -821,7 +833,7 @@ res://
 
 **Completion test:**
 
-A player should be able to discover a price difference between two stations, trade a commodity, and change the local market by doing so.
+The world should already contain moving civilian and freighter traffic. Freighters select compatible goods, transport them between stations and change local market supply. The next step is to make production and consumption continuously change those markets.
 
 ---
 
@@ -977,7 +989,7 @@ If not, improve the systems that already exist before adding more content.
 
 **Current Stage: Living World Foundation**
 
-Milestones 0, 1, 2 and 3 are complete. Milestones 4 and 5 are currently in progress.
+Milestones 0, 1, 2 and 3 are complete. Milestones 4 and 5 are currently in progress. The first living traffic layer is now operational.
 
 The project now has the first layer of the world simulation:
 
@@ -995,6 +1007,8 @@ Generated Stations
 Factions
 	 ↓
 Markets
+	 ↓
+Civilian + Freighter Traffic
 
 Resources
 	 ↓
@@ -1009,16 +1023,16 @@ Prices
 
 ### Immediate Next Steps
 
-1. Expand the living world with law enforcement and civilian/freighter behaviour.
-2. Add bandit behaviour and cargo theft.
-3. Connect hostile encounters to the living traffic system.
-4. Complete production and consumption simulation.
-2. Connect supply and demand changes to the economy.
-3. Implement real player cargo trading.
-4. Build the ship equipment/shipyard fitting flow around `OwnedShipData`.
-5. Add weapon tiers and meaningful equipment progression.
-6. Connect equipment purchases to the economy.
-7. Build missions on top of the working world simulation.
+1. Complete production and consumption simulation.
+2. Make supply and demand change continuously over time.
+3. Implement real player cargo trading and cargo inventory integration.
+4. Add law enforcement traffic and bandit behaviour.
+5. Connect hostile encounters to civilian and freighter traffic.
+6. Add cargo theft and loss during hostile encounters.
+7. Build the ship equipment/shipyard fitting flow around `OwnedShipData`.
+8. Add weapon tiers and meaningful equipment progression.
+9. Connect equipment purchases to the economy.
+10. Build missions on top of the working world simulation.
 
 ---
 
