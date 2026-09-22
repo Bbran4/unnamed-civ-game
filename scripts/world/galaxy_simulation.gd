@@ -1,6 +1,7 @@
 extends Node
 
 @export var simulation_seconds_per_real_second: float = 30.0
+@export var traffic_simulation_seconds_per_real_second: float = 1.0
 @export var simulation_tick_seconds: float = 60.0
 @export var consumption_efficiency: float = 1.0
 @export var civilian_ship_count_per_system: int = 6
@@ -24,11 +25,12 @@ func _process(delta: float) -> void:
 		return
 
 	var simulated_delta: float = delta * simulation_seconds_per_real_second
+	var traffic_delta: float = delta * traffic_simulation_seconds_per_real_second
 	simulation_seconds += simulated_delta
 	_tick_accumulator += simulated_delta
 
 	_advance_system_time(simulated_delta)
-	_advance_traffic(simulated_delta)
+	_advance_traffic(traffic_delta)
 
 	while _tick_accumulator >= simulation_tick_seconds:
 		_tick_accumulator -= simulation_tick_seconds
