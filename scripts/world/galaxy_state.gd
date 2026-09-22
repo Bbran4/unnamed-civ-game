@@ -27,12 +27,42 @@ func get_or_create_system(system_id: String, planet_count: int = DEFAULT_PLANET_
 	var generated_system: GeneratedSystemData = generator.generate_system(system_seed)
 	generated_system.id = system_id
 
+	var used_station_names: Dictionary = _get_existing_station_names()
+
 	for station_index: int in range(generated_system.stations.size()):
 		var station: GeneratedStationData = generated_system.stations[station_index]
 		station.id = "%s_station_%d" % [system_id, station_index]
+		station.display_name = _make_unique_station_name(station.display_name, used_station_names)
 
 	_systems[system_id] = generated_system
 	return generated_system
+
+func _get_existing_station_names() -> Dictionary:
+	var used_station_names: Dictionary = {}
+
+	for existing_system_id: String in _systems.keys():
+		var existing_system: GeneratedSystemData = _systems[existing_system_id] as GeneratedSystemData
+		if existing_system == null:
+			continue
+
+		for station: GeneratedStationData in existing_system.stations:
+			if station == null:
+				continue
+			used_station_names[station.display_name] = true
+
+	return used_station_names
+
+func _make_unique_station_name(base_name: String, used_station_names: Dictionary) -> String:
+	var candidate_name: String = base_name
+	var suffix_index: int = 2
+
+	while used_station_names.has(candidate_name):
+		candidate_name = "%s %d" % [base_name, suffix_index]
+		suffix_index += 1
+
+	used_station_names[candidate_name] = true
+	return candidate_name
+
 
 func get_system(system_id: String) -> GeneratedSystemData:
 	return get_or_create_system(system_id)
