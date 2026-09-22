@@ -11,7 +11,7 @@ const DEFAULT_STATION_COUNT: int = 5
 const INTER_SYSTEM_DISTANCE: float = 90000.0
 const INTER_SYSTEM_FUEL_COST: float = 60.0
 const INTER_SYSTEM_TRANSIT_TIME: float = 45.0
-const ORBIT_TIME_SCALE: float = 0.05
+const ORBIT_TIME_SCALE: float = 0.001
 
 var _systems: Dictionary = {}
 
