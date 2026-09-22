@@ -8,6 +8,7 @@ extends Node2D
 @export var station_count: int = 5
 @export var system_scene_path: String = "res://scenes/world/systems/asterion.tscn"
 @export var orbit_time_scale: float = GalaxyState.ORBIT_TIME_SCALE
+@export var station_reference_radius: float = 5000.0
 
 const PLANET_SCENE: PackedScene = preload("res://scenes/planets/first_planet.tscn")
 const MOON_SCENE: PackedScene = preload("res://scenes/planets/moon.tscn")
@@ -221,7 +222,7 @@ func get_reference_velocity_at_position(world_position: Vector2) -> Vector2:
 			nearest_station_distance = station_distance
 			nearest_station_velocity = get_station_velocity(station)
 
-	if nearest_station_distance <= 2500.0:
+	if nearest_station_distance <= station_reference_radius:
 		return nearest_station_velocity
 
 	var nearest_planet_distance: float = INF
