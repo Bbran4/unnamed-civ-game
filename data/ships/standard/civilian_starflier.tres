@@ -7,8 +7,8 @@
 
 [ext_resource type="Resource" path="res://data/ships/weapons/civilian_laser.tres" id="1_weapon"]
 
-weapons = [ExtResource("1_weapon")]
 [resource]
+weapons = [ExtResource("1_weapon")]
 script = ExtResource("1_script")
 id = "civilian_starflier"
 display_name = "Starflier"
