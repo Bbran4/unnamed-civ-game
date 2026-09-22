@@ -67,6 +67,9 @@ func generate_system(system_seed: int) -> GeneratedSystemData:
             planet,
             rng
         )
+        var planet_for_market: GeneratedPlanetData = generated_system.planets[planet_index]
+        var market: Market = Market.new()
+        station.market = market.build_market(planet_for_market, station)
         generated_system.stations.append(station)
 
     return generated_system
