@@ -40,7 +40,7 @@ func _load_cargo_from_origin() -> void:
     for good: GoodData in origin_station.station_type.good_exports:
         if good == null:
             continue
-        if destination_station.station_type.good_imports.has(good):
+        if _station_imports_good(destination_station, good.id):
             export_candidates.append(good)
 
     if export_candidates.is_empty():
@@ -102,3 +102,13 @@ func _update_market_price(market: MarketData, good: GoodData) -> void:
     var supply: float = float(market.supply.get(good.id, 0.0))
     var demand: float = float(market.demand.get(good.id, 0.0))
     market.current_prices[good.id] = Market.new().calculate_price(good.base_value, supply, demand)
+
+func _station_imports_good(station: GeneratedStationData, good_id: String) -> bool:
+    if station.station_type == null:
+        return false
+
+    for good: GoodData in station.station_type.good_imports:
+        if good != null and good.id == good_id:
+            return true
+
+    return false
