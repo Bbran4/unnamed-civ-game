@@ -17,6 +17,7 @@ enum JourneyType {
 @export var acceleration: float = 120.0
 @export var arrival_distance: float = 180.0
 @export var dock_duration: float = 6.0
+@export var simulation_visual_only: bool = false
 
 var travel_state: TravelState = TravelState.SELECT_DESTINATION
 var journey_type: JourneyType = JourneyType.LOCAL_TRANSFER
@@ -35,6 +36,9 @@ func setup(start_station_id: String) -> void:
 	travel_state = TravelState.SELECT_DESTINATION
 
 func _physics_process(delta: float) -> void:
+	if simulation_visual_only:
+		return
+
 	if space_system == null:
 		space_system = get_tree().get_first_node_in_group("space_system") as SpaceSystem
 		if space_system == null:
