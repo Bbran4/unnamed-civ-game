@@ -11,6 +11,13 @@ extends Node
 @export var inter_system_transit_seconds: float = 45.0
 @export var enable_debug_output: bool = true
 @export var station_market_report_interval: float = 5.0
+@export var freighter_cargo_capacity: int = 250
+@export var freighter_starting_credits: float = 25000.0
+@export var freighter_fuel_capacity: float = 100.0
+@export var freighter_starting_fuel: float = 100.0
+@export var freighter_fuel_consumption_per_10000_distance: float = 5.0
+@export var freighter_maximum_units_per_cargo_type: int = 100
+@export var freighter_trade_reserve_seconds: float = 120.0
 
 var simulation_seconds: float = 0.0
 var _tick_accumulator: float = 0.0
@@ -117,9 +124,28 @@ func _simulation_tick(simulated_delta: float) -> void:
 			if station == null or station.market == null or station.station_type == null:
 				continue
 
-			extracted_units += _process_resource_extraction(system, station, simulated_delta)
-			consumed_units += _consume_station_operational_demand(station, simulated_delta)
-			produced_batches += _process_station_production(station, simulated_delta)
+			extracted_units += _process_resource_extraction(
+				system,
+				station,
+				simulated_delta
+			)
+			consumed_units += _consume_station_operational_demand(
+				station,
+				simulated_delta
+			)
+			produced_batches += _process_station_production(
+				station,
+				simulated_delta
+			)
+
+	for system_id: String in GalaxyState.get_all_system_ids():
+		var system: GeneratedSystemData = GalaxyState.get_system(system_id)
+
+		for station: GeneratedStationData in system.stations:
+			if station == null or station.market == null:
+				continue
+
+			_refresh_station_demand(station)
 			_update_station_prices(station)
 
 	if enable_debug_output:
@@ -306,21 +332,8 @@ func _refresh_station_demand(station: GeneratedStationData) -> void:
 	if station == null or station.market == null:
 		return
 
-	for item_id: String in station.market.supply.keys():
-		var supply: float = float(
-		station.market.supply.get(item_id, 0.0)
-		)
-		var demand_rate: float = float(
-			station.market.demand_rate.get(item_id, 0.0)
-		)
-		var target_stock: float = maxf(
-			demand_rate * Market.PRICE_TARGET_SECONDS,
-			1.0
-		)
-		station.market.demand[item_id] = maxf(
-			target_stock - supply,
-			0.0
-		)
+	var market: Market = Market.new()
+	market.refresh_demand(station.market)
 
 func _update_station_prices(station: GeneratedStationData) -> void:
 	if station == null or station.market == null:
@@ -479,19 +492,39 @@ func _calculate_traffic_destination_score(
 	if not is_freighter:
 		return 1000.0 - distance * 0.001
 
-	var best_margin: float = -INF
+	return _calculate_best_trade_profit(
+		origin_station,
+		destination_station,
+		distance
+	)
+
+func _calculate_best_trade_profit(
+	origin_station: GeneratedStationData,
+	destination_station: GeneratedStationData,
+	distance: float
+) -> float:
+	if origin_station == null or destination_station == null:
+		return -INF
+	if origin_station.market == null or destination_station.market == null:
+		return -INF
+
+	var best_profit: float = -INF
+	var fuel_required: float = _calculate_freighter_fuel_required(distance)
+	var fuel_cost: float = _calculate_freighter_fuel_cost(
+		origin_station,
+		fuel_required
+	)
 
 	for item_id: String in origin_station.market.supply.keys():
-		var available_supply: float = float(
-			origin_station.market.supply.get(item_id, 0.0)
+		var exportable_units: float = _get_exportable_units(
+			origin_station,
+			item_id
 		)
-		if available_supply <= 0.0:
-			continue
-
 		var destination_demand: float = float(
 			destination_station.market.demand.get(item_id, 0.0)
 		)
-		if destination_demand <= 0.0:
+
+		if exportable_units < 1.0 or destination_demand <= 0.0:
 			continue
 
 		var origin_price: float = float(
@@ -500,15 +533,23 @@ func _calculate_traffic_destination_score(
 		var destination_price: float = float(
 			destination_station.market.current_prices.get(item_id, 0.0)
 		)
-		var margin: float = destination_price - origin_price
 
-		if margin > best_margin:
-			best_margin = margin
+		if origin_price <= 0.0 or destination_price <= origin_price:
+			continue
 
-	if best_margin == -INF:
-		return -INF
+		var tradable_units: float = minf(
+			exportable_units,
+			destination_demand
+		)
+		var trade_profit: float = (
+			(destination_price - origin_price)
+			* tradable_units
+		) - fuel_cost
 
-	return best_margin - (distance * 0.0001)
+		if trade_profit > best_profit:
+			best_profit = trade_profit
+
+	return best_profit
 
 func _prepare_freighter_cargo(
 	record: Dictionary,
@@ -519,72 +560,140 @@ func _prepare_freighter_cargo(
 		record["cargo"] = {}
 		return
 
-	var remaining_capacity: int = 250
-	var remaining_credits: float = float(
-		record.get("credits", 25000.0)
+	var remaining_capacity: int = maxi(freighter_cargo_capacity, 0)
+	var remaining_credits: float = maxf(
+		float(record.get("credits", freighter_starting_credits)),
+		0.0
 	)
 	var cargo: Dictionary = {}
 
-	for item_id: String in origin_station.market.supply.keys():
-		if remaining_capacity <= 0:
+	while remaining_capacity > 0 and remaining_credits > 0.0:
+		var best_item_id: String = ""
+		var best_profit_per_unit: float = 0.0
+		var best_units: int = 0
+		var best_origin_price: float = 0.0
+
+		for item_id: String in origin_station.market.supply.keys():
+			var exportable_units: float = _get_exportable_units(
+				origin_station,
+				item_id
+			)
+			var destination_demand: float = float(
+				destination_station.market.demand.get(item_id, 0.0)
+			)
+
+			if exportable_units < 1.0 or destination_demand <= 0.0:
+				continue
+
+			var origin_price: float = float(
+				origin_station.market.current_prices.get(item_id, 0.0)
+			)
+			var destination_price: float = float(
+				destination_station.market.current_prices.get(item_id, 0.0)
+			)
+
+			if origin_price <= 0.0 or destination_price <= origin_price:
+				continue
+
+			var profit_per_unit: float = (
+				destination_price - origin_price
+			)
+			var affordable_units: int = int(
+				floor(remaining_credits / origin_price)
+			)
+			var available_units: int = int(floor(exportable_units))
+			var demand_units: int = int(floor(destination_demand))
+			var units: int = mini(
+				remaining_capacity,
+				mini(
+					freighter_maximum_units_per_cargo_type,
+					mini(
+						available_units,
+						mini(demand_units, affordable_units)
+					)
+				)
+			)
+
+			if profit_per_unit > best_profit_per_unit and units > 0:
+				best_item_id = item_id
+				best_profit_per_unit = profit_per_unit
+				best_units = units
+				best_origin_price = origin_price
+
+		if best_item_id.is_empty() or best_units <= 0:
 			break
 
-		var available_supply: float = float(
-			origin_station.market.supply.get(item_id, 0.0)
-		)
-		if available_supply <= 0.0:
-			continue
-
-		var destination_demand: float = float(
-			destination_station.market.demand.get(item_id, 0.0)
-		)
-		if destination_demand <= 0.0:
-			continue
-
-		var origin_price: float = float(
-			origin_station.market.current_prices.get(item_id, 0.0)
-		)
-		var destination_price: float = float(
-			destination_station.market.current_prices.get(item_id, 0.0)
-		)
-		if origin_price <= 0.0 or destination_price <= origin_price:
-			continue
-
-		var affordable_units: int = int(
-			floor(remaining_credits / origin_price)
-		)
-		var available_units: int = int(floor(available_supply))
-		var units: int = mini(
-			100,
-			mini(
-				remaining_capacity,
-				mini(available_units, affordable_units)
-			)
-		)
-
-		if units <= 0:
-			continue
-
-		var base_value: float = float(
-			origin_station.market.base_values.get(item_id, origin_price)
-		)
-
-		cargo[item_id] = {
-			"units": units,
-			"purchase_price": origin_price,
-			"base_value": base_value,
-			"is_resource": _is_resource_id(item_id)
+		cargo[best_item_id] = {
+			"units": best_units,
+			"purchase_price": best_origin_price,
+			"base_value": float(
+				origin_station.market.base_values.get(
+					best_item_id,
+					best_origin_price
+				)
+			),
+			"is_resource": _is_resource_id(best_item_id)
 		}
 
-		remaining_capacity -= units
-		remaining_credits -= origin_price * float(units)
-		origin_station.market.supply[item_id] = maxf(
+		remaining_capacity -= best_units
+		remaining_credits -= (
+			best_origin_price * float(best_units)
+		)
+
+		var current_supply: float = float(
+			origin_station.market.supply.get(best_item_id, 0.0)
+		)
+		origin_station.market.supply[best_item_id] = maxf(
 			0.0,
-			available_supply - float(units)
+			current_supply - float(best_units)
 		)
 
 	record["cargo"] = cargo
 	record["credits"] = remaining_credits
+
+func _get_exportable_units(
+	station: GeneratedStationData,
+	item_id: String
+) -> float:
+	if station == null or station.market == null:
+		return 0.0
+
+	var supply: float = float(
+		station.market.supply.get(item_id, 0.0)
+	)
+	var demand_rate: float = float(
+		station.market.demand_rate.get(item_id, 0.0)
+	)
+	var reserve: float = (
+		demand_rate * freighter_trade_reserve_seconds
+	)
+
+	return maxf(supply - reserve, 0.0)
+
+func _calculate_freighter_fuel_required(distance: float) -> float:
+	if distance <= 0.0:
+		return 0.0
+	if freighter_fuel_consumption_per_10000_distance <= 0.0:
+		return 0.0
+
+	return (
+		distance / 10000.0
+	) * freighter_fuel_consumption_per_10000_distance
+
+func _calculate_freighter_fuel_cost(
+	origin_station: GeneratedStationData,
+	fuel_required: float
+) -> float:
+	if origin_station == null or origin_station.market == null:
+		return 0.0
+	if fuel_required <= 0.0:
+		return 0.0
+
+	var fuel_price: float = float(
+		origin_station.market.current_prices.get("fuel", 0.0)
+	)
+
+	return fuel_required * fuel_price
 
 func _is_resource_id(item_id: String) -> bool:
 	return ResourceLoader.exists(
@@ -613,25 +722,45 @@ func _advance_travelling_record(record: Dictionary, simulated_delta: float) -> v
 	if bool(record.get("is_freighter", false)):
 		_complete_freighter_trade(record, destination_station)
 
-func _complete_freighter_trade(record: Dictionary, destination_station: GeneratedStationData) -> void:
+func _complete_freighter_trade(
+	record: Dictionary,
+	destination_station: GeneratedStationData
+) -> void:
 	var cargo: Dictionary = record.get("cargo", {}) as Dictionary
 	if destination_station == null or destination_station.market == null:
 		return
 
 	var revenue: float = 0.0
+
 	for item_id: String in cargo.keys():
 		var cargo_entry: Dictionary = cargo[item_id]
 		var units: int = int(cargo_entry.get("units", 0))
-		var base_value: float = float(cargo_entry.get("base_value", 0.0))
-		if units <= 0 or base_value <= 0.0:
-			continue
-		var market_price: float = float(destination_station.market.current_prices.get(item_id, base_value))
-		var sale_price: float = market_price * (1.0 + clampf(GalaxyState.INTER_SYSTEM_DISTANCE / 40000.0, 0.0, 1.5))
-		revenue += sale_price * float(units)
-		var current_supply: float = float(destination_station.market.supply.get(item_id, 0.0))
-		destination_station.market.supply[item_id] = current_supply + float(units)
+		var purchase_price: float = float(
+			cargo_entry.get("purchase_price", 0.0)
+		)
 
-	record["credits"] = float(record.get("credits", 0.0)) + revenue
+		if units <= 0 or purchase_price <= 0.0:
+			continue
+
+		var sale_price: float = float(
+			destination_station.market.current_prices.get(
+				item_id,
+				purchase_price
+			)
+		)
+		revenue += sale_price * float(units)
+
+		var current_supply: float = float(
+			destination_station.market.supply.get(item_id, 0.0)
+		)
+		destination_station.market.supply[item_id] = (
+			current_supply + float(units)
+		)
+
+	record["credits"] = (
+		float(record.get("credits", freighter_starting_credits))
+		+ revenue
+	)
 	record["cargo"] = {}
 
 func get_traffic_for_system(system_id: String) -> Array[Dictionary]:
