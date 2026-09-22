@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="ShipModuleData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ships/ship_module_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+id = "power_generator"
+display_name = "Power Generator"
+description = "An upgraded power plant providing additional energy capacity for ship systems."
+module_type = "power"
+price = 2800
+power_capacity_bonus = 50.0
