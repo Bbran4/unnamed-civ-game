@@ -23,7 +23,7 @@ var player_ship: Node2D
 var is_destroying: bool = false
 
 @onready var weapon_muzzle: Marker2D = $WeaponMuzzle
-@onready var visual: Polygon2D = $Visual
+@onready var hull_visual: Polygon2D = $Hull
 @onready var status_bars: Control = $EnemyStatusBars
 
 func _ready() -> void:
@@ -134,9 +134,9 @@ func _update_status_bars() -> void:
 	status_bars.set_values(current_hull, max_hull, current_shield, max_shield)
 
 func _flash_hit() -> void:
-	visual.modulate = Color(1.0, 1.0, 1.0, 1.0)
+	hull_visual.modulate = Color(1.0, 1.0, 1.0, 1.0)
 	var tween: Tween = create_tween()
-	tween.tween_property(visual, "modulate", Color(1.0, 0.3, 0.25, 1.0), 0.08)
+	tween.tween_property(hull_visual, "modulate", Color(0.72, 0.12, 0.1, 1.0), 0.08)
 
 func _destroy() -> void:
 	if salvage_scene != null:
