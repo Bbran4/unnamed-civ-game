@@ -27,9 +27,11 @@ const DEFAULT_STATION_COUNT: int = 5
 const INTER_SYSTEM_DISTANCE: float = 90000.0
 const INTER_SYSTEM_FUEL_COST: float = 60.0
 const INTER_SYSTEM_TRANSIT_TIME: float = 45.0
+const INTER_SYSTEM_DISTANCE_PRICE_SCALE: float = 40000.0
 
 var _systems: Dictionary = {}
 var _pending_shipments: Array[Dictionary] = []
+var inter_system_trade_profit: float = 0.0
 
 func _process(delta: float) -> void:
 	if _pending_shipments.is_empty():
@@ -94,10 +96,18 @@ func queue_shipment(
 		"remaining_time": INTER_SYSTEM_TRANSIT_TIME
 	})
 
-func _deliver_shipment(shipment: Dictionary) -> void:
-	var destination_system: GeneratedSystemData = get_or_create_system(
-		String(shipment.get("destination_system_id", ""))
+	print(
+		"Inter-system freighter departed for %s / %s with %d cargo units."
+		% [
+			destination_system_id,
+			destination_station_id,
+			_calculate_manifest_units(manifest)
+		]
 	)
+
+func _deliver_shipment(shipment: Dictionary) -> void:
+	var destination_system_id: String = String(shipment.get("destination_system_id", ""))
+	var destination_system: GeneratedSystemData = get_or_create_system(destination_system_id)
 	var destination_station_id: String = String(shipment.get("destination_station_id", ""))
 	var destination_station: GeneratedStationData = null
 
@@ -111,19 +121,39 @@ func _deliver_shipment(shipment: Dictionary) -> void:
 
 	var manifest: Dictionary = shipment.get("manifest", {})
 	var market: Market = Market.new()
+	var sale_revenue: float = 0.0
+	var purchase_cost: float = 0.0
+	var cargo_units: int = 0
 
+	# Sell at the destination price before the arriving cargo changes supply.
 	for item_id: String in manifest.keys():
 		var cargo_entry: Dictionary = manifest[item_id]
 		var units: int = int(cargo_entry.get("units", 0))
 		if units <= 0:
 			continue
 
-		var current_supply: float = float(destination_station.market.supply.get(item_id, 0.0))
-		destination_station.market.supply[item_id] = current_supply + float(units)
+		cargo_units += units
+
+		var purchase_price: float = float(cargo_entry.get("purchase_price", 0.0))
+		purchase_cost += purchase_price * float(units)
 
 		var base_value: float = float(cargo_entry.get("base_value", 0.0))
 		if base_value <= 0.0:
 			continue
+
+		var market_price: float = float(
+			destination_station.market.current_prices.get(item_id, base_value)
+		)
+		var distance_multiplier: float = 1.0 + clampf(
+			INTER_SYSTEM_DISTANCE / INTER_SYSTEM_DISTANCE_PRICE_SCALE,
+			0.0,
+			1.5
+		)
+		var sale_price: float = market_price * distance_multiplier
+		sale_revenue += sale_price * float(units)
+
+		var current_supply: float = float(destination_station.market.supply.get(item_id, 0.0))
+		destination_station.market.supply[item_id] = current_supply + float(units)
 
 		var demand: float = float(destination_station.market.demand.get(item_id, 0.0))
 		var is_producer: bool = _station_exports_item(
@@ -138,6 +168,30 @@ func _deliver_shipment(shipment: Dictionary) -> void:
 			demand,
 			is_producer
 		)
+
+	var trade_profit: float = sale_revenue - purchase_cost
+	inter_system_trade_profit += trade_profit
+
+	print(
+		"Inter-system freighter arrived at %s / %s | Cargo: %d | Sale: %.0f | Cost: %.0f | Profit: %.0f"
+		% [
+			destination_system_id,
+			destination_station_id,
+			cargo_units,
+			sale_revenue,
+			purchase_cost,
+			trade_profit
+		]
+	)
+
+func _calculate_manifest_units(manifest: Dictionary) -> int:
+	var total_units: int = 0
+
+	for item_id: String in manifest.keys():
+		var cargo_entry: Dictionary = manifest[item_id]
+		total_units += int(cargo_entry.get("units", 0))
+
+	return total_units
 
 func _station_exports_item(station: GeneratedStationData, item_id: String, is_resource: bool) -> bool:
 	if station.station_type == null:
