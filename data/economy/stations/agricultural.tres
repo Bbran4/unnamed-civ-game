@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="StationTypeData" load_steps=8 format=3]
+[gd_resource type="Resource" script_class="StationTypeData" load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scripts/economy/station_type_data.gd" id="1_script"]
 [ext_resource type="Resource" path="res://data/economy/goods/food.tres" id="good_food"]
@@ -7,6 +7,8 @@
 [ext_resource type="Resource" path="res://data/economy/goods/fertilizer.tres" id="good_fertilizer"]
 [ext_resource type="Resource" path="res://data/economy/resources/water.tres" id="resource_water"]
 [ext_resource type="Resource" path="res://data/economy/resources/organic_matter.tres" id="resource_organic_matter"]
+[ext_resource type="Resource" path="res://data/economy/recipes/food_processing.tres" id="recipe_food_processing"]
+[ext_resource type="Resource" path="res://data/economy/recipes/fertilizer_production.tres" id="recipe_fertilizer_production"]
 
 [resource]
 script = ExtResource("1_script")
