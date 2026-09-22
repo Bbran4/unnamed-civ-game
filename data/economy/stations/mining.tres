@@ -13,12 +13,12 @@
 script = ExtResource("1_script")
 id = "mining"
 display_name = "Mining Station"
-description = "Extracts raw minerals from nearby worlds and asteroid fields."
+description = "Extracts raw minerals and water from nearby worlds and asteroid fields."
 population_multiplier = 0.6
 industries = Array[String](["Mining"])
 resource_extraction_rate = 40.0
 resource_imports = Array[ResourceData]([ExtResource("resource_water")])
-resource_exports = Array[ResourceData]([ExtResource("resource_iron"), ExtResource("resource_titanium"), ExtResource("resource_rare_earths")])
+resource_exports = Array[ResourceData]([ExtResource("resource_water"), ExtResource("resource_iron"), ExtResource("resource_titanium"), ExtResource("resource_rare_earths")])
 good_imports = Array[GoodData]([ExtResource("good_food"), ExtResource("good_fuel"), ExtResource("good_machinery")])
 good_exports = Array[GoodData]([])
 production_recipes = Array[ProductionRecipeData]([])
