@@ -1,14 +1,16 @@
-[gd_resource type="Resource" script_class="ShipData" load_steps=9 format=3]
+[gd_resource type="Resource" script_class="ShipData" load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scripts/ships/ship_data.gd" id="1_script"]
 [ext_resource type="Resource" path="res://data/ships/bodies/heavy_fighter.tres" id="2_body"]
 [ext_resource type="Resource" path="res://data/ships/wings/heavy_wings.tres" id="3_wings"]
+[ext_resource type="Resource" path="res://data/ships/modules/reinforced_shield_generator.tres" id="8_module"]
 [ext_resource type="Resource" path="res://data/ships/tails/heavy_tail.tres" id="4_tail"]
 [ext_resource type="Resource" path="res://data/ships/weapons/authority_laser.tres" id="5_weapon"]
 [ext_resource type="Resource" path="res://data/ships/weapons/plasma_cannon.tres" id="6_weapon"]
 [ext_resource type="Resource" path="res://data/ships/weapons/standard_missile.tres" id="7_weapon"]
 
 [resource]
+modules = [ExtResource("8_module")]
 weapons = [ExtResource("5_weapon"), ExtResource("5_weapon"), ExtResource("6_weapon"), ExtResource("7_weapon")]
 script = ExtResource("1_script")
 id = "authority_enforcer"
@@ -20,5 +22,4 @@ configuration_type = "standard"
 body = ExtResource("2_body")
 wings = ExtResource("3_wings")
 tail = ExtResource("4_tail")
-shield_capacity = 180
 shield_regeneration = 6
