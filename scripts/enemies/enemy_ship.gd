@@ -83,6 +83,7 @@ func _apply_ship_data() -> void:
 	armor = float(ship_data.get_total_armor())
 	move_speed = ship_data.get_max_speed() * 0.5
 	acceleration = ship_data.get_acceleration()
+	shield_regen_rate = ship_data.shield_regeneration if max_shield > 0.0 else 0.0
 
 func _update_status_bar_transform() -> void:
 	status_bars.global_position = global_position + Vector2(0.0, -55.0)
