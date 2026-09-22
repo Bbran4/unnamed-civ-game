@@ -1,146 +1,225 @@
 class_name Market
 extends RefCounted
 
-const FUEL_GOOD_PATH: String = "res://data/economy/goods/fuel.tres"
-const PRODUCER_PRICE_MULTIPLIER: float = 0.65
-const DEFAULT_FUEL_SUPPLY: float = 100.0
+const RESOURCE_PATHS: Array[String] = [
+	"res://data/economy/resources/carbon.tres",
+	"res://data/economy/resources/copper.tres",
+	"res://data/economy/resources/crystals.tres",
+	"res://data/economy/resources/helium.tres",
+	"res://data/economy/resources/hydrogen.tres",
+	"res://data/economy/resources/iron.tres",
+	"res://data/economy/resources/organic_matter.tres",
+	"res://data/economy/resources/rare_earths.tres",
+	"res://data/economy/resources/silicates.tres",
+	"res://data/economy/resources/titanium.tres",
+	"res://data/economy/resources/uranium.tres",
+	"res://data/economy/resources/water.tres"
+]
+
+const GOOD_PATHS: Array[String] = [
+	"res://data/economy/goods/advanced_components.tres",
+	"res://data/economy/goods/construction_materials.tres",
+	"res://data/economy/goods/electronics.tres",
+	"res://data/economy/goods/fertilizer.tres",
+	"res://data/economy/goods/food.tres",
+	"res://data/economy/goods/fuel.tres",
+	"res://data/economy/goods/machinery.tres",
+	"res://data/economy/goods/medical_supplies.tres",
+	"res://data/economy/goods/ship_components.tres",
+	"res://data/economy/goods/steel.tres"
+]
+
+const INITIAL_STOCK_SECONDS: float = 60.0
+const PRICE_TARGET_SECONDS: float = 600.0
 
 func build_market(planet: GeneratedPlanetData, station: GeneratedStationData) -> MarketData:
 	var market_data: MarketData = MarketData.new()
+	var resources: Array[ResourceData] = _load_resources()
+	var goods: Array[GoodData] = _load_goods()
 
-	for resource_data: ResourceData in station.station_type.resource_imports:
-		var abundance: float = float(planet.resource_abundance.get(resource_data.id, 0.0))
-		var starting_supply: float = abundance * 100.0
-		market_data.supply[resource_data.id] = starting_supply
-		market_data.demand[resource_data.id] = calculate_resource_demand(resource_data, station.population)
-		market_data.current_prices[resource_data.id] = calculate_price(
-			resource_data.base_value,
-			starting_supply,
-			float(market_data.demand[resource_data.id]),
-			false
-		)
+	for resource_data: ResourceData in resources:
+		if resource_data == null:
+			continue
+		_register_item(market_data, resource_data.id, resource_data.base_value)
 
-	for resource_data: ResourceData in station.station_type.resource_exports:
-		var abundance: float = float(planet.resource_abundance.get(resource_data.id, 0.0))
-		var starting_supply: float = abundance * 500.0
-		market_data.supply[resource_data.id] = starting_supply
-		market_data.demand[resource_data.id] = calculate_resource_demand(resource_data, station.population)
-		market_data.current_prices[resource_data.id] = calculate_price(
-			resource_data.base_value,
-			starting_supply,
-			float(market_data.demand[resource_data.id]),
-			true
-		)
+	for good_data: GoodData in goods:
+		if good_data == null:
+			continue
+		_register_item(market_data, good_data.id, good_data.base_value)
 
-	for good_data: GoodData in station.station_type.good_imports:
-		var starting_supply: float = 50.0
-		market_data.supply[good_data.id] = starting_supply
-		market_data.demand[good_data.id] = calculate_good_demand(good_data, station.population)
-		market_data.current_prices[good_data.id] = calculate_price(
-			good_data.base_value,
-			starting_supply,
-			float(market_data.demand[good_data.id]),
-			false
-		)
+	_initialize_extraction_supply(market_data, planet, station)
+	_initialize_operational_demand(market_data, station)
+	_initialize_production_demand(market_data, station)
 
-	for good_data: GoodData in station.station_type.good_exports:
-		var starting_supply: float = 150.0
-		market_data.supply[good_data.id] = starting_supply
-		market_data.demand[good_data.id] = calculate_good_demand(good_data, station.population)
-		market_data.current_prices[good_data.id] = calculate_price(
-			good_data.base_value,
-			starting_supply,
-			float(market_data.demand[good_data.id]),
-			true
-		)
+	for item_id: String in market_data.supply.keys():
+		var base_value: float = float(market_data.base_values.get(item_id, 1.0))
+		var supply: float = float(market_data.supply[item_id])
+		var demand: float = float(market_data.demand[item_id])
+		market_data.current_prices[item_id] = calculate_price(base_value, supply, demand)
 
-	_ensure_fuel_market(market_data, station)
 	return market_data
 
 func calculate_price(
 	base_value: float,
 	supply: float,
-	demand: float,
-	is_producer: bool = false
+	demand_per_second: float
 ) -> float:
-	var safe_supply: float = maxf(supply, 1.0)
-	var pressure: float = demand / safe_supply
-	var price_multiplier: float = clampf(0.5 + pressure * 0.5, 0.25, 4.0)
+	var safe_base_value: float = maxf(base_value, 0.01)
+	var target_stock: float = maxf(demand_per_second * PRICE_TARGET_SECONDS, 1.0)
+	var safe_supply: float = maxf(supply, 0.01)
+	var pressure: float = target_stock / safe_supply
+	var price_multiplier: float = clampf(0.5 + (pressure * 0.5), 0.25, 4.0)
+	return safe_base_value * price_multiplier
 
-	if is_producer:
-		price_multiplier *= PRODUCER_PRICE_MULTIPLIER
+func _register_item(
+	market_data: MarketData,
+	item_id: String,
+	base_value: float
+) -> void:
+	if item_id.is_empty():
+		return
 
-	return base_value * price_multiplier
+	market_data.supply[item_id] = 0.0
+	market_data.demand[item_id] = 0.0
+	market_data.operational_demand[item_id] = 0.0
+	market_data.base_values[item_id] = base_value
+	market_data.current_prices[item_id] = base_value
 
-func calculate_resource_demand(resource_data: ResourceData, population: int) -> float:
-	var population_factor: float = maxf(float(population) / 10000.0, 1.0)
+func _initialize_extraction_supply(
+	market_data: MarketData,
+	planet: GeneratedPlanetData,
+	station: GeneratedStationData
+) -> void:
+	if station == null or station.station_type == null or planet == null:
+		return
 
-	match resource_data.category:
-		"Biological":
-			return population_factor * 20.0
-		"Volatile":
-			return population_factor * 12.0
-		"Metal":
-			return population_factor * 10.0
-		"Mineral":
-			return population_factor * 8.0
-		"Rare Mineral":
-			return population_factor * 4.0
-		"Radioactive":
-			return population_factor * 2.0
+	for resource_data: ResourceData in station.station_type.resource_extraction:
+		if resource_data == null:
+			continue
 
-	return population_factor * 5.0
+		var abundance: float = clampf(
+			float(planet.resource_abundance.get(resource_data.id, 0.0)),
+			0.0,
+			1.0
+		)
+		var extraction_rate: float = station.station_type.resource_extraction_rate * abundance
+		var starting_supply: float = extraction_rate * INITIAL_STOCK_SECONDS
 
-func calculate_good_demand(good_data: GoodData, population: int) -> float:
-	var population_factor: float = maxf(float(population) / 10000.0, 1.0)
+		market_data.supply[resource_data.id] = starting_supply
 
-	match good_data.category:
-		"Consumer":
-			return population_factor * 30.0
-		"Fuel":
-			return population_factor * 25.0
-		"Industrial":
-			return population_factor * 15.0
-		"Agricultural":
-			return population_factor * 10.0
-		"Medical":
-			return population_factor * 6.0
-		"Construction":
-			return population_factor * 8.0
-		"Shipbuilding":
-			return population_factor * 5.0
-		"Advanced":
-			return population_factor * 3.0
-
-	return population_factor * 5.0
-
-func _ensure_fuel_market(
+func _initialize_operational_demand(
 	market_data: MarketData,
 	station: GeneratedStationData
 ) -> void:
-	var fuel_resource: Resource = ResourceLoader.load(FUEL_GOOD_PATH)
-	var fuel_good: GoodData = fuel_resource as GoodData
-	if fuel_good == null:
+	if station == null or station.station_type == null:
 		return
 
-	if not market_data.supply.has(fuel_good.id):
-		market_data.supply[fuel_good.id] = DEFAULT_FUEL_SUPPLY
+	for resource_data: ResourceData in station.station_type.resource_imports:
+		if resource_data == null:
+			continue
 
-	if not market_data.demand.has(fuel_good.id):
-		market_data.demand[fuel_good.id] = calculate_good_demand(
-			fuel_good,
+		var demand_rate: float = calculate_operational_demand(
+			resource_data.category,
 			station.population
 		)
+		market_data.operational_demand[resource_data.id] = (
+			float(market_data.operational_demand.get(resource_data.id, 0.0))
+			+ demand_rate
+		)
+		market_data.demand[resource_data.id] = (
+			float(market_data.demand.get(resource_data.id, 0.0))
+			+ demand_rate
+		)
 
-	var is_fuel_exported: bool = false
-	for good_data: GoodData in station.station_type.good_exports:
-		if good_data != null and good_data.id == fuel_good.id:
-			is_fuel_exported = true
-			break
+	for good_data: GoodData in station.station_type.good_imports:
+		if good_data == null:
+			continue
 
-	market_data.current_prices[fuel_good.id] = calculate_price(
-		fuel_good.base_value,
-		float(market_data.supply[fuel_good.id]),
-		float(market_data.demand[fuel_good.id]),
-		is_fuel_exported
-	)
+		var demand_rate: float = calculate_operational_demand(
+			good_data.category,
+			station.population
+		)
+		market_data.operational_demand[good_data.id] = (
+			float(market_data.operational_demand.get(good_data.id, 0.0))
+			+ demand_rate
+		)
+		market_data.demand[good_data.id] = (
+			float(market_data.demand.get(good_data.id, 0.0))
+			+ demand_rate
+		)
+
+func _initialize_production_demand(
+	market_data: MarketData,
+	station: GeneratedStationData
+) -> void:
+	if station == null or station.station_type == null:
+		return
+
+	for recipe: ProductionRecipeData in station.station_type.production_recipes:
+		if recipe == null or recipe.production_time <= 0.0:
+			continue
+
+		for ingredient: RecipeIngredientData in recipe.inputs:
+			if ingredient == null or ingredient.quantity <= 0.0:
+				continue
+
+			var item_id: String = _get_ingredient_id(ingredient)
+			if item_id.is_empty():
+				continue
+
+			var demand_rate: float = ingredient.quantity / recipe.production_time
+			market_data.demand[item_id] = (
+				float(market_data.demand.get(item_id, 0.0))
+				+ demand_rate
+			)
+
+func calculate_operational_demand(
+	category: String,
+	population: int
+) -> float:
+	var population_factor: float = maxf(float(population) / 10000.0, 0.1)
+
+	match category:
+		"Biological", "Agricultural", "Consumer":
+			return population_factor * 0.020
+		"Volatile", "Fuel":
+			return population_factor * 0.010
+		"Metal", "Mineral", "Industrial", "Construction":
+			return population_factor * 0.004
+		"Rare Mineral", "Advanced", "Shipbuilding":
+			return population_factor * 0.001
+		"Radioactive":
+			return population_factor * 0.0005
+		"Medical":
+			return population_factor * 0.002
+
+	return population_factor * 0.002
+
+func _get_ingredient_id(ingredient: RecipeIngredientData) -> String:
+	if ingredient.resource != null:
+		return ingredient.resource.id
+	if ingredient.good != null:
+		return ingredient.good.id
+	return ""
+
+func _load_resources() -> Array[ResourceData]:
+	var resources: Array[ResourceData] = []
+
+	for resource_path: String in RESOURCE_PATHS:
+		var loaded_resource: Resource = ResourceLoader.load(resource_path)
+		var resource_data: ResourceData = loaded_resource as ResourceData
+		if resource_data != null:
+			resources.append(resource_data)
+
+	return resources
+
+func _load_goods() -> Array[GoodData]:
+	var goods: Array[GoodData] = []
+
+	for good_path: String in GOOD_PATHS:
+		var loaded_resource: Resource = ResourceLoader.load(good_path)
+		var good_data: GoodData = loaded_resource as GoodData
+		if good_data != null:
+			goods.append(good_data)
+
+	return goods
