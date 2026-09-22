@@ -75,8 +75,9 @@ An alternate mouse-aim control style exists for testing.
 ### Initial Ship Systems
 
 - [x] Hull
-- [x] Shields
-- [x] Shield regeneration
+- [x] Modular shields
+- [x] Shield regeneration when a shield module is installed
+- [x] Shield HUD hidden when no shield module is installed
 - [x] Acceleration
 - [x] Maximum speed
 - [x] Reverse movement
@@ -152,7 +153,7 @@ The first procedural test system targets:
 
 - [x] **5 planets** per generated test system
 - [x] **3 stations** per generated test system
-- [x] **5 factions**
+- [x] **7 factions**
 - [x] Multiple planet types
 - [x] Raw resources
 - [x] Processed goods
@@ -231,6 +232,81 @@ Gravity is intentionally part of the world data because eventually planetary env
 For example, a large gas giant should not behave like a small barren moon.
 
 ---
+
+
+---
+
+# Ships and Equipment
+
+Ships are split into ship templates and player-owned ship instances.
+
+A `ShipData` resource is a catalogue/template definition. It describes the fixed architecture of a standard ship and is not modified by player equipment changes.
+
+An `OwnedShipData` resource represents the actual ship the player owns. It stores installed equipment and persistent ship state.
+
+```text
+Ship Template
+     │
+     ▼
+Owned Ship
+├── Fixed Body
+├── Fixed Wings
+├── Fixed Tail
+├── Installed Weapons
+├── Installed Modules
+├── Cargo
+├── Current Hull
+└── Current Shield
+```
+
+### Ship Construction
+
+Standard ships are assembled from three fixed structural parts:
+
+- **Body** determines hull points, armour and module slots.
+- **Wings** determine weapon mounts and cargo capacity.
+- **Tail** determines speed, acceleration and boost performance.
+
+The player can customize equipment without modifying the underlying template.
+
+### Ship Modules
+
+Modules occupy slots provided by the ship body.
+
+Current modules include:
+
+- Basic Shield Generator
+- Standard Shield Generator
+- Reinforced Shield Generator
+- Reinforced Armour
+- Cargo Expansion
+- Engine Booster
+- Power Generator
+- Scanner
+
+Shield capacity is entirely module-based. A ship with no shield generator has zero shield capacity, and its shield bar is hidden.
+
+### Ship Weapons
+
+Ships support up to four weapon mounts depending on their wings.
+
+Current weapon families include:
+
+- Civilian Laser
+- Pirate Laser
+- Authority Laser
+- Pulse Laser
+- Beam Laser
+- Plasma Cannon
+- Autocannon
+- Heavy Cannon
+- Railgun
+- Scatter Cannon
+- Micro Missile Rack
+- Standard Missile
+- Heavy Torpedo
+
+Standard ship templates have predefined starting loadouts, while owned ships are the player's customizable equipment state.
 
 # Resources
 
@@ -415,6 +491,8 @@ Current factions:
 - Helios Mining Consortium
 - Orion Trade League
 - Independent
+- Sol System Authority (law enforcement)
+- Red Knife Syndicate (bandits)
 
 Factions can influence:
 
@@ -742,7 +820,38 @@ A player should be able to discover a price difference between two stations, tra
 
 ---
 
-## Milestone 5 - Missions and Rewards
+
+---
+
+## Milestone 5 - Ship Equipment and Progression
+
+**Status: IN PROGRESS**
+
+- [x] Ship body data
+- [x] Ship wings data
+- [x] Ship tail data
+- [x] Ship module data
+- [x] Ship weapon data
+- [x] Standard ship templates
+- [x] Weapon mount limits
+- [x] Weapon loadouts
+- [x] Player-owned ship data
+- [x] Separate ship templates from owned ship state
+- [x] Modular shield generators
+- [x] Persistent owned ship through scene transitions
+- [ ] Shipyard equipment interface
+- [ ] Install/remove modules from owned ships
+- [ ] Install/remove weapons from owned ships
+- [ ] Weapon tiers
+- [ ] Weapon manufacturers/faction variants
+- [ ] Equipment purchasing
+- [ ] Equipment inventory
+- [ ] Ship buying and selling
+- [ ] Custom body/wings/tail ship construction
+
+The structural parts of a standard ship remain fixed. Custom ships will eventually allow the player to select compatible body, wings and tail parts.
+
+## Milestone 6 - Missions and Rewards
 
 - [ ] Mission data resource
 - [ ] Mission manager
@@ -759,7 +868,7 @@ Missions should use the existing world rather than creating fake mission-only lo
 
 ---
 
-## Milestone 6 - Ship Boarding
+## Milestone 7 - Ship Boarding
 
 - [ ] Boarding requirement
 - [ ] Boarding transition
@@ -773,7 +882,7 @@ Missions should use the existing world rather than creating fake mission-only lo
 
 ---
 
-## Milestone 7 - Expanded Stations
+## Milestone 8 - Expanded Stations
 
 - [ ] Shipyard
 - [ ] Trade market
@@ -785,7 +894,7 @@ Missions should use the existing world rather than creating fake mission-only lo
 
 ---
 
-## Milestone 8 - Multiple Systems
+## Milestone 9 - Multiple Systems
 
 **Status: IN PROGRESS**
 
@@ -799,7 +908,7 @@ Missions should use the existing world rather than creating fake mission-only lo
 
 ---
 
-## Milestone 9 - Deeper RPG Systems
+## Milestone 10 - Deeper RPG Systems
 
 - [ ] Character equipment
 - [ ] On-foot weapons
@@ -813,7 +922,7 @@ Missions should use the existing world rather than creating fake mission-only lo
 
 ---
 
-## Milestone 10 - Polish
+## Milestone 11 - Polish
 
 - [ ] Balance ships
 - [ ] Balance weapons
@@ -861,9 +970,9 @@ If not, improve the systems that already exist before adding more content.
 
 # Current Status
 
-**Current Stage: Milestone 3 - Procedural World Foundation**
+**Current Stage: Milestones 4 and 5 - Living Economy and Ship Equipment**
 
-Milestones 0, 1 and 2 are complete.
+Milestones 0, 1, 2 and 3 are complete. Milestones 4 and 5 are currently in progress.
 
 The project now has the first layer of the world simulation:
 
@@ -895,12 +1004,13 @@ Prices
 
 ### Immediate Next Steps
 
-1. Simulate production and consumption.
-2. Let supply and demand change over time.
-3. Give the player real cargo trading.
-4. Connect player trading to the economy.
-5. Build station services around the working economy.
-6. Only then start building missions on top of the simulation.
+1. Complete production and consumption simulation.
+2. Connect supply and demand changes to the economy.
+3. Implement real player cargo trading.
+4. Build the ship equipment/shipyard fitting flow around `OwnedShipData`.
+5. Add weapon tiers and meaningful equipment progression.
+6. Connect equipment purchases to the economy.
+7. Build missions on top of the working world simulation.
 
 ---
 
