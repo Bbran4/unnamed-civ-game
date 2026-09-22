@@ -5,6 +5,7 @@ func _ready() -> void:
 		if not SaveManager.load_game():
 			push_error("Existing save could not be loaded.")
 			return
+		SaveManager.save_game()
 	else:
 		WorldState.new_world(randi())
 		SaveManager.save_game()
