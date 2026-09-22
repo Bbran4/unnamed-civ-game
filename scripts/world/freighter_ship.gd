@@ -484,27 +484,19 @@ func _station_imports_resource(
 	station: GeneratedStationData,
 	resource_id: String
 ) -> bool:
-	if station.station_type == null:
+	if station == null or station.market == null:
 		return false
 
-	for resource_data: ResourceData in station.station_type.resource_imports:
-		if resource_data != null and resource_data.id == resource_id:
-			return true
-
-	return false
+	return station.market.demand.has(resource_id)
 
 func _station_imports_good(
 	station: GeneratedStationData,
 	good_id: String
 ) -> bool:
-	if station.station_type == null:
+	if station == null or station.market == null:
 		return false
 
-	for good_data: GoodData in station.station_type.good_imports:
-		if good_data != null and good_data.id == good_id:
-			return true
-
-	return false
+	return station.market.demand.has(good_id)
 
 func _enter_docked_state() -> void:
 	travel_state = TravelState.DOCKED
