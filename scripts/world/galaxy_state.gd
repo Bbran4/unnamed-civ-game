@@ -11,6 +11,7 @@ const DEFAULT_STATION_COUNT: int = 5
 const INTER_SYSTEM_DISTANCE: float = 90000.0
 const INTER_SYSTEM_FUEL_COST: float = 60.0
 const INTER_SYSTEM_TRANSIT_TIME: float = 45.0
+const ORBIT_TIME_SCALE: float = 0.05
 
 var _systems: Dictionary = {}
 
@@ -56,7 +57,7 @@ func get_planet_position(system_id: String, planet_id: String) -> Vector2:
 	for planet: GeneratedPlanetData in system.planets:
 		if planet.id != planet_id:
 			continue
-		var angle: float = get_orbit_angle(system, planet.orbital_angle, planet.orbital_period, orbit_time_scale)
+		var angle: float = get_orbit_angle(system, planet.orbital_angle, planet.orbital_period, ORBIT_TIME_SCALE)
 		return Vector2(cos(angle), sin(angle)) * planet.orbital_distance
 	return Vector2.ZERO
 
@@ -76,7 +77,7 @@ func get_station_position(system_id: String, station_id: String) -> Vector2:
 		if station.id != station_id:
 			continue
 		var planet_position: Vector2 = get_planet_position(system_id, station.planet_id)
-		var station_angle: float = get_orbit_angle(system, station.orbital_angle, station.orbital_period, orbit_time_scale)
+		var station_angle: float = get_orbit_angle(system, station.orbital_angle, station.orbital_period, ORBIT_TIME_SCALE)
 		var station_offset: Vector2 = Vector2(cos(station_angle), sin(station_angle)) * station.orbital_distance
 		return planet_position + station_offset
 	return Vector2.ZERO
