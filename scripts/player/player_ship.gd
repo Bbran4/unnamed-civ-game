@@ -37,7 +37,9 @@ var weapon_ammo: Dictionary = {}
 @onready var status_bars: Control = $PlayerStatusBars/Bars
 
 func _ready() -> void:
-	owned_ship_data = OwnedShipData.create_from_template(ship_data)
+	if WorldState.current_owned_ship == null or WorldState.current_owned_ship.ship_template == null or WorldState.current_owned_ship.ship_template.id != ship_data.id:
+		WorldState.current_owned_ship = OwnedShipData.create_from_template(ship_data)
+	owned_ship_data = WorldState.current_owned_ship
 	_apply_ship_data()
 	current_hull = owned_ship_data.current_hull
 	current_shield = owned_ship_data.current_shield
