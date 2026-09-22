@@ -303,24 +303,24 @@ func _get_ingredient_id(ingredient: RecipeIngredientData) -> String:
 	return ""
 
 func _refresh_station_demand(station: GeneratedStationData) -> void:
-\tif station == null or station.market == null:
-\t\treturn
+	if station == null or station.market == null:
+		return
 
-\tfor item_id: String in station.market.supply.keys():
-\t\tvar supply: float = float(
-\t\t\tstation.market.supply.get(item_id, 0.0)
-\t\t)
-\t\tvar demand_rate: float = float(
-\t\t\tstation.market.demand_rate.get(item_id, 0.0)
-\t\t)
-\t\tvar target_stock: float = maxf(
-\t\t\tdemand_rate * Market.PRICE_TARGET_SECONDS,
-\t\t\t1.0
-\t\t)
-\t\tstation.market.demand[item_id] = maxf(
-\t\t\ttarget_stock - supply,
-\t\t\t0.0
-\t\t)
+	for item_id: String in station.market.supply.keys():
+		var supply: float = float(
+		station.market.supply.get(item_id, 0.0)
+		)
+		var demand_rate: float = float(
+			station.market.demand_rate.get(item_id, 0.0)
+		)
+		var target_stock: float = maxf(
+			demand_rate * Market.PRICE_TARGET_SECONDS,
+			1.0
+		)
+		station.market.demand[item_id] = maxf(
+			target_stock - supply,
+			0.0
+		)
 
 func _update_station_prices(station: GeneratedStationData) -> void:
 	if station == null or station.market == null:
