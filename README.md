@@ -759,12 +759,20 @@ Milestone 0 is deliberately small. It establishes the foundation needed for the 
 
 ## Milestone 1 - Persistent Procedural World
 
-- [ ] Generate a persistent world map
+**Status: IN PROGRESS**
+
+- [x] Generate a persistent world map
 - [ ] Generate terrain
 - [ ] Generate resources
 - [ ] Generate starting locations
 - [ ] Save generated world seed
 - [ ] Load the same world after restart
+
+### Persistent world map implemented
+
+The first Milestone 1 slice now generates a deterministic 64×64 world map from a world seed and stores the generated terrain data in WorldState. The map is rendered directly from world state, and the generated data is included in the existing JSON save system.
+
+This deliberately stops before resources, civilization starting locations and the broader terrain/resource systems are implemented. Those remain separate Milestone 1 tasks.
 
 ## Milestone 2 - First Civilization
 
