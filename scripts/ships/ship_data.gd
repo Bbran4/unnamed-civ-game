@@ -10,7 +10,7 @@ extends Resource
 @export var body: ShipBodyData
 @export var wings: ShipWingsData
 @export var tail: ShipTailData
-@export var shield_capacity: int = 100
+@export var shield_capacity: int = 0
 @export var shield_regeneration: float = 5.0
 @export var modules: Array[ShipModuleData] = []
 @export var weapons: Array[ShipWeaponData] = []
