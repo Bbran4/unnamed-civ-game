@@ -221,3 +221,27 @@ func _fire_primary() -> void:
 func take_damage(damage_amount: float, damage_type: String = "energy", shield_multiplier: float = 1.0, hull_multiplier: float = 1.0) -> void:
     shield_regen_remaining = shield_regen_delay
     var remaining_damage: float = damage_amount
+
+func _calculate_hull_damage(incoming_hull_damage: float) -> float:
+    if armor <= 0.0:
+        return incoming_hull_damage
+
+    var armor_constant_value: float = maxf(0.001, armor_constant)
+    var damage_multiplier: float = armor_constant_value / (armor_constant_value + armor)
+    return incoming_hull_damage * damage_multiplier
+
+func _shield_regeneration(delta: float) -> void:
+    if shield_regen_remaining > 0.0:
+        shield_regen_remaining = maxf(0.0, shield_regen_remaining - delta)
+        return
+
+    if current_shield >= max_shield:
+        return
+
+    current_shield = minf(max_shield, current_shield + shield_regen_rate * delta)
+    if owned_ship_data != null:
+        owned_ship_data.current_shield = current_shield
+    _update_status_bars()
+
+func _update_status_bars() -> void:
+    status_bars.set_values(current_hull, max_hull, current_shield, max_shield)
