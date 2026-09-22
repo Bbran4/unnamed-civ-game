@@ -54,8 +54,8 @@ func build_market(planet: GeneratedPlanetData, station: GeneratedStationData) ->
 	for item_id: String in market_data.supply.keys():
 		var base_value: float = float(market_data.base_values.get(item_id, 1.0))
 		var supply: float = float(market_data.supply[item_id])
-		var demand: float = float(market_data.demand[item_id])
-		market_data.current_prices[item_id] = calculate_price(base_value, supply, demand)
+		var demand_rate: float = float(market_data.demand_rate[item_id])
+		market_data.current_prices[item_id] = calculate_price(base_value, supply, demand_rate)
 
 	return market_data
 
@@ -81,6 +81,7 @@ func _register_item(
 
 	market_data.supply[item_id] = 0.0
 	market_data.demand[item_id] = 0.0
+	market_data.demand_rate[item_id] = 0.0
 	market_data.operational_demand[item_id] = 0.0
 	market_data.base_values[item_id] = base_value
 	market_data.current_prices[item_id] = base_value
@@ -126,8 +127,8 @@ func _initialize_operational_demand(
 			float(market_data.operational_demand.get(resource_data.id, 0.0))
 			+ demand_rate
 		)
-		market_data.demand[resource_data.id] = (
-			float(market_data.demand.get(resource_data.id, 0.0))
+		market_data.demand_rate[resource_data.id] = (
+			float(market_data.demand_rate.get(resource_data.id, 0.0))
 			+ demand_rate
 		)
 
@@ -143,8 +144,8 @@ func _initialize_operational_demand(
 			float(market_data.operational_demand.get(good_data.id, 0.0))
 			+ demand_rate
 		)
-		market_data.demand[good_data.id] = (
-			float(market_data.demand.get(good_data.id, 0.0))
+		market_data.demand_rate[good_data.id] = (
+			float(market_data.demand_rate.get(good_data.id, 0.0))
 			+ demand_rate
 		)
 
@@ -168,8 +169,8 @@ func _initialize_production_demand(
 				continue
 
 			var demand_rate: float = ingredient.quantity / recipe.production_time
-			market_data.demand[item_id] = (
-				float(market_data.demand.get(item_id, 0.0))
+			market_data.demand_rate[item_id] = (
+				float(market_data.demand_rate.get(item_id, 0.0))
 				+ demand_rate
 			)
 
