@@ -4,11 +4,11 @@ extends CivilianShip
 @export var ship_data: ShipData
 @export var cargo_capacity: int = 250
 @export var average_cargo_price: float = 50.0
-@export var starting_credits: float = 0.0
+@export var starting_credits: float = 25000.0
 @export var fuel_capacity: float = 100.0
 @export var starting_fuel: float = 100.0
 @export var fuel_consumption_per_10000_distance: float = 5.0
-@export var maximum_units_per_cargo_type: int = 50
+@export var maximum_units_per_cargo_type: int = 100
 @export var distance_price_scale: float = 40000.0
 
 var credits: float = 0.0
@@ -27,7 +27,7 @@ func setup(start_station_id: String) -> void:
 
 	credits = starting_credits
 	if credits <= 0.0:
-		credits = float(cargo_capacity) * average_cargo_price
+		credits = float(cargo_capacity) * average_cargo_price * 2.0
 
 	fuel_units = clampf(starting_fuel, 0.0, fuel_capacity)
 
