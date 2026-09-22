@@ -59,7 +59,7 @@ func _format_market_row(item_id: String, is_demand: bool) -> String:
 	)
 
 	if is_demand:
-		return "%-24s %7.4f /s     %6.0f cr" % [
+		return "%-24s %7.2f needed     %6.0f cr" % [
 			display_name,
 			quantity,
 			price
