@@ -222,6 +222,25 @@ func take_damage(damage_amount: float, damage_type: String = "energy", shield_mu
     shield_regen_remaining = shield_regen_delay
     var remaining_damage: float = damage_amount
 
+    if current_shield > 0.0:
+        var shield_damage: float = minf(current_shield, remaining_damage * shield_multiplier)
+        current_shield -= shield_damage
+        remaining_damage -= shield_damage
+        if owned_ship_data != null:
+            owned_ship_data.current_shield = current_shield
+
+    if remaining_damage > 0.0:
+        var hull_damage: float = _calculate_hull_damage(remaining_damage * hull_multiplier)
+        current_hull = maxf(0.0, current_hull - hull_damage)
+        if owned_ship_data != null:
+            owned_ship_data.current_hull = current_hull
+
+    _update_status_bars()
+    camera.shake(0.06, 2.0)
+
+    if current_hull <= 0.0:
+        queue_free()
+
 func _calculate_hull_damage(incoming_hull_damage: float) -> float:
     if armor <= 0.0:
         return incoming_hull_damage
