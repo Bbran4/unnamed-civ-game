@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ShipWeaponData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ships/ship_weapon_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+id = "authority_laser"
+display_name = "Authority Laser"
+description = "A regulated service laser issued to Sol System Authority patrol craft."
+weapon_type = "energy"
+price = 2600
+damage = 12.0
+fire_rate = 5.0
+projectile_speed = 1500.0
+range = 3000.0
