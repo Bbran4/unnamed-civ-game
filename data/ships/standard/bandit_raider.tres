@@ -1,13 +1,15 @@
-[gd_resource type="Resource" script_class="ShipData" load_steps=7 format=3]
+[gd_resource type="Resource" script_class="ShipData" load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/ships/ship_data.gd" id="1_script"]
 [ext_resource type="Resource" path="res://data/ships/bodies/light_fighter.tres" id="2_body"]
 [ext_resource type="Resource" path="res://data/ships/wings/standard_wings.tres" id="3_wings"]
+[ext_resource type="Resource" path="res://data/ships/modules/basic_shield_generator.tres" id="8_module"]
 [ext_resource type="Resource" path="res://data/ships/tails/interceptor_tail.tres" id="4_tail"]
 [ext_resource type="Resource" path="res://data/ships/weapons/pirate_laser.tres" id="5_weapon"]
 [ext_resource type="Resource" path="res://data/ships/weapons/micro_missile.tres" id="6_weapon"]
 
 [resource]
+modules = [ExtResource("8_module")]
 weapons = [ExtResource("5_weapon"), ExtResource("6_weapon")]
 script = ExtResource("1_script")
 id = "bandit_raider"
@@ -19,5 +21,4 @@ configuration_type = "standard"
 body = ExtResource("2_body")
 wings = ExtResource("3_wings")
 tail = ExtResource("4_tail")
-shield_capacity = 70
 shield_regeneration = 3
