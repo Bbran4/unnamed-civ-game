@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="ShipModuleData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ships/ship_module_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+id = "standard_shield_generator"
+display_name = "Standard Shield Generator"
+description = "A dependable shield generator used by patrol, transport, and military vessels."
+module_type = "shield"
+price = 4200
+shield_capacity_bonus = 80
