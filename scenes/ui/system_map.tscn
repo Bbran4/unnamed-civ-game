@@ -126,6 +126,31 @@ color = Color(0.9, 0.8, 0.25, 1)
 polygon = PackedVector2Array(0, -5, 5, 0, 0, 5, -5, 0)
 color = Color(0.9, 0.8, 0.25, 1)
 
+
+[node name="Civilian1" type="Polygon2D" parent="Panel/MapArea/OrbitMap"]
+polygon = PackedVector2Array(0, -4, 6, 4, -6, 4)
+color = Color(0.55, 0.9, 1, 1)
+
+[node name="Civilian2" type="Polygon2D" parent="Panel/MapArea/OrbitMap"]
+polygon = PackedVector2Array(0, -4, 6, 4, -6, 4)
+color = Color(0.55, 0.9, 1, 1)
+
+[node name="Civilian3" type="Polygon2D" parent="Panel/MapArea/OrbitMap"]
+polygon = PackedVector2Array(0, -4, 6, 4, -6, 4)
+color = Color(0.55, 0.9, 1, 1)
+
+[node name="Civilian4" type="Polygon2D" parent="Panel/MapArea/OrbitMap"]
+polygon = PackedVector2Array(0, -4, 6, 4, -6, 4)
+color = Color(0.55, 0.9, 1, 1)
+
+[node name="Freighter1" type="Polygon2D" parent="Panel/MapArea/OrbitMap"]
+polygon = PackedVector2Array(-6, -4, 6, -4, 7, 0, 6, 4, -6, 4, -7, 0)
+color = Color(1, 0.75, 0.35, 1)
+
+[node name="Freighter2" type="Polygon2D" parent="Panel/MapArea/OrbitMap"]
+polygon = PackedVector2Array(-6, -4, 6, -4, 7, 0, 6, 4, -6, 4, -7, 0)
+color = Color(1, 0.75, 0.35, 1)
+
 [node name="StationLabel1" type="Label" parent="Panel/MapArea/OrbitMap"]
 text = "Station"
 
