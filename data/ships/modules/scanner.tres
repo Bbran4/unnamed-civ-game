@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ShipModuleData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ships/ship_module_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+id = "scanner"
+display_name = "Long Range Scanner"
+description = "A sensitive scanner array for detecting ships and objects at greater distances."
+module_type = "scanner"
+price = 2400
