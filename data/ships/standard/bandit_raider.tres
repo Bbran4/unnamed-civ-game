@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="ShipData" load_steps=8 format=3]
+[gd_resource type="Resource" script_class="ShipData" load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/ships/ship_data.gd" id="1_script"]
 [ext_resource type="Resource" path="res://data/ships/bodies/light_fighter.tres" id="2_body"]
@@ -6,7 +6,6 @@
 [ext_resource type="Resource" path="res://data/ships/tails/interceptor_tail.tres" id="4_tail"]
 [ext_resource type="Resource" path="res://data/ships/weapons/pirate_laser.tres" id="5_weapon"]
 [ext_resource type="Resource" path="res://data/ships/weapons/micro_missile.tres" id="6_weapon"]
-[ext_resource type="Resource" path="res://data/ships/weapons/scatter_cannon.tres" id="7_weapon"]
 
 [resource]
 weapons = [ExtResource("5_weapon"), ExtResource("6_weapon")]
