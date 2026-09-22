@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="ShipData" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/ships/ship_data.gd" id="1_script"]
+[ext_resource type="Resource" path="res://data/ships/bodies/light_fighter.tres" id="2_body"]
+[ext_resource type="Resource" path="res://data/ships/wings/light_wings.tres" id="3_wings"]
+[ext_resource type="Resource" path="res://data/ships/tails/standard_tail.tres" id="4_tail"]
+
+[resource]
+script = ExtResource("1_script")
+id = "player_starflier"
+display_name = "Starflier"
+description = "A compact civilian light fighter used for courier work and local travel."
+faction_id = "civilian"
+ship_class = "light_fighter"
+configuration_type = "standard"
+body = ExtResource("2_body")
+wings = ExtResource("3_wings")
+tail = ExtResource("4_tail")
+shield_capacity = 80
+shield_regeneration = 4.0
