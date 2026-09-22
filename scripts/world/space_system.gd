@@ -165,7 +165,8 @@ func update_orbits() -> void:
 		var planet_angle: float = GalaxyState.get_orbit_angle(
 			generated_system,
 			planet.orbital_angle,
-			planet.orbital_period
+			planet.orbital_period,
+			orbit_time_scale
 		)
 		var planet_position: Vector2 = Vector2(cos(planet_angle), sin(planet_angle)) * planet.orbital_distance
 		planet_instance.position = planet_position
