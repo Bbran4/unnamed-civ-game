@@ -24,4 +24,6 @@ func _process(_delta: float) -> void:
 		prompt.visible = player_in_range
 
 	if player_in_range and Input.is_action_just_pressed("interact"):
-		prompt.text = "Station Market: Shop system coming soon."
+		var market_panel: CanvasLayer = get_parent().get_node_or_null("StationMarketPanel") as CanvasLayer
+		if market_panel != null and market_panel.has_method("open_market"):
+			market_panel.call("open_market")
