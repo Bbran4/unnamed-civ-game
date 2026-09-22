@@ -26,5 +26,6 @@ func set_values(
 func _update_bars() -> void:
 	health_bar.max_value = max_health
 	health_bar.value = current_health
+	shield_bar.visible = max_shield > 0.0
 	shield_bar.max_value = max_shield
 	shield_bar.value = current_shield
