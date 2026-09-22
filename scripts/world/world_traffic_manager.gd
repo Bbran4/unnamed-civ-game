@@ -2,8 +2,10 @@ class_name WorldTrafficManager
 extends Node2D
 
 const CIVILIAN_SCENE: PackedScene = preload("res://scenes/world/civilian_ship.tscn")
+const FREIGHTER_SCENE: PackedScene = preload("res://scenes/world/freighter_ship.tscn")
 
-@export var civilian_ship_count: int = 6
+@export var civilian_ship_count: int = 4
+@export var freighter_ship_count: int = 2
 
 var space_system: SpaceSystem
 var civilian_ships: Array[CivilianShip] = []
@@ -20,12 +22,18 @@ func _process(_delta: float) -> void:
     if space_system == null:
         return
 
-    while civilian_ships.size() < civilian_ship_count:
+    while _count_civilian_ships() < civilian_ship_count:
         _spawn_civilian()
+
+    while _count_freighter_ships() < freighter_ship_count:
+        _spawn_freighter()
 
 func _spawn_initial_traffic() -> void:
     for _index: int in range(civilian_ship_count):
         _spawn_civilian()
+
+    for _index: int in range(freighter_ship_count):
+        _spawn_freighter()
 
 func _spawn_civilian() -> void:
     if space_system == null:
@@ -54,3 +62,36 @@ func _remove_invalid_ships() -> void:
             valid_ships.append(civilian_ship)
 
     civilian_ships = valid_ships
+
+func _spawn_freighter() -> void:
+    if space_system == null:
+        return
+
+    var stations: Array[GeneratedStationData] = space_system.generated_system.stations
+    if stations.is_empty():
+        return
+
+    var station_index: int = randi_range(0, stations.size() - 1)
+    var station: GeneratedStationData = stations[station_index]
+    var freighter_ship: FreighterShip = FREIGHTER_SCENE.instantiate() as FreighterShip
+    if freighter_ship == null:
+        return
+
+    add_child(freighter_ship)
+    freighter_ship.global_position = space_system.get_station_position(station.id)
+    freighter_ship.setup(station.id)
+    civilian_ships.append(freighter_ship)
+
+func _count_civilian_ships() -> int:
+    var count: int = 0
+    for ship: CivilianShip in civilian_ships:
+        if is_instance_valid(ship) and ship is not FreighterShip:
+            count += 1
+    return count
+
+func _count_freighter_ships() -> int:
+    var count: int = 0
+    for ship: CivilianShip in civilian_ships:
+        if is_instance_valid(ship) and ship is FreighterShip:
+            count += 1
+    return count
