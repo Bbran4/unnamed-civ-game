@@ -202,13 +202,14 @@ func update_map() -> void:
 		var planet: GeneratedPlanetData = generated_system.planets[planet_index]
 		var position_scale: float = MAP_RADIUS / MAX_ORBIT_DISTANCE
 		var map_position: Vector2 = MAP_CENTER + (
-			Vector2(cos(
-				planet.orbital_angle
-				+ ((TAU / maxf(planet.orbital_period, 1.0)) * space_system.generated_system.simulation_time)
-			), sin(
-				planet.orbital_angle
-				+ ((TAU / maxf(planet.orbital_period, 1.0)) * space_system.generated_system.simulation_time)
-			)) * planet.orbital_distance * position_scale
+			Vector2.from_angle(
+				GalaxyState.get_orbit_angle(
+					generated_system,
+					planet.orbital_angle,
+					planet.orbital_period,
+					space_system.orbit_time_scale
+				)
+			) * planet.orbital_distance * position_scale
 		)
 
 		marker.position = map_position
