@@ -14,6 +14,8 @@ enum ControlStyle {
 @export var boost_acceleration: float = 850.0
 @export var max_hull: float = 100.0
 @export var max_shield: float = 50.0
+@export var armor: float = 0.0
+@export var armor_constant: float = 100.0
 @export var shield_regen_rate: float = 15.0
 @export var shield_regen_delay: float = 2.0
 @export var primary_fire_cooldown: float = 0.18
@@ -157,13 +159,22 @@ func take_damage(damage_amount: float) -> void:
         remaining_damage -= shield_damage
 
     if remaining_damage > 0.0:
-        current_hull = maxf(0.0, current_hull - remaining_damage)
+        var hull_damage: float = _calculate_hull_damage(remaining_damage)
+        current_hull = maxf(0.0, current_hull - hull_damage)
 
     _update_status_bars()
     camera.shake(0.06, 2.0)
 
     if current_hull <= 0.0:
         queue_free()
+
+func _calculate_hull_damage(incoming_hull_damage: float) -> float:
+    if armor <= 0.0:
+        return incoming_hull_damage
+
+    var armor_constant_value: float = maxf(0.001, armor_constant)
+    var damage_multiplier: float = armor_constant_value / (armor_constant_value + armor)
+    return incoming_hull_damage * damage_multiplier
 
 func _shield_regeneration(delta: float) -> void:
     if shield_regen_remaining > 0.0:
