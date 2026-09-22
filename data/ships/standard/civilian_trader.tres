@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="ShipData" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/ships/ship_data.gd" id="1_script"]
+[ext_resource type="Resource" path="res://data/ships/bodies/freighter.tres" id="2_body"]
+[ext_resource type="Resource" path="res://data/ships/wings/freighter_wings.tres" id="3_wings"]
+[ext_resource type="Resource" path="res://data/ships/tails/freighter_tail.tres" id="4_tail"]
+
+[resource]
+script = ExtResource("1_script")
+id = "civilian_trader"
+display_name = "Wayfarer"
+description = "A compact commercial freighter built for independent traders."
+faction_id = "civilian"
+ship_class = "freighter"
+configuration_type = "standard"
+body = ExtResource("2_body")
+wings = ExtResource("3_wings")
+tail = ExtResource("4_tail")
+shield_capacity = 140
+shield_regeneration = 3
