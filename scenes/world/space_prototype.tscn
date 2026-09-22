@@ -1,20 +1,20 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene format=3 uid="uid://bbpi6vi435xup"]
 
-[ext_resource type="Script" path="res://scripts/world/space_system.gd" id="1_system"]
-[ext_resource type="PackedScene" path="res://scenes/player/player_ship.tscn" id="2_player"]
-[ext_resource type="PackedScene" path="res://scenes/enemies/enemy_ship.tscn" id="3_enemy"]
+[ext_resource type="Script" uid="uid://dtvlr7etpo3y7" path="res://scripts/world/space_system.gd" id="1_system"]
+[ext_resource type="PackedScene" uid="uid://qysded2rilet" path="res://scenes/player/player_ship.tscn" id="2_player"]
+[ext_resource type="PackedScene" uid="uid://cbq86tt2fgajw" path="res://scenes/enemies/enemy_ship.tscn" id="3_enemy"]
 
-[node name="SpacePrototype" type="Node2D"]
+[node name="SpacePrototype" type="Node2D" unique_id=1403017983]
 script = ExtResource("1_system")
 
-[node name="Background" type="Polygon2D" parent="."]
+[node name="Background" type="Polygon2D" parent="." unique_id=1160559130]
 color = Color(0.008, 0.012, 0.025, 1)
 polygon = PackedVector2Array(-2400, -1600, 2400, -1600, 2400, 1600, -2400, 1600)
 
-[node name="GeneratedObjects" type="Node2D" parent="."]
+[node name="GeneratedObjects" type="Node2D" parent="." unique_id=1353783121]
 
-[node name="PlayerShip" parent="." instance=ExtResource("2_player")]
+[node name="PlayerShip" parent="." unique_id=388088113 instance=ExtResource("2_player")]
 position = Vector2(850, 120)
 
-[node name="EnemyShip" parent="." instance=ExtResource("3_enemy")]
+[node name="EnemyShip" parent="." unique_id=523013378 instance=ExtResource("3_enemy")]
 position = Vector2(350, 0)
