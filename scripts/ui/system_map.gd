@@ -20,7 +20,7 @@ const SYSTEM_SCENES: Dictionary = {
 
 const MAP_CENTER: Vector2 = Vector2(350.0, 270.0)
 const MAP_RADIUS: float = 230.0
-const MAX_ORBIT_DISTANCE: float = 15400.0
+const MAX_ORBIT_DISTANCE: float = 52000.0
 const MIN_MAP_ZOOM: float = 0.5
 const MAX_MAP_ZOOM: float = 6.0
 const MAP_ZOOM_STEP: float = 0.3
@@ -219,12 +219,7 @@ func update_map() -> void:
 
     var player_ship: Node2D = get_tree().get_first_node_in_group("player_ship") as Node2D
     if player_ship != null:
-        var player_position_scale: float = MAP_RADIUS / MAX_ORBIT_DISTANCE
-        var player_map_position: Vector2 = MAP_CENTER + (player_ship.global_position * player_position_scale)
-        var player_offset: Vector2 = player_map_position - MAP_CENTER
-        if player_offset.length() > MAP_RADIUS - 10.0:
-            player_map_position = MAP_CENTER + player_offset.normalized() * (MAP_RADIUS - 10.0)
-
+        var player_map_position: Vector2 = _world_to_map_position(player_ship.global_position)
         player_marker.position = player_map_position
         player_marker.visible = true
         player_label.position = player_map_position + Vector2(10.0, -10.0)
@@ -247,9 +242,7 @@ func update_map() -> void:
 
         var station: GeneratedStationData = generated_system.stations[station_index]
         var station_position: Vector2 = space_system.get_station_position(station.id)
-        var map_position: Vector2 = MAP_CENTER + (
-            station_position * (MAP_RADIUS / MAX_ORBIT_DISTANCE)
-        )
+        var map_position: Vector2 = _world_to_map_position(station_position)
 
         marker.position = map_position
         marker.visible = true
