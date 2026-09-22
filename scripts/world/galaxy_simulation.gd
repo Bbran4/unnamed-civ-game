@@ -520,13 +520,15 @@ func _calculate_traffic_destination_score(
 	return _calculate_best_trade_profit(
 		origin_station,
 		destination_station,
-		distance
+		distance,
+		distance >= GalaxyState.INTER_SYSTEM_DISTANCE
 	)
 
 func _calculate_best_trade_profit(
 	origin_station: GeneratedStationData,
 	destination_station: GeneratedStationData,
-	distance: float
+	distance: float,
+	is_inter_system: bool
 ) -> float:
 	if origin_station == null or destination_station == null:
 		return -INF
@@ -534,7 +536,11 @@ func _calculate_best_trade_profit(
 		return -INF
 
 	var best_profit: float = -INF
-	var fuel_required: float = _calculate_freighter_fuel_required(distance)
+	var fuel_required: float = (
+		GalaxyState.INTER_SYSTEM_FUEL_COST
+		if is_inter_system
+		else _calculate_freighter_fuel_required(distance)
+	)
 	var fuel_cost: float = _calculate_freighter_fuel_cost(
 		origin_station,
 		fuel_required
