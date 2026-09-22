@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://c2nibcb783twg" path="res://scenes/ships/projectile.tscn" id="2_projectile"]
 [ext_resource type="Script" uid="uid://deu2xafkd4xq3" path="res://scripts/player/player_camera.gd" id="3_camera"]
 [ext_resource type="PackedScene" path="res://scenes/ui/player_status_bars.tscn" id="4_status"]
+[ext_resource type="Resource" path="res://data/ships/player_starflier.tres" id="5_ship"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape_player"]
 radius = 12.0
@@ -12,26 +13,38 @@ height = 38.0
 [node name="PlayerShip" type="CharacterBody2D" unique_id=525073808 groups=["player_ship"]]
 collision_mask = 2
 script = ExtResource("1_player")
-boost_acceleration = 650.0
+ship_data = ExtResource("5_ship")
 projectile_scene = ExtResource("2_projectile")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1810472292]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CapsuleShape_player")
 
-[node name="Visual" type="Polygon2D" parent="." unique_id=1099983229]
+[node name="Hull" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(28, 0, 13, -9, -10, -12, -19, -5, -15, 0, -19, 5, -10, 12, 13, 9)
 color = Color(0.25, 0.75, 1, 1)
-polygon = PackedVector2Array(24, 0, -14, -12, -8, 0, -14, 12)
 
-[node name="Core" type="Polygon2D" parent="." unique_id=556469882]
+[node name="LeftWing" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(8, -5, -5, -24, -15, -20, -10, -4)
+color = Color(0.12, 0.45, 0.75, 1)
+
+[node name="RightWing" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(8, 5, -5, 24, -15, 20, -10, 4)
+color = Color(0.12, 0.45, 0.75, 1)
+
+[node name="Cockpit" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(14, 0, 2, -5, -7, -3, -7, 3, 2, 5)
 color = Color(0.8, 0.95, 1, 1)
-polygon = PackedVector2Array(8, 0, -4, -4, -4, 4)
 
-[node name="WeaponMuzzle" type="Marker2D" parent="." unique_id=1705805171]
-position = Vector2(24, 0)
+[node name="Engine" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-15, -5, -25, -2, -25, 2, -15, 5)
+color = Color(0.35, 0.9, 1, 1)
+
+[node name="WeaponMuzzle" type="Marker2D" parent="."]
+position = Vector2(28, 0)
 
 [node name="PlayerStatusBars" parent="." instance=ExtResource("4_status")]
 
-[node name="Camera2D" type="Camera2D" parent="." unique_id=1736432008]
+[node name="Camera2D" type="Camera2D" parent="."]
 position_smoothing_enabled = true
 position_smoothing_speed = 6.0
 script = ExtResource("3_camera")
