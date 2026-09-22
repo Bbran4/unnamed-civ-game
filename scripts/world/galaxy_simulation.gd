@@ -85,7 +85,7 @@ func _print_station_market_report() -> void:
 					station.market.current_prices.get(item_id, 0.0)
 				)
 				market_lines.append(
-					"%s S=%.2f D=%.4f/s P=%.2f"
+					"%s S=%.2f D=%.2f P=%.2f"
 					% [
 						item_id,
 						supply_value,
@@ -301,6 +301,26 @@ func _get_ingredient_id(ingredient: RecipeIngredientData) -> String:
 	if ingredient.good != null:
 		return ingredient.good.id
 	return ""
+
+func _refresh_station_demand(station: GeneratedStationData) -> void:
+\tif station == null or station.market == null:
+\t\treturn
+
+\tfor item_id: String in station.market.supply.keys():
+\t\tvar supply: float = float(
+\t\t\tstation.market.supply.get(item_id, 0.0)
+\t\t)
+\t\tvar demand_rate: float = float(
+\t\t\tstation.market.demand_rate.get(item_id, 0.0)
+\t\t)
+\t\tvar target_stock: float = maxf(
+\t\t\tdemand_rate * Market.PRICE_TARGET_SECONDS,
+\t\t\t1.0
+\t\t)
+\t\tstation.market.demand[item_id] = maxf(
+\t\t\ttarget_stock - supply,
+\t\t\t0.0
+\t\t)
 
 func _update_station_prices(station: GeneratedStationData) -> void:
 	if station == null or station.market == null:
