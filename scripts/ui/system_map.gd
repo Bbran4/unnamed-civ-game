@@ -25,6 +25,8 @@ const MAX_ORBIT_DISTANCE: float = 15400.0
 @onready var panel: Panel = $Panel
 @onready var system_name_label: Label = $Panel/SystemName
 @onready var star_label: Label = $Panel/MapArea/OrbitMap/StarLabel
+@onready var player_marker: Polygon2D = $Panel/MapArea/OrbitMap/PlayerMarker
+@onready var player_label: Label = $Panel/MapArea/OrbitMap/PlayerLabel
 @onready var status_label: Label = $Panel/Status
 @onready var warp_button: Button = $Panel/WarpButton
 @onready var hyperdrive_button: Button = $Panel/HyperdriveButton
@@ -180,6 +182,22 @@ func update_map() -> void:
         label.position = map_position + Vector2(10.0, -10.0)
         label.text = planet.display_name
         label.visible = true
+
+    var player_ship: Node2D = get_tree().get_first_node_in_group("player_ship") as Node2D
+    if player_ship != null:
+        var player_position_scale: float = MAP_RADIUS / MAX_ORBIT_DISTANCE
+        var player_map_position: Vector2 = MAP_CENTER + (player_ship.global_position * player_position_scale)
+        var player_offset: Vector2 = player_map_position - MAP_CENTER
+        if player_offset.length() > MAP_RADIUS - 10.0:
+            player_map_position = MAP_CENTER + player_offset.normalized() * (MAP_RADIUS - 10.0)
+
+        player_marker.position = player_map_position
+        player_marker.visible = true
+        player_label.position = player_map_position + Vector2(10.0, -10.0)
+        player_label.visible = true
+    else:
+        player_marker.visible = false
+        player_label.visible = false
 
     for station_index: int in range(station_markers.size()):
         var marker: Polygon2D = station_markers[station_index]
