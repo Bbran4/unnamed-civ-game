@@ -41,24 +41,74 @@ func _simulation_tick(simulated_delta: float) -> void:
 
 	var production_batches: int = 0
 	var consumed_units: float = 0.0
+	var extracted_units: float = 0.0
 
 	for station: GeneratedStationData in space_system.generated_system.stations:
 		if station == null or station.market == null or station.station_type == null:
 			continue
 
+		extracted_units += _process_resource_extraction(station, simulated_delta)
 		consumed_units += _consume_station_demand(station, simulated_delta)
 		production_batches += _process_station_production(station, simulated_delta)
 		_update_station_prices(station)
 
 	if enable_debug_output:
 		print(
-			"Economy tick | Sim %.1fh | Consumed %.2f units | Produced %d batches"
+			"Economy tick | Sim %.1fh | Extracted %.2f units | Consumed %.2f units | Produced %d batches"
 			% [
 				simulation_seconds / 3600.0,
+				extracted_units,
 				consumed_units,
 				production_batches
 			]
 		)
+
+func _process_resource_extraction(
+	station: GeneratedStationData,
+	simulated_delta: float
+) -> float:
+	if (
+		space_system == null
+		or station.station_type == null
+		or station.market == null
+	):
+		return 0.0
+
+	if station.station_type.resource_extraction_rate <= 0.0:
+		return 0.0
+
+	var planet: GeneratedPlanetData = space_system.get_planet_by_id(
+		station.planet_id
+	)
+	if planet == null:
+		return 0.0
+
+	var simulated_hours: float = simulated_delta / 3600.0
+	var extracted_units: float = 0.0
+
+	for resource_data: ResourceData in station.station_type.resource_exports:
+		if resource_data == null:
+			continue
+
+		var abundance: float = float(
+			planet.resource_abundance.get(resource_data.id, 0.0)
+		)
+		var extraction_rate: float = (
+			station.station_type.resource_extraction_rate
+			* clampf(abundance, 0.0, 1.0)
+		)
+		var extracted_amount: float = extraction_rate * simulated_hours
+
+		if extracted_amount <= 0.0:
+			continue
+
+		var current_supply: float = float(
+			station.market.supply.get(resource_data.id, 0.0)
+		)
+		station.market.supply[resource_data.id] = current_supply + extracted_amount
+		extracted_units += extracted_amount
+
+	return extracted_units
 
 func _consume_station_demand(
 	station: GeneratedStationData,
@@ -135,6 +185,7 @@ func _process_station_production(
 				_add_recipe_output(station, recipe)
 				progress -= recipe.production_time
 				completed_batches += 1
+
 		station_progress[recipe.id] = progress
 		production_progress[station.id] = station_progress
 
