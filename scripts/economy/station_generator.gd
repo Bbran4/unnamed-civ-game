@@ -9,7 +9,7 @@ const STATION_TYPE_PATHS: Array[String] = [
 	"res://data/economy/stations/shipyard.tres",
 	"res://data/economy/stations/research.tres",
 	"res://data/economy/stations/trade.tres",
-    "res://data/economy/stations/military.tres"
+	"res://data/economy/stations/military.tres"
 ]
 
 const FACTION_PATHS: Array[String] = [
@@ -17,7 +17,9 @@ const FACTION_PATHS: Array[String] = [
 	"res://data/factions/frontier_coalition.tres",
 	"res://data/factions/helios_consortium.tres",
 	"res://data/factions/orion_trade_league.tres",
-    "res://data/factions/independent.tres"
+	"res://data/factions/independent.tres",
+	"res://data/factions/sol_system_authority.tres",
+	"res://data/factions/red_knife_syndicate.tres"
 ]
 
 const NAME_PREFIXES: Array[String] = [
@@ -28,7 +30,7 @@ const NAME_PREFIXES: Array[String] = [
 	"Frontier",
 	"Pioneer",
 	"Atlas",
-    "Wayfarer"
+	"Wayfarer"
 ]
 
 const NAME_SUFFIXES: Array[String] = [
@@ -39,7 +41,7 @@ const NAME_SUFFIXES: Array[String] = [
 	"Platform",
 	"Dock",
 	"Outpost",
-    "Hub"
+	"Hub"
 ]
 
 func generate_station(station_index: int, planet: GeneratedPlanetData, rng: RandomNumberGenerator) -> GeneratedStationData:
