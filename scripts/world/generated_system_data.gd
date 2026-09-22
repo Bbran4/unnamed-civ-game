@@ -10,3 +10,4 @@ extends Resource
 @export var star_temperature: float = 0.0
 @export var planets: Array[GeneratedPlanetData] = []
 @export var stations: Array[GeneratedStationData] = []
+@export var simulation_time: float = 0.0
