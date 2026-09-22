@@ -243,7 +243,7 @@ func _update_station_prices(station: GeneratedStationData) -> void:
 	for resource_data: ResourceData in station.station_type.resource_exports:
 		if resource_data == null:
 			continue
-		_update_price_for_resource(station.market, market, resource_data)
+		_update_price_for_resource(station, station.market, market, resource_data)
 
 	for good_data: GoodData in station.station_type.good_imports:
 		if good_data == null:
@@ -253,7 +253,7 @@ func _update_station_prices(station: GeneratedStationData) -> void:
 	for good_data: GoodData in station.station_type.good_exports:
 		if good_data == null:
 			continue
-		_update_price_for_good(station.market, market, good_data)
+		_update_price_for_good(station, station.market, market, good_data)
 
 func _update_price_for_resource(station: GeneratedStationData, market_data: MarketData, market: Market, resource_data: ResourceData) -> void:
 	var supply: float = float(market_data.supply.get(resource_data.id, 0.0))
