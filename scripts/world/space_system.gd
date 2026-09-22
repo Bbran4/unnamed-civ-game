@@ -7,7 +7,7 @@ extends Node2D
 @export var planet_count: int = 5
 @export var station_count: int = 5
 @export var system_scene_path: String = "res://scenes/world/systems/asterion.tscn"
-@export var orbit_time_scale: float = 0.05
+@export var orbit_time_scale: float = GalaxyState.ORBIT_TIME_SCALE
 
 const PLANET_SCENE: PackedScene = preload("res://scenes/planets/first_planet.tscn")
 const MOON_SCENE: PackedScene = preload("res://scenes/planets/moon.tscn")
@@ -113,6 +113,7 @@ func build_system_visuals() -> void:
 			]
 
 		station_instances[station.id] = station_instance
+		station_instance.position = GalaxyState.get_station_position(generated_system.id, station.id)
 
 func build_orbit_lines() -> void:
 	for orbit_index: int in range(generated_system.planets.size()):
@@ -173,6 +174,12 @@ func update_orbits() -> void:
 
 		update_moons_for_planet(planet, planet_position)
 
+	for station: GeneratedStationData in generated_system.stations:
+		var station_instance: Node2D = station_instances.get(station.id) as Node2D
+		if station_instance == null:
+			continue
+		station_instance.position = GalaxyState.get_station_position(generated_system.id, station.id)
+
 func update_moons_for_planet(
 	planet: GeneratedPlanetData,
 	planet_position: Vector2
@@ -185,7 +192,8 @@ func update_moons_for_planet(
 		var moon_angle: float = GalaxyState.get_orbit_angle(
 			generated_system,
 			moon.orbital_angle,
-			moon.orbital_period
+			moon.orbital_period,
+			orbit_time_scale
 		)
 		moon_instance.position = planet_position + Vector2(cos(moon_angle), sin(moon_angle)) * moon.orbital_distance
 
