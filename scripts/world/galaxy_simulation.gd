@@ -1,4 +1,3 @@
-class_name GalaxySimulation
 extends Node
 
 @export var simulation_seconds_per_real_second: float = 30.0
