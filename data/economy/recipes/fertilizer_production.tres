@@ -1,10 +1,11 @@
-[gd_resource type="Resource" script_class="ProductionRecipeData" load_steps=8 format=3]
+[gd_resource type="Resource" script_class="ProductionRecipeData" format=3 uid="uid://fkv3fi4rlyai"]
 
-[ext_resource type="Script" path="res://scripts/economy/production_recipe_data.gd" id="1_script"]
-[ext_resource type="Script" path="res://scripts/economy/recipe_ingredient_data.gd" id="ingredient_script"]
+[ext_resource type="Script" uid="uid://cswjuiv7r1gki" path="res://scripts/economy/production_recipe_data.gd" id="1_script"]
+[ext_resource type="Resource" path="res://data/economy/goods/fertilizer.tres" id="good_fertilizer"]
+[ext_resource type="Script" uid="uid://b1gjbbi84k53b" path="res://scripts/economy/recipe_ingredient_data.gd" id="ingredient_script"]
 [ext_resource type="Resource" path="res://data/economy/resources/organic_matter.tres" id="resource_organic_matter"]
 [ext_resource type="Resource" path="res://data/economy/resources/water.tres" id="resource_water"]
-[ext_resource type="Resource" path="res://data/economy/goods/fertilizer.tres" id="good_fertilizer"]
+
 [sub_resource type="Resource" id="Ingredient1"]
 script = ExtResource("ingredient_script")
 resource = ExtResource("resource_organic_matter")
@@ -20,7 +21,7 @@ script = ExtResource("1_script")
 id = "fertilizer_production"
 display_name = "Fertilizer Production"
 description = "Processes organic material and water into agricultural fertilizer."
-inputs = Array[RecipeIngredientData]([SubResource("Ingredient1"), SubResource("Ingredient2")])
+inputs = Array[ExtResource("ingredient_script")]([SubResource("Ingredient1"), SubResource("Ingredient2")])
 output = ExtResource("good_fertilizer")
 output_quantity = 2
 production_time = 75

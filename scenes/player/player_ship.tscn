@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://c2nibcb783twg" path="res://scenes/ships/projectile.tscn" id="2_projectile"]
 [ext_resource type="Script" uid="uid://deu2xafkd4xq3" path="res://scripts/player/player_camera.gd" id="3_camera"]
 [ext_resource type="PackedScene" path="res://scenes/ui/player_status_bars.tscn" id="4_status"]
-[ext_resource type="Resource" path="res://data/ships/player_starflier.tres" id="5_ship"]
+[ext_resource type="Resource" uid="uid://bfuhdxe8hw5lo" path="res://data/ships/player_starflier.tres" id="5_ship"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape_player"]
 radius = 12.0
