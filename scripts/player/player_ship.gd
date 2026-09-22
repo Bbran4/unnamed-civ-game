@@ -5,6 +5,7 @@ enum ControlStyle {
 	MOUSE_AIM
 }
 
+@export var ship_data: ShipData
 @export var forward_acceleration: float = 600.0
 @export var reverse_acceleration: float = 350.0
 @export var turn_speed: float = 3.5
@@ -33,6 +34,7 @@ var control_style: ControlStyle = ControlStyle.ROTATION_KEYS
 @onready var status_bars: Control = $PlayerStatusBars/Bars
 
 func _ready() -> void:
+	_apply_ship_data()
 	current_hull = max_hull
 	current_shield = max_shield
 	control_style = WorldState.control_style as ControlStyle
@@ -99,6 +101,17 @@ func _physics_process(delta: float) -> void:
 	fire_cooldown_remaining = maxf(0.0, fire_cooldown_remaining - delta)
 	if Input.is_action_pressed("primary_fire"):
 		_fire_primary()
+
+func _apply_ship_data() -> void:
+	if ship_data == null:
+		return
+
+	max_hull = float(ship_data.get_total_hull_points())
+	max_shield = float(ship_data.get_total_shield_capacity())
+	armor = float(ship_data.get_total_armor())
+	max_speed = ship_data.get_max_speed()
+	forward_acceleration = ship_data.get_acceleration()
+	boost_max_speed = max_speed * ship_data.get_boost_multiplier()
 
 func get_space_reference_velocity() -> Vector2:
 	var space_system: Node = get_tree().get_first_node_in_group("space_system")
