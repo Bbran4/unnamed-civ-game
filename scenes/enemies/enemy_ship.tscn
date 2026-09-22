@@ -40,8 +40,19 @@ color = Color(1, 0.72, 0.2, 1)
 polygon = PackedVector2Array(-17, -6, -29, -2, -29, 2, -17, 6)
 color = Color(1, 0.35, 0.12, 1)
 
-[node name="WeaponMuzzle" type="Marker2D" parent="."]
-position = Vector2(30, 0)
+[node name="WeaponMuzzles" type="Node2D" parent="."]
+
+[node name="Muzzle1" type="Marker2D" parent="WeaponMuzzles"]
+position = Vector2(30, -7)
+
+[node name="Muzzle2" type="Marker2D" parent="WeaponMuzzles"]
+position = Vector2(30, 7)
+
+[node name="Muzzle3" type="Marker2D" parent="WeaponMuzzles"]
+position = Vector2(18, -13)
+
+[node name="Muzzle4" type="Marker2D" parent="WeaponMuzzles"]
+position = Vector2(18, 13)
 
 [node name="EnemyStatusBars" parent="." instance=ExtResource("4_status")]
 rotation = 0.0
