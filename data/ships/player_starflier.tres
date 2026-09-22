@@ -1,20 +1,21 @@
-[gd_resource type="Resource" script_class="ShipData" format=3 uid="uid://youy62nlfq8e"]
+[gd_resource type="Resource" script_class="ShipData" load_steps=7 format=3]
 
-[ext_resource type="Script" uid="uid://cmwe1wmd8bnyf" path="res://scripts/ships/ship_data.gd" id="1_script"]
+[ext_resource type="Script" path="res://scripts/ships/ship_data.gd" id="1_script"]
 [ext_resource type="Resource" path="res://data/ships/bodies/light_fighter.tres" id="2_body"]
-[ext_resource type="Script" uid="uid://b2t2lmlgitgwj" path="res://scripts/ships/ship_module_data.gd" id="2_u57gh"]
-[ext_resource type="Resource" path="res://data/ships/wings/light_wings.tres" id="3_wings"]
-[ext_resource type="Resource" path="res://data/ships/tails/standard_tail.tres" id="4_tail"]
-[ext_resource type="Script" uid="uid://0cqbaj8iyi1a" path="res://scripts/ships/ship_weapon_data.gd" id="5_d4pkg"]
+[ext_resource type="Resource" path="res://data/ships/modules/basic_shield_generator.tres" id="3_module"]
+[ext_resource type="Resource" path="res://data/ships/wings/light_wings.tres" id="4_wings"]
+[ext_resource type="Resource" path="res://data/ships/tails/standard_tail.tres" id="5_tail"]
+[ext_resource type="Resource" path="res://data/ships/weapons/civilian_laser.tres" id="6_weapon"]
 
 [resource]
+modules = [ExtResource("3_module")]
+weapons = [ExtResource("6_weapon")]
 script = ExtResource("1_script")
 id = "player_starflier"
 display_name = "Starflier"
 description = "A compact civilian light fighter used for courier work and local travel."
 faction_id = "civilian"
 body = ExtResource("2_body")
-wings = ExtResource("3_wings")
-tail = ExtResource("4_tail")
-shield_capacity = 80
+wings = ExtResource("4_wings")
+tail = ExtResource("5_tail")
 shield_regeneration = 4.0
