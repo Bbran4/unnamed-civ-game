@@ -3,7 +3,6 @@
 [ext_resource type="Script" path="res://scripts/economy/station_type_data.gd" id="1_script"]
 [ext_resource type="Resource" path="res://data/economy/resources/hydrogen.tres" id="resource_hydrogen"]
 [ext_resource type="Resource" path="res://data/economy/resources/carbon.tres" id="resource_carbon"]
-[ext_resource type="Resource" path="res://data/economy/resources/water.tres" id="resource_water"]
 [ext_resource type="Resource" path="res://data/economy/goods/fuel.tres" id="good_fuel"]
 [ext_resource type="Resource" path="res://data/economy/recipes/fuel_refining.tres" id="recipe_fuel_refining"]
 
@@ -14,7 +13,9 @@ display_name = "Refinery Station"
 description = "Processes volatile and mineral resources into fuels and industrial feedstock."
 population_multiplier = 1.1
 industries = Array[String](["Refining"])
-resource_imports = Array[ResourceData]([ExtResource("resource_hydrogen"), ExtResource("resource_carbon"), ExtResource("resource_water")])
+resource_extraction_rate = 35.0
+resource_extraction = Array[ResourceData]([ExtResource("resource_hydrogen"), ExtResource("resource_carbon")])
+resource_imports = Array[ResourceData]([])
 resource_exports = Array[ResourceData]([])
 good_imports = Array[GoodData]([])
 good_exports = Array[GoodData]([ExtResource("good_fuel")])
