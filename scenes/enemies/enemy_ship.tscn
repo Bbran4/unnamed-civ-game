@@ -1,58 +1,58 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene format=3 uid="uid://cbq86tt2fgajw"]
 
-[ext_resource type="Script" path="res://scripts/enemies/enemy_ship.gd" id="1_enemy"]
-[ext_resource type="PackedScene" path="res://scenes/ships/projectile.tscn" id="2_projectile"]
+[ext_resource type="Script" uid="uid://bxyl71iu5loge" path="res://scripts/enemies/enemy_ship.gd" id="1_enemy"]
+[ext_resource type="PackedScene" uid="uid://c2nibcb783twg" path="res://scenes/ships/projectile.tscn" id="2_projectile"]
 [ext_resource type="PackedScene" path="res://scenes/economy/salvage_pickup.tscn" id="3_salvage"]
 [ext_resource type="PackedScene" path="res://scenes/ui/enemy_status_bars.tscn" id="4_status"]
-[ext_resource type="Resource" path="res://data/ships/enemies/razor_raider.tres" id="5_ship"]
+[ext_resource type="Resource" uid="uid://dv4hhwr1ead3m" path="res://data/ships/enemies/razor_raider.tres" id="5_ship"]
 
 [sub_resource type="CircleShape2D" id="CircleShape_enemy"]
 radius = 18.0
 
-[node name="EnemyShip" type="CharacterBody2D" groups=["enemy_ship"]]
+[node name="EnemyShip" type="CharacterBody2D" unique_id=506752907 groups=["enemy_ship"]]
+collision_layer = 2
 script = ExtResource("1_enemy")
 ship_data = ExtResource("5_ship")
 projectile_scene = ExtResource("2_projectile")
 salvage_scene = ExtResource("3_salvage")
-collision_layer = 2
-collision_mask = 1
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1373938699]
 shape = SubResource("CircleShape_enemy")
 
-[node name="Hull" type="Polygon2D" parent="."]
-polygon = PackedVector2Array(30, 0, 12, -10, -10, -15, -22, -7, -16, 0, -22, 7, -10, 15, 12, 10)
+[node name="Hull" type="Polygon2D" parent="." unique_id=502764212]
 color = Color(0.72, 0.12, 0.1, 1)
+polygon = PackedVector2Array(30, 0, 12, -10, -10, -15, -22, -7, -16, 0, -22, 7, -10, 15, 12, 10)
 
-[node name="LeftWing" type="Polygon2D" parent="."]
+[node name="LeftWing" type="Polygon2D" parent="." unique_id=36596914]
+color = Color(0.42, 0.08, 0.07, 1)
 polygon = PackedVector2Array(9, -6, -5, -27, -18, -22, -12, -5)
-color = Color(0.42, 0.08, 0.07, 1)
 
-[node name="RightWing" type="Polygon2D" parent="."]
+[node name="RightWing" type="Polygon2D" parent="." unique_id=1044944520]
+color = Color(0.42, 0.08, 0.07, 1)
 polygon = PackedVector2Array(9, 6, -5, 27, -18, 22, -12, 5)
-color = Color(0.42, 0.08, 0.07, 1)
 
-[node name="Cockpit" type="Polygon2D" parent="."]
-polygon = PackedVector2Array(16, 0, 3, -6, -8, -4, -8, 4, 3, 6)
+[node name="Cockpit" type="Polygon2D" parent="." unique_id=686078428]
 color = Color(1, 0.72, 0.2, 1)
+polygon = PackedVector2Array(16, 0, 3, -6, -8, -4, -8, 4, 3, 6)
 
-[node name="Engine" type="Polygon2D" parent="."]
-polygon = PackedVector2Array(-17, -6, -29, -2, -29, 2, -17, 6)
+[node name="Engine" type="Polygon2D" parent="." unique_id=1890252739]
 color = Color(1, 0.35, 0.12, 1)
+polygon = PackedVector2Array(-17, -6, -29, -2, -29, 2, -17, 6)
 
-[node name="WeaponMuzzles" type="Node2D" parent="."]
+[node name="WeaponMuzzles" type="Node2D" parent="." unique_id=168497817]
 
-[node name="Muzzle1" type="Marker2D" parent="WeaponMuzzles"]
+[node name="Muzzle1" type="Marker2D" parent="WeaponMuzzles" unique_id=234058720]
 position = Vector2(30, -7)
 
-[node name="Muzzle2" type="Marker2D" parent="WeaponMuzzles"]
+[node name="Muzzle2" type="Marker2D" parent="WeaponMuzzles" unique_id=1869246792]
 position = Vector2(30, 7)
 
-[node name="Muzzle3" type="Marker2D" parent="WeaponMuzzles"]
+[node name="Muzzle3" type="Marker2D" parent="WeaponMuzzles" unique_id=8265319]
 position = Vector2(18, -13)
 
-[node name="Muzzle4" type="Marker2D" parent="WeaponMuzzles"]
+[node name="Muzzle4" type="Marker2D" parent="WeaponMuzzles" unique_id=1690791766]
 position = Vector2(18, 13)
 
-[node name="EnemyStatusBars" parent="." instance=ExtResource("4_status")]
-rotation = 0.0
+[node name="EnemyStatusBars" parent="." unique_id=1769773125 instance=ExtResource("4_status")]
+layout_mode = 3
+anchors_preset = 0
