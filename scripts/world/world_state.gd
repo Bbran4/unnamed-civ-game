@@ -1,6 +1,6 @@
 extends Node
 
-const SAVE_VERSION := 2
+const SAVE_VERSION := 3
 
 var world_seed: int = 0
 var current_era: int = 0
@@ -66,4 +66,10 @@ func _has_generated_map() -> bool:
 	var width := int(world_data.get("width", 0))
 	var height := int(world_data.get("height", 0))
 	var terrain: Array = world_data.get("terrain", [])
-	return width > 0 and height > 0 and terrain.size() == width * height
+	var resources: Array = world_data.get("resources", [])
+	return (
+		width > 0
+		and height > 0
+		and terrain.size() == width * height
+		and resources.size() == width * height
+	)
