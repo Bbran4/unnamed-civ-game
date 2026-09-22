@@ -3,6 +3,7 @@ extends Node
 ## Shared game state used by systems that persist between scenes.
 var credits: int = 500
 var current_ship_id: String = "starter_shuttle"
+var current_owned_ship: OwnedShipData
 var inventory: Dictionary = {}
 var owned_ships: Array[String] = ["starter_shuttle"]
 var active_missions: Array[String] = []
