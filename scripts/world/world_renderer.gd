@@ -36,7 +36,7 @@ func _draw() -> void:
 	)
 
 func _terrain_color(terrain_type: int) -> Color:
-	switch terrain_type:
+	match terrain_type:
 		WorldGenerator.TERRAIN_WATER:
 			return Color("4f7fa8")
 		WorldGenerator.TERRAIN_PLAINS:
