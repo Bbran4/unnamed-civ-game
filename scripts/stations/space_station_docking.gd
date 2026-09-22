@@ -33,6 +33,6 @@ func _dock_player() -> void:
         return
 
     WorldState.station_exit_position = global_position + Vector2(250.0, 0.0)
-    WorldState.current_station_id = get_parent().name
+    WorldState.current_station_id = name
     WorldState.returning_from_station = false
     SceneManager.change_scene(destination_scene)
