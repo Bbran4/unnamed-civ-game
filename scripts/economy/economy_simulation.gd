@@ -258,9 +258,48 @@ func _update_station_prices(station: GeneratedStationData) -> void:
 func _update_price_for_resource(market_data: MarketData, market: Market, resource_data: ResourceData) -> void:
 	var supply: float = float(market_data.supply.get(resource_data.id, 0.0))
 	var demand: float = float(market_data.demand.get(resource_data.id, 0.0))
-	market_data.current_prices[resource_data.id] = market.calculate_price(resource_data.base_value, supply, demand)
+	var is_producer: bool = _station_exports_resource(station, resource_data.id)
+	market_data.current_prices[resource_data.id] = market.calculate_price(
+		resource_data.base_value,
+		supply,
+		demand,
+		is_producer
+	)
 
 func _update_price_for_good(market_data: MarketData, market: Market, good_data: GoodData) -> void:
 	var supply: float = float(market_data.supply.get(good_data.id, 0.0))
 	var demand: float = float(market_data.demand.get(good_data.id, 0.0))
-	market_data.current_prices[good_data.id] = market.calculate_price(good_data.base_value, supply, demand)
+	var is_producer: bool = _station_exports_good(station, good_data.id)
+	market_data.current_prices[good_data.id] = market.calculate_price(
+		good_data.base_value,
+		supply,
+		demand,
+		is_producer
+	)
+
+
+func _station_exports_resource(
+	station: GeneratedStationData,
+	resource_id: String
+) -> bool:
+	if station == null or station.station_type == null:
+		return false
+
+	for resource_data: ResourceData in station.station_type.resource_exports:
+		if resource_data != null and resource_data.id == resource_id:
+			return true
+
+	return false
+
+func _station_exports_good(
+	station: GeneratedStationData,
+	good_id: String
+) -> bool:
+	if station == null or station.station_type == null:
+		return false
+
+	for good_data: GoodData in station.station_type.good_exports:
+		if good_data != null and good_data.id == good_id:
+			return true
+
+	return false
