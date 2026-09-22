@@ -461,7 +461,32 @@ func _select_traffic_destination(record: Dictionary) -> void:
 	var destination_station: GeneratedStationData = _get_station_by_id(destination_system, destination_station_id)
 
 	if bool(record.get("is_freighter", false)):
-		_prepare_freighter_cargo(record, origin_station, destination_station)
+		if best_score <= 0.0:
+			record["dock_remaining"] = dock_duration
+			return
+
+		var fuel_required: float = _get_freighter_trip_fuel_required(
+			system_id,
+			destination_system_id,
+			float(selected["distance"])
+		)
+		if not _ensure_freighter_fuel(
+			record,
+			origin_station,
+			fuel_required
+		):
+			record["dock_remaining"] = dock_duration
+			return
+
+		_prepare_freighter_cargo(
+			record,
+			origin_station,
+			destination_station
+		)
+		var cargo: Dictionary = record.get("cargo", {}) as Dictionary
+		if cargo.is_empty():
+			record["dock_remaining"] = dock_duration
+			return
 
 	record["destination_system_id"] = destination_system_id
 	record["destination_station_id"] = destination_station_id
@@ -669,6 +694,58 @@ func _get_exportable_units(
 	)
 
 	return maxf(supply - reserve, 0.0)
+
+func _get_freighter_trip_fuel_required(
+	origin_system_id: String,
+	destination_system_id: String,
+	distance: float
+) -> float:
+	if origin_system_id != destination_system_id:
+		return GalaxyState.INTER_SYSTEM_FUEL_COST
+
+	return _calculate_freighter_fuel_required(distance)
+
+func _ensure_freighter_fuel(
+	record: Dictionary,
+	origin_station: GeneratedStationData,
+	fuel_required: float
+) -> bool:
+	if fuel_required <= 0.0:
+		return true
+
+	var current_fuel: float = float(
+		record.get("fuel", freighter_starting_fuel)
+	)
+	if current_fuel >= fuel_required:
+		record["fuel"] = current_fuel - fuel_required
+		return true
+
+	var fuel_shortfall: float = fuel_required - current_fuel
+	var fuel_supply: float = float(
+		origin_station.market.supply.get("fuel", 0.0)
+	)
+	var fuel_price: float = float(
+		origin_station.market.current_prices.get("fuel", 0.0)
+	)
+
+	if fuel_supply < fuel_shortfall or fuel_price <= 0.0:
+		return false
+
+	var fuel_cost: float = fuel_shortfall * fuel_price
+	var credits: float = float(
+		record.get("credits", freighter_starting_credits)
+	)
+	if credits < fuel_cost:
+		return false
+
+	origin_station.market.supply["fuel"] = maxf(
+		0.0,
+		fuel_supply - fuel_shortfall
+	)
+	record["credits"] = credits - fuel_cost
+	record["fuel"] = 0.0
+
+	return true
 
 func _calculate_freighter_fuel_required(distance: float) -> float:
 	if distance <= 0.0:
