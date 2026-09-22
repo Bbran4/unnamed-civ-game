@@ -1,19 +1,18 @@
 ; Engine configuration file.
-; It's best edited using the editor UI and not directly,
-; since the parameters that go here are not all obvious.
-;
-; Format:
-;   [section] ; section goes between []
-;   param=value ; assign values to parameters
 
 config_version=5
 
 [application]
 
-config/name="Unnamed Space Game"
+config/name="Unnamed Civilization Game"
 run/main_scene="res://scenes/main/game.tscn"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://icon.svg"
+
+[autoload]
+
+WorldState="*res://scripts/world/world_state.gd"
+SaveManager="*res://scripts/managers/save_manager.gd"
 
 [display]
 
