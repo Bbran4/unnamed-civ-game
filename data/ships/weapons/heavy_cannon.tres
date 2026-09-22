@@ -13,3 +13,6 @@ damage = 24.0
 fire_rate = 2.5
 projectile_speed = 1100.0
 range = 3000.0
+
+shield_damage_multiplier = 0.75
+hull_damage_multiplier = 1.5
