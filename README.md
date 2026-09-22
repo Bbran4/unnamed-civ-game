@@ -736,13 +736,26 @@ If those ten things are fun, the project has a foundation worth expanding.
 
 ## Milestone 0 - Project Foundation
 
-**Status: COMPLETE / IN PROGRESS**
+**Status: COMPLETE**
 
 - [x] Godot project configuration
 - [x] Repository structure
-- [ ] Civilization-focused scene structure
-- [ ] Core world state
-- [ ] Save/load foundation
+- [x] Civilization-focused scene structure
+- [x] Core world state
+- [x] Save/load foundation
+
+### Foundation implemented
+
+The project now has a minimal runnable civilization-focused foundation:
+
+- `WorldState` is a persistent autoload containing the world seed, era, simulation time, civilizations, world data and permanent legacy data.
+- `SaveManager` is a persistent autoload providing JSON save/load to `user://civilization_save.json`.
+- The main game scene loads an existing world or creates and saves a new one automatically.
+- Civilization, world and main scene boundaries are established under `scenes/`.
+- The project has been renamed from the original space-game prototype to **Unnamed Civilization Game**.
+- The world state is intentionally independent from visual scenes so simulation data can later continue running while the player changes views.
+
+Milestone 0 is deliberately small. It establishes the foundation needed for the procedural world, autonomous civilizations and persistent eras without prematurely implementing the simulation itself.
 
 ## Milestone 1 - Persistent Procedural World
 
