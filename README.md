@@ -762,17 +762,41 @@ Milestone 0 is deliberately small. It establishes the foundation needed for the 
 **Status: IN PROGRESS**
 
 - [x] Generate a persistent world map
-- [ ] Generate terrain
+- [x] Generate terrain
 - [ ] Generate resources
 - [ ] Generate starting locations
-- [ ] Save generated world seed
-- [ ] Load the same world after restart
+- [x] Save generated world seed
+- [x] Load the same world after restart
 
 ### Persistent world map implemented
 
-The first Milestone 1 slice now generates a deterministic 64×64 world map from a world seed and stores the generated terrain data in WorldState. The map is rendered directly from world state, and the generated data is included in the existing JSON save system.
+The first Milestone 1 slice is now implemented and tested.
 
-This deliberately stops before resources, civilization starting locations and the broader terrain/resource systems are implemented. Those remain separate Milestone 1 tasks.
+The game:
+
+- Generates a deterministic **64×64** world map from a world seed.
+- Uses FastNoiseLite to generate the initial terrain distribution.
+- Currently supports five basic terrain types: water, plains, forest, mountain and desert.
+- Stores the generated map in WorldState.
+- Renders the map directly from world state.
+- Includes the generated world data in the existing JSON save system.
+- Loads the saved map after restarting instead of generating a different world.
+- Has been verified by running the game and confirming that the world is visible and remains identical after restart.
+
+The current map is intentionally a simple prototype renderer. It is a foundation for the later terrain, resource, civilization and visual systems rather than final map art.
+
+This slice deliberately stops before resources and civilization starting locations are implemented. Those remain separate Milestone 1 tasks.
+
+### Current Milestone 1 checkpoint
+
+**Status: TESTED**
+
+The persistent procedural world slice has been committed as:
+
+    Checkpoint: persistent procedural world
+    Commit: e13e7ee6d553de39dfd1a1eac78ecdb426464194
+
+The repository is intentionally paused at this checkpoint before the next Milestone 1 task.
 
 ## Milestone 2 - First Civilization
 
