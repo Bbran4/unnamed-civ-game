@@ -119,7 +119,7 @@ func _ready() -> void:
     WorldState.map_open = false
 
     close_button.pressed.connect(close_map)
-    panel.gui_input.connect(_on_map_gui_input)
+    $Panel/MapArea.gui_input.connect(_on_map_gui_input)
     warp_button.pressed.connect(_warp_to_selected_system)
     hyperdrive_button.pressed.connect(_hyperdrive_to_selected_station)
 
