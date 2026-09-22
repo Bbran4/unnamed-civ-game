@@ -4,6 +4,7 @@
 [ext_resource type="Script" path="res://scripts/stations/docked_ship_exit.gd" id="2_exit"]
 [ext_resource type="Script" path="res://scripts/stations/station_npc.gd" id="3_npc"]
 [ext_resource type="Script" path="res://scripts/stations/station_terminal.gd" id="4_terminal"]
+[ext_resource type="PackedScene" path="res://scenes/stations/station_market_panel.tscn" id="5_market"]
 
 [sub_resource type="CircleShape2D" id="CircleShape_npc"]
 radius = 28.0
@@ -118,6 +119,8 @@ offset_bottom = 65.0
 text = "Press E to browse shop"
 horizontal_alignment = 1
 visible = false
+
+[node name="StationMarketPanel" parent="." instance=ExtResource("5_market")]
 
 [node name="StationCharacter" parent="." instance=ExtResource("1_character")]
 position = Vector2(-40, 80)
