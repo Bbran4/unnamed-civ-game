@@ -1,9 +1,0 @@
-[gd_scene format=3 uid="uid://bet08okbfea60"]
-
-[ext_resource type="Script" uid="uid://ccxvq4njig7ld" path="res://scripts/game.gd" id="1_game"]
-[ext_resource type="PackedScene" path="res://scenes/world/systems/asterion.tscn" id="2_system"]
-
-[node name="Game" type="Node2D" unique_id=828467067]
-script = ExtResource("1_game")
-
-[node name="AsterionSystem" parent="." unique_id=1008856966 instance=ExtResource("2_system")]
