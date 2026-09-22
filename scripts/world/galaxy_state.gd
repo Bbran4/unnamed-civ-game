@@ -42,16 +42,21 @@ func get_all_system_ids() -> Array[String]:
 		system_ids.append(system_id)
 	return system_ids
 
-func get_orbit_angle(system: GeneratedSystemData, initial_angle: float, period: float) -> float:
+func get_orbit_angle(
+	system: GeneratedSystemData,
+	initial_angle: float,
+	period: float,
+	time_scale: float = 1.0
+) -> float:
 	var orbital_speed: float = TAU / maxf(period, 1.0)
-	return initial_angle + orbital_speed * system.simulation_time
+	return initial_angle + orbital_speed * system.simulation_time * time_scale
 
 func get_planet_position(system_id: String, planet_id: String) -> Vector2:
 	var system: GeneratedSystemData = get_system(system_id)
 	for planet: GeneratedPlanetData in system.planets:
 		if planet.id != planet_id:
 			continue
-		var angle: float = get_orbit_angle(system, planet.orbital_angle, planet.orbital_period)
+		var angle: float = get_orbit_angle(system, planet.orbital_angle, planet.orbital_period, orbit_time_scale)
 		return Vector2(cos(angle), sin(angle)) * planet.orbital_distance
 	return Vector2.ZERO
 
@@ -61,7 +66,7 @@ func get_planet_velocity(system_id: String, planet_id: String, orbit_time_scale:
 		if planet.id != planet_id:
 			continue
 		var orbital_speed: float = (TAU / maxf(planet.orbital_period, 1.0)) * orbit_time_scale
-		var angle: float = get_orbit_angle(system, planet.orbital_angle, planet.orbital_period)
+		var angle: float = get_orbit_angle(system, planet.orbital_angle, planet.orbital_period, orbit_time_scale)
 		return Vector2(-sin(angle), cos(angle)) * planet.orbital_distance * orbital_speed
 	return Vector2.ZERO
 
@@ -71,7 +76,7 @@ func get_station_position(system_id: String, station_id: String) -> Vector2:
 		if station.id != station_id:
 			continue
 		var planet_position: Vector2 = get_planet_position(system_id, station.planet_id)
-		var station_angle: float = get_orbit_angle(system, station.orbital_angle, station.orbital_period)
+		var station_angle: float = get_orbit_angle(system, station.orbital_angle, station.orbital_period, orbit_time_scale)
 		var station_offset: Vector2 = Vector2(cos(station_angle), sin(station_angle)) * station.orbital_distance
 		return planet_position + station_offset
 	return Vector2.ZERO
@@ -80,6 +85,6 @@ func get_station_velocity(system_id: String, station: GeneratedStationData, orbi
 	var planet_velocity: Vector2 = get_planet_velocity(system_id, station.planet_id, orbit_time_scale)
 	var system: GeneratedSystemData = get_system(system_id)
 	var orbital_speed: float = (TAU / maxf(station.orbital_period, 1.0)) * orbit_time_scale
-	var station_angle: float = get_orbit_angle(system, station.orbital_angle, station.orbital_period)
+	var station_angle: float = get_orbit_angle(system, station.orbital_angle, station.orbital_period, orbit_time_scale)
 	var local_velocity: Vector2 = Vector2(-sin(station_angle), cos(station_angle)) * station.orbital_distance * orbital_speed
 	return planet_velocity + local_velocity
