@@ -44,6 +44,7 @@ func _process(delta: float) -> void:
 	while _station_market_report_accumulator >= station_market_report_interval:
 		_station_market_report_accumulator -= station_market_report_interval
 		_print_station_market_report()
+		_print_freighter_report()
 
 	while _tick_accumulator >= simulation_tick_seconds:
 		_tick_accumulator -= simulation_tick_seconds
@@ -111,6 +112,71 @@ func _print_station_market_report() -> void:
 					system.display_name
 				]
 			)
+
+func _print_freighter_report() -> void:
+	print("========== FREIGHTER REPORT ==========")
+
+	for traffic_id: String in _traffic.keys():
+		var record: Dictionary = _traffic[traffic_id]
+		if not bool(record.get("is_freighter", false)):
+			continue
+
+		var current_system_id: String = String(
+			record.get("system_id", "")
+		)
+		var current_system: GeneratedSystemData = GalaxyState.get_system(
+			current_system_id
+		)
+		var origin_station_id: String = String(
+			record.get("origin_station_id", "")
+		)
+		var destination_system_id: String = String(
+			record.get("destination_system_id", "")
+		)
+		var destination_station_id: String = String(
+			record.get("destination_station_id", "")
+		)
+
+		var origin_station: GeneratedStationData = _get_station_by_id(
+			current_system,
+			origin_station_id
+		)
+		var origin_name: String = (
+			origin_station.display_name
+			if origin_station != null
+			else origin_station_id
+		)
+
+		var destination_name: String = "Docked"
+		if not destination_station_id.is_empty():
+			var destination_system: GeneratedSystemData = GalaxyState.get_system(
+				destination_system_id
+			)
+			var destination_station: GeneratedStationData = _get_station_by_id(
+				destination_system,
+				destination_station_id
+			)
+			if destination_station != null:
+				destination_name = destination_station.display_name
+
+		var cargo: Dictionary = record.get("cargo", {}) as Dictionary
+		var cargo_units: int = 0
+		for item_id: String in cargo.keys():
+			var cargo_entry: Dictionary = cargo[item_id]
+			cargo_units += int(cargo_entry.get("units", 0))
+
+		print(
+			"FREIGHT | %s | %s -> %s | State: %s | Cargo: %d | Credits: %.0f | Fuel: %.1f"
+			% [
+				traffic_id,
+				origin_name,
+				destination_name,
+				String(record.get("state", "docked")),
+				cargo_units,
+				float(record.get("credits", 0.0)),
+				float(record.get("fuel", 0.0))
+			]
+		)
 
 func _simulation_tick(simulated_delta: float) -> void:
 	var extracted_units: float = 0.0
