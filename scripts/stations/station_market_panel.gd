@@ -14,7 +14,7 @@ func _ready() -> void:
 
 func open_market() -> void:
 	station = _get_current_station()
-	if station == null or station.market == null or station.station_type == null:
+	if station == null or station.market == null:
 		return
 	_update_display()
 	panel.visible = true
@@ -28,8 +28,8 @@ func _process(_delta: float) -> void:
 
 func _update_display() -> void:
 	title_label.text = "%s  |  MARKET" % station.display_name
-	var demand_items: Array[String] = _get_demand_item_ids()
-	var supply_items: Array[String] = _get_supply_item_ids()
+	var demand_items: Array[String] = _get_top_demand_item_ids()
+	var supply_items: Array[String] = _get_top_supply_item_ids()
 
 	for row_index: int in range(MAX_ROWS):
 		var demand_label: Label = panel.get_node("Demand%d" % (row_index + 1)) as Label
@@ -43,69 +43,113 @@ func _update_display() -> void:
 			supply_label.text = _format_market_row(supply_items[row_index], false)
 
 func _format_market_row(item_id: String, is_demand: bool) -> String:
-	var display_name: String = item_id
-	var base_value: float = 0.0
-
-	for resource_data: ResourceData in station.station_type.resource_imports:
-		if resource_data != null and resource_data.id == item_id:
-			display_name = resource_data.display_name
-			base_value = resource_data.base_value
-
-	for resource_data: ResourceData in station.station_type.resource_exports:
-		if resource_data != null and resource_data.id == item_id:
-			display_name = resource_data.display_name
-			base_value = resource_data.base_value
-
-	for good_data: GoodData in station.station_type.good_imports:
-		if good_data != null and good_data.id == item_id:
-			display_name = good_data.display_name
-			base_value = good_data.base_value
-
-	for good_data: GoodData in station.station_type.good_exports:
-		if good_data != null and good_data.id == item_id:
-			display_name = good_data.display_name
-			base_value = good_data.base_value
-
+	var display_name: String = _get_item_display_name(item_id)
 	var quantity: float = 0.0
+
 	if is_demand:
 		quantity = float(station.market.demand.get(item_id, 0.0))
 	else:
 		quantity = float(station.market.supply.get(item_id, 0.0))
 
-	var price: float = float(station.market.current_prices.get(item_id, base_value))
-	return "%-24s %7.1f units   %6.0f cr" % [display_name, quantity, price]
+	var price: float = float(
+		station.market.current_prices.get(
+			item_id,
+			float(station.market.base_values.get(item_id, 0.0))
+		)
+	)
 
-func _get_demand_item_ids() -> Array[String]:
+	if is_demand:
+		return "%-24s %7.4f /s     %6.0f cr" % [
+			display_name,
+			quantity,
+			price
+		]
+
+	return "%-24s %7.2f units   %6.0f cr" % [
+		display_name,
+		quantity,
+		price
+	]
+
+func _get_top_demand_item_ids() -> Array[String]:
 	var item_ids: Array[String] = []
+	var item_scores: Array[Dictionary] = []
 
-	for resource_data: ResourceData in station.station_type.resource_imports:
-		if resource_data != null and not item_ids.has(resource_data.id):
-			item_ids.append(resource_data.id)
+	for item_id: String in station.market.demand.keys():
+		var demand_value: float = float(
+			station.market.demand.get(item_id, 0.0)
+		)
+		if demand_value <= 0.0:
+			continue
 
-	for good_data: GoodData in station.station_type.good_imports:
-		if good_data != null and not item_ids.has(good_data.id):
-			item_ids.append(good_data.id)
+		item_scores.append({
+			"id": item_id,
+			"score": demand_value
+		})
+
+	item_scores.sort_custom(_sort_market_scores)
+
+	for score_entry: Dictionary in item_scores:
+		if item_ids.size() >= MAX_ROWS:
+			break
+		item_ids.append(String(score_entry["id"]))
 
 	return item_ids
 
-func _get_supply_item_ids() -> Array[String]:
+func _get_top_supply_item_ids() -> Array[String]:
 	var item_ids: Array[String] = []
+	var item_scores: Array[Dictionary] = []
 
-	for resource_data: ResourceData in station.station_type.resource_exports:
-		if resource_data != null and not item_ids.has(resource_data.id):
-			item_ids.append(resource_data.id)
+	for item_id: String in station.market.supply.keys():
+		var supply_value: float = float(
+			station.market.supply.get(item_id, 0.0)
+		)
+		if supply_value <= 0.0:
+			continue
 
-	for good_data: GoodData in station.station_type.good_exports:
-		if good_data != null and not item_ids.has(good_data.id):
-			item_ids.append(good_data.id)
+		item_scores.append({
+			"id": item_id,
+			"score": supply_value
+		})
+
+	item_scores.sort_custom(_sort_market_scores)
+
+	for score_entry: Dictionary in item_scores:
+		if item_ids.size() >= MAX_ROWS:
+			break
+		item_ids.append(String(score_entry["id"]))
 
 	return item_ids
+
+func _sort_market_scores(left: Dictionary, right: Dictionary) -> bool:
+	var left_score: float = float(left.get("score", 0.0))
+	var right_score: float = float(right.get("score", 0.0))
+	return left_score > right_score
+
+func _get_item_display_name(item_id: String) -> String:
+	var resource_paths: Array[String] = Market.RESOURCE_PATHS
+	for resource_path: String in resource_paths:
+		var loaded_resource: Resource = ResourceLoader.load(resource_path)
+		var resource_data: ResourceData = loaded_resource as ResourceData
+		if resource_data != null and resource_data.id == item_id:
+			return resource_data.display_name
+
+	var good_paths: Array[String] = Market.GOOD_PATHS
+	for good_path: String in good_paths:
+		var loaded_resource: Resource = ResourceLoader.load(good_path)
+		var good_data: GoodData = loaded_resource as GoodData
+		if good_data != null and good_data.id == item_id:
+			return good_data.display_name
+
+	return item_id
 
 func _get_current_station() -> GeneratedStationData:
 	if WorldState.current_station_id.is_empty():
 		return null
 
-	var system: GeneratedSystemData = GalaxyState.get_system(WorldState.current_system_id)
+	var system: GeneratedSystemData = GalaxyState.get_system(
+		WorldState.current_system_id
+	)
 
 	for candidate: GeneratedStationData in system.stations:
 		if candidate.id == WorldState.current_station_id:
