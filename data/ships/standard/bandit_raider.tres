@@ -1,10 +1,13 @@
-[gd_resource type="Resource" script_class="ShipData" load_steps=5 format=3]
+[gd_resource type="Resource" script_class="ShipData" load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/ships/ship_data.gd" id="1_script"]
 [ext_resource type="Resource" path="res://data/ships/bodies/light_fighter.tres" id="2_body"]
 [ext_resource type="Resource" path="res://data/ships/wings/standard_wings.tres" id="3_wings"]
 [ext_resource type="Resource" path="res://data/ships/tails/interceptor_tail.tres" id="4_tail"]
 
+[ext_resource type="Resource" path="res://data/ships/weapons/pirate_laser.tres" id="1_weapon"]
+
+weapons = [ExtResource("1_weapon")]
 [resource]
 script = ExtResource("1_script")
 id = "bandit_raider"
