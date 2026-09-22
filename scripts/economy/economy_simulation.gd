@@ -123,17 +123,18 @@ func _process_station_production(
 		) as Dictionary
 
 		var progress: float = float(station_progress.get(recipe.id, 0.0))
-		progress += simulated_delta
 
-		while progress >= recipe.production_time:
-			if not _has_recipe_inputs(station, recipe):
-				break
+		if _has_recipe_inputs(station, recipe):
+			progress += simulated_delta
 
-			_consume_recipe_inputs(station, recipe)
-			_add_recipe_output(station, recipe)
-			progress -= recipe.production_time
-			completed_batches += 1
+			while progress >= recipe.production_time:
+				if not _has_recipe_inputs(station, recipe):
+					break
 
+				_consume_recipe_inputs(station, recipe)
+				_add_recipe_output(station, recipe)
+				progress -= recipe.production_time
+				completed_batches += 1
 		station_progress[recipe.id] = progress
 		production_progress[station.id] = station_progress
 
