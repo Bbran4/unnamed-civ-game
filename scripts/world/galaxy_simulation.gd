@@ -10,12 +10,14 @@ extends Node
 @export var dock_duration: float = 6.0
 @export var inter_system_transit_seconds: float = 45.0
 @export var enable_debug_output: bool = true
+@export var station_market_report_interval: float = 5.0
 
 var simulation_seconds: float = 0.0
 var _tick_accumulator: float = 0.0
 var _initialized: bool = false
 var _production_progress: Dictionary = {}
 var _traffic: Dictionary = {}
+var _station_market_report_accumulator: float = 0.0
 
 func _ready() -> void:
 	call_deferred("_initialize")
@@ -31,6 +33,10 @@ func _process(delta: float) -> void:
 
 	_advance_system_time(simulated_delta)
 	_advance_traffic(traffic_delta)
+	_station_market_report_accumulator += delta
+	while _station_market_report_accumulator >= station_market_report_interval:
+		_station_market_report_accumulator -= station_market_report_interval
+		_print_station_market_report()
 
 	while _tick_accumulator >= simulation_tick_seconds:
 		_tick_accumulator -= simulation_tick_seconds
@@ -51,6 +57,29 @@ func _advance_system_time(simulated_delta: float) -> void:
 	for system_id: String in GalaxyState.get_all_system_ids():
 		var system: GeneratedSystemData = GalaxyState.get_system(system_id)
 		system.simulation_time += simulated_delta
+
+func _print_station_market_report() -> void:
+	print("========== STATION MARKET REPORT ==========")
+	for system_id: String in GalaxyState.get_all_system_ids():
+		var system: GeneratedSystemData = GalaxyState.get_system(system_id)
+		for station: GeneratedStationData in system.stations:
+			if station == null or station.market == null:
+				continue
+
+			var demand_parts: Array[String] = []
+			var supply_parts: Array[String] = []
+			for item_id: String in station.market.demand.keys():
+				var demand_value: float = float(station.market.demand[item_id])
+				demand_parts.append("%s %.1f" % [item_id, demand_value])
+			for item_id: String in station.market.supply.keys():
+				var supply_value: float = float(station.market.supply[item_id])
+				supply_parts.append("%s %.1f" % [item_id, supply_value])
+
+			print("%s | Demands: %s | Supplies: %s" % [
+				station.display_name,
+				", ".join(demand_parts),
+				", ".join(supply_parts)
+			])
 
 func _simulation_tick(simulated_delta: float) -> void:
 	var extracted_units: float = 0.0
