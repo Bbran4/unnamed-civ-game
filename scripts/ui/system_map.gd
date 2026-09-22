@@ -21,6 +21,10 @@ const SYSTEM_SCENES: Dictionary = {
 const MAP_CENTER: Vector2 = Vector2(350.0, 270.0)
 const MAP_RADIUS: float = 230.0
 const MAX_ORBIT_DISTANCE: float = 15400.0
+const MIN_MAP_ZOOM: float = 0.5
+const MAX_MAP_ZOOM: float = 3.0
+const MAP_ZOOM_STEP: float = 0.15
+const TRAFFIC_REFRESH_INTERVAL: float = 0.05
 
 @onready var panel: Panel = $Panel
 @onready var system_name_label: Label = $Panel/SystemName
@@ -79,10 +83,24 @@ const MAX_ORBIT_DISTANCE: float = 15400.0
     $Panel/MapArea/OrbitMap/StationLabel3
 ]
 
+@onready var civilian_markers: Array[Polygon2D] = [
+    $Panel/MapArea/OrbitMap/Civilian1,
+    $Panel/MapArea/OrbitMap/Civilian2,
+    $Panel/MapArea/OrbitMap/Civilian3,
+    $Panel/MapArea/OrbitMap/Civilian4
+]
+
+@onready var freighter_markers: Array[Polygon2D] = [
+    $Panel/MapArea/OrbitMap/Freighter1,
+    $Panel/MapArea/OrbitMap/Freighter2
+]
+
 var space_system: SpaceSystem
 var map_open: bool = false
 var selected_system_id: String = ""
 var selected_station_id: String = ""
+var map_zoom: float = 1.0
+var traffic_refresh_timer: float = 0.0
 
 func _ready() -> void:
     space_system = get_parent() as SpaceSystem
@@ -90,6 +108,7 @@ func _ready() -> void:
     WorldState.map_open = false
 
     close_button.pressed.connect(close_map)
+    panel.gui_input.connect(_on_map_gui_input)
     warp_button.pressed.connect(_warp_to_selected_system)
     hyperdrive_button.pressed.connect(_hyperdrive_to_selected_station)
 
@@ -106,11 +125,12 @@ func _ready() -> void:
 
     _select_system(WorldState.current_system_id)
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
     if Input.is_action_just_pressed("open_map"):
         toggle_map()
 
     if map_open:
+        traffic_refresh_timer = maxf(0.0, traffic_refresh_timer - delta)
         update_map()
         update_warp_state()
 
@@ -166,7 +186,7 @@ func update_map() -> void:
             continue
 
         var planet: GeneratedPlanetData = generated_system.planets[planet_index]
-        var position_scale: float = MAP_RADIUS / MAX_ORBIT_DISTANCE
+        var position_scale: float = MAP_RADIUS * map_zoom / MAX_ORBIT_DISTANCE
         var map_position: Vector2 = MAP_CENTER + (
             Vector2(cos(
                 planet.orbital_angle
@@ -199,6 +219,8 @@ func update_map() -> void:
         player_marker.visible = false
         player_label.visible = false
 
+    _update_traffic_markers()
+
     for station_index: int in range(station_markers.size()):
         var marker: Polygon2D = station_markers[station_index]
         var label: Label = station_labels[station_index]
@@ -222,6 +244,65 @@ func update_map() -> void:
         label.visible = true
         station_buttons[station_index].text = station.display_name
         station_buttons[station_index].visible = true
+
+func _on_map_gui_input(event: InputEvent) -> void:
+    if not map_open:
+        return
+    if event is not InputEventMouseButton:
+        return
+
+    var mouse_event: InputEventMouseButton = event as InputEventMouseButton
+    if not mouse_event.pressed:
+        return
+
+    if mouse_event.button_index == MOUSE_BUTTON_WHEEL_UP:
+        map_zoom = minf(MAX_MAP_ZOOM, map_zoom + MAP_ZOOM_STEP)
+        update_map()
+    elif mouse_event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+        map_zoom = maxf(MIN_MAP_ZOOM, map_zoom - MAP_ZOOM_STEP)
+        update_map()
+
+func _update_traffic_markers() -> void:
+    var civilian_index: int = 0
+    var freighter_index: int = 0
+
+    for traffic_node: Node in get_tree().get_nodes_in_group("civilian_ship"):
+        var civilian_ship: CivilianShip = traffic_node as CivilianShip
+        if civilian_ship == null:
+            continue
+
+        var map_position: Vector2 = _world_to_map_position(civilian_ship.global_position)
+
+        if civilian_ship is FreighterShip:
+            if freighter_index >= freighter_markers.size():
+                continue
+            freighter_markers[freighter_index].position = map_position
+            freighter_markers[freighter_index].visible = true
+            freighter_index += 1
+        else:
+            if civilian_index >= civilian_markers.size():
+                continue
+            civilian_markers[civilian_index].position = map_position
+            civilian_markers[civilian_index].visible = true
+            civilian_index += 1
+
+    while civilian_index < civilian_markers.size():
+        civilian_markers[civilian_index].visible = false
+        civilian_index += 1
+
+    while freighter_index < freighter_markers.size():
+        freighter_markers[freighter_index].visible = false
+        freighter_index += 1
+
+func _world_to_map_position(world_position: Vector2) -> Vector2:
+    var position_scale: float = MAP_RADIUS * map_zoom / MAX_ORBIT_DISTANCE
+    var map_offset: Vector2 = world_position * position_scale
+    var maximum_radius: float = MAP_RADIUS - 8.0
+
+    if map_offset.length() > maximum_radius:
+        map_offset = map_offset.normalized() * maximum_radius
+
+    return MAP_CENTER + map_offset
 
 func build_map_circle_points(radius: float) -> PackedVector2Array:
     var points: PackedVector2Array = PackedVector2Array()
