@@ -146,6 +146,13 @@ func get_total_armor_bonus() -> int:
 			total_armor_bonus += module.armor_bonus
 	return total_armor_bonus
 
+func get_shield_regeneration() -> float:
+	if get_total_shield_capacity() <= 0:
+		return 0.0
+	if ship_template == null:
+		return 0.0
+	return ship_template.shield_regeneration
+
 func get_total_shield_capacity() -> int:
 	var total_shield_capacity: int = 0
 	for module: ShipModuleData in installed_modules:
