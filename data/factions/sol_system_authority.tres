@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="FactionData" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/factions/faction_data.gd" id="1_script"]
+[ext_resource type="Resource" path="res://data/economy/stations/military.tres" id="station_military"]
+[ext_resource type="Resource" path="res://data/economy/stations/trade.tres" id="station_trade"]
+[ext_resource type="Resource" path="res://data/economy/stations/industrial.tres" id="station_industrial"]
+
+[resource]
+script = ExtResource("1_script")
+id = "sol_system_authority"
+display_name = "Sol System Authority"
+description = "A professional law enforcement and regulatory organization responsible for patrols, customs, anti-piracy operations, and the security of established space lanes."
+faction_category = "law_enforcement"
+preferred_station_types = Array[StationTypeData]([ExtResource("station_military"), ExtResource("station_trade"), ExtResource("station_industrial")])
+preferred_goods = Array[GoodData]([])
