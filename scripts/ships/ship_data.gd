@@ -18,6 +18,12 @@ func get_weapon_mounts() -> int:
 		return 0
 	return mini(wings.weapon_mounts, 4)
 
+func get_used_module_slots() -> int:
+	return mini(modules.size(), module_slots)
+
+func has_module_capacity() -> bool:
+	return modules.size() < module_slots
+
 func get_total_shield_capacity() -> int:
 	var total_shield_capacity: int = shield_capacity
 	for module: ShipModuleData in modules:
