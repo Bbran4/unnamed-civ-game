@@ -204,10 +204,10 @@ func update_map() -> void:
         var map_position: Vector2 = MAP_CENTER + (
             Vector2(cos(
                 planet.orbital_angle
-                + ((TAU / maxf(planet.orbital_period, 1.0)) * space_system.simulation_time)
+                + ((TAU / maxf(planet.orbital_period, 1.0)) * space_system.generated_system.simulation_time)
             ), sin(
                 planet.orbital_angle
-                + ((TAU / maxf(planet.orbital_period, 1.0)) * space_system.simulation_time)
+                + ((TAU / maxf(planet.orbital_period, 1.0)) * space_system.generated_system.simulation_time)
             )) * planet.orbital_distance * position_scale
         )
 
