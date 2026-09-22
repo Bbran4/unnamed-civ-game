@@ -28,6 +28,7 @@ var current_shield: float = 50.0
 var shield_regen_remaining: float = 0.0
 var fire_cooldown_remaining: float = 0.0
 var control_style: ControlStyle = ControlStyle.ROTATION_KEYS
+var weapon_ammo: Dictionary = {}
 
 @onready var weapon_muzzles: Array[Marker2D] = [$WeaponMuzzles/Muzzle1, $WeaponMuzzles/Muzzle2, $WeaponMuzzles/Muzzle3, $WeaponMuzzles/Muzzle4]
 @onready var camera: Camera2D = $Camera2D
@@ -45,6 +46,7 @@ func _ready() -> void:
 	else:
 		global_position = WorldState.system_entry_position
 
+	_initialize_weapon_ammo()
 	_update_status_bars()
 
 func _physics_process(delta: float) -> void:
@@ -101,6 +103,16 @@ func _physics_process(delta: float) -> void:
 	fire_cooldown_remaining = maxf(0.0, fire_cooldown_remaining - delta)
 	if Input.is_action_pressed("primary_fire"):
 		_fire_primary()
+
+func _initialize_weapon_ammo() -> void:
+	weapon_ammo.clear()
+	if ship_data == null:
+		return
+
+	for weapon_index: int in range(ship_data.weapons.size()):
+		var weapon: ShipWeaponData = ship_data.get_weapon(weapon_index)
+		if weapon != null and weapon.ammo_capacity > 0:
+			weapon_ammo[weapon_index] = weapon.ammo_capacity
 
 func _apply_ship_data() -> void:
 	if ship_data == null:
@@ -169,9 +181,23 @@ func _fire_primary() -> void:
 			projectile_2d.global_position = weapon_muzzle.global_position
 			projectile_2d.global_rotation = global_rotation
 			projectile_2d.set("owner_group", "player_projectile")
+			if weapon.ammo_capacity > 0:
+				var remaining_ammo: int = weapon_ammo.get(mount_index, weapon.ammo_capacity)
+				if remaining_ammo <= 0:
+					continue
+				weapon_ammo[mount_index] = remaining_ammo - 1
+
 			projectile_2d.set("damage", weapon.damage)
 			projectile_2d.set("speed", weapon.projectile_speed)
 			projectile_2d.set("lifetime", weapon.range / maxf(weapon.projectile_speed, 1.0))
+			projectile_2d.set("projectile_type", weapon.weapon_type)
+			projectile_2d.set("shield_damage_multiplier", weapon.shield_damage_multiplier)
+			projectile_2d.set("hull_damage_multiplier", weapon.hull_damage_multiplier)
+			projectile_2d.set("tracking", weapon.tracking)
+			projectile_2d.set("tracking_turn_speed", weapon.tracking_turn_speed)
+			if weapon.tracking:
+				var missile_target: Node2D = get_tree().get_first_node_in_group("enemy_ship") as Node2D
+				projectile_2d.set("target", missile_target)
 			get_tree().current_scene.add_child(projectile_2d)
 			var fire_interval: float = 1.0 / maxf(weapon.fire_rate, 0.01)
 			lowest_fire_interval = minf(lowest_fire_interval, fire_interval)
