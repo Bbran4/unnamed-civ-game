@@ -21,6 +21,7 @@ var shield_regen_remaining: float = 0.0
 var fire_cooldown_remaining: float = 0.0
 var player_ship: Node2D
 var is_destroying: bool = false
+var weapon_ammo: Dictionary = {}
 
 @onready var weapon_muzzles: Array[Marker2D] = [$WeaponMuzzles/Muzzle1, $WeaponMuzzles/Muzzle2, $WeaponMuzzles/Muzzle3, $WeaponMuzzles/Muzzle4]
 @onready var hull_visual: Polygon2D = $Hull
@@ -32,6 +33,7 @@ func _ready() -> void:
 	current_shield = max_shield
 	_update_status_bars()
 	_update_status_bar_transform()
+	_initialize_weapon_ammo()
 	player_ship = get_tree().get_first_node_in_group("player_ship") as Node2D
 
 func _physics_process(delta: float) -> void:
@@ -61,6 +63,16 @@ func _physics_process(delta: float) -> void:
 	fire_cooldown_remaining = maxf(0.0, fire_cooldown_remaining - delta)
 	if distance_to_player < 550.0:
 		_fire_at_player()
+
+func _initialize_weapon_ammo() -> void:
+	weapon_ammo.clear()
+	if ship_data == null:
+		return
+
+	for weapon_index: int in range(ship_data.weapons.size()):
+		var weapon: ShipWeaponData = ship_data.get_weapon(weapon_index)
+		if weapon != null and weapon.ammo_capacity > 0:
+			weapon_ammo[weapon_index] = weapon.ammo_capacity
 
 func _apply_ship_data() -> void:
 	if ship_data == null:
@@ -98,9 +110,22 @@ func _fire_at_player() -> void:
 			projectile_2d.global_position = weapon_muzzle.global_position
 			projectile_2d.global_rotation = global_rotation
 			projectile_2d.set("owner_group", "enemy_projectile)
+			if weapon.ammo_capacity > 0:
+				var remaining_ammo: int = weapon_ammo.get(mount_index, weapon.ammo_capacity)
+				if remaining_ammo <= 0:
+					continue
+				weapon_ammo[mount_index] = remaining_ammo - 1
+
 			projectile_2d.set("damage", weapon.damage)
 			projectile_2d.set("speed", weapon.projectile_speed)
 			projectile_2d.set("lifetime", weapon.range / maxf(weapon.projectile_speed, 1.0))
+			projectile_2d.set("projectile_type", weapon.weapon_type)
+			projectile_2d.set("shield_damage_multiplier", weapon.shield_damage_multiplier)
+			projectile_2d.set("hull_damage_multiplier", weapon.hull_damage_multiplier)
+			projectile_2d.set("tracking", weapon.tracking)
+			projectile_2d.set("tracking_turn_speed", weapon.tracking_turn_speed)
+			if weapon.tracking:
+				projectile_2d.set("target", player_ship)
 			get_tree().current_scene.add_child(projectile_2d)
 			var fire_interval: float = 1.0 / maxf(weapon.fire_rate, 0.01)
 			lowest_fire_interval = minf(lowest_fire_interval, fire_interval)
