@@ -71,7 +71,7 @@ func _remain_docked(delta: float) -> void:
 		cargo_good_id = ""
 
 func _unload_cargo() -> void:
-	var destination_station: GeneratedStationData = _get_station_by_id(origin_station_id)
+	var destination_station: GeneratedStationData = _get_station_by_id(destination_station_id)
 	if destination_station == null or destination_station.market == null:
 		return
 	if cargo_good_id.is_empty():
