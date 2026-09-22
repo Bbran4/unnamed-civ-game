@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 WorldState="*res://scripts/world_state.gd"
 SceneManager="*res://scripts/scene_manager.gd"
+GalaxyState="*res://scripts/world/galaxy_state.gd"
 
 [display]
 

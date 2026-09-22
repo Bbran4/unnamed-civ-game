@@ -41,10 +41,13 @@ func _select_destination() -> void:
 		return
 
 	var best_destination: GeneratedStationData = null
+	var best_destination_system_id: String = ""
 	var best_manifest: Dictionary = {}
 	var best_profit: float = 0.0
 	var best_route_distance: float = 0.0
+	var best_is_inter_system: bool = false
 
+	# Local, in-system destinations.
 	for station: GeneratedStationData in space_system.generated_system.stations:
 		if station == null or station.id == origin_station_id:
 			continue
@@ -52,31 +55,48 @@ func _select_destination() -> void:
 			continue
 
 		var route_distance: float = _get_station_distance(origin_station.id, station.id)
-		var candidate_manifest: Dictionary = _build_trade_manifest(origin_station, station, route_distance)
-		if candidate_manifest.is_empty():
-			continue
-
-		var candidate_profit: float = _calculate_manifest_profit(
-			origin_station,
-			station,
-			candidate_manifest,
-			route_distance
-		)
-		var fuel_required: float = _calculate_fuel_required(route_distance)
-		var fuel_cost: float = _calculate_fuel_cost(origin_station, fuel_required)
-		candidate_profit -= fuel_cost
+		var evaluation: Dictionary = _evaluate_trade_candidate(origin_station, station, route_distance, false)
+		var candidate_profit: float = float(evaluation.get("profit", 0.0))
 
 		if candidate_profit > best_profit:
 			best_profit = candidate_profit
 			best_destination = station
-			best_manifest = candidate_manifest
+			best_destination_system_id = space_system.system_id
+			best_manifest = evaluation.get("manifest", {})
 			best_route_distance = route_distance
+			best_is_inter_system = false
+
+	# Distant, inter-system destinations. Every other generated star system is
+	# considered as a possible trade partner, even while it is not loaded.
+	for system_id: String in GalaxyState.get_all_system_ids():
+		if system_id == space_system.system_id:
+			continue
+
+		var remote_system: GeneratedSystemData = GalaxyState.get_system(system_id)
+		for station: GeneratedStationData in remote_system.stations:
+			if station == null or station.market == null or station.station_type == null:
+				continue
+
+			var route_distance: float = GalaxyState.INTER_SYSTEM_DISTANCE
+			var evaluation: Dictionary = _evaluate_trade_candidate(origin_station, station, route_distance, true)
+			var candidate_profit: float = float(evaluation.get("profit", 0.0))
+
+			if candidate_profit > best_profit:
+				best_profit = candidate_profit
+				best_destination = station
+				best_destination_system_id = system_id
+				best_manifest = evaluation.get("manifest", {})
+				best_route_distance = route_distance
+				best_is_inter_system = true
 
 	if best_destination == null or best_manifest.is_empty() or best_profit <= 0.0:
 		_enter_docked_state()
 		return
 
-	var fuel_required_for_best_route: float = _calculate_fuel_required(best_route_distance)
+	var fuel_required_for_best_route: float = (
+		GalaxyState.INTER_SYSTEM_FUEL_COST if best_is_inter_system
+		else _calculate_fuel_required(best_route_distance)
+	)
 	if not _refuel_for_trip(origin_station, fuel_required_for_best_route):
 		_enter_docked_state()
 		return
@@ -87,6 +107,16 @@ func _select_destination() -> void:
 		_enter_docked_state()
 		return
 
+	if best_is_inter_system:
+		# There is no rendered flight between star systems, so the freighter
+		# jumps out immediately; the cargo arrives (and updates the
+		# destination market) after GalaxyState.INTER_SYSTEM_TRANSIT_TIME.
+		GalaxyState.queue_shipment(best_destination_system_id, best_destination.id, cargo_manifest)
+		cargo_manifest.clear()
+		cargo_units = 0
+		queue_free()
+		return
+
 	destination_station_id = best_destination.id
 	journey_type = JourneyType.TRADE_RUN
 	journey_time = 0.0
@@ -94,6 +124,32 @@ func _select_destination() -> void:
 	cargo_route_distance = best_route_distance
 	travel_state = TravelState.TRAVEL
 	velocity = Vector2.ZERO
+
+func _evaluate_trade_candidate(
+	origin_station: GeneratedStationData,
+	destination_station: GeneratedStationData,
+	route_distance: float,
+	is_inter_system: bool
+) -> Dictionary:
+	var candidate_manifest: Dictionary = _build_trade_manifest(origin_station, destination_station, route_distance)
+	if candidate_manifest.is_empty():
+		return {"profit": 0.0, "manifest": {}}
+
+	var candidate_profit: float = _calculate_manifest_profit(
+		origin_station,
+		destination_station,
+		candidate_manifest,
+		route_distance
+	)
+
+	var fuel_required: float = (
+		GalaxyState.INTER_SYSTEM_FUEL_COST if is_inter_system
+		else _calculate_fuel_required(route_distance)
+	)
+	var fuel_cost: float = _calculate_fuel_cost(origin_station, fuel_required)
+	candidate_profit -= fuel_cost
+
+	return {"profit": candidate_profit, "manifest": candidate_manifest}
 
 func _build_trade_manifest(
 	origin_station: GeneratedStationData,
@@ -191,10 +247,12 @@ func _build_trade_manifest(
 		if best_item_id.is_empty() or best_profit_per_unit <= 0.0 or best_available_units <= 0:
 			break
 
+		var best_base_value: float = _get_item_base_value(origin_station, best_item_id, best_item_is_resource)
 		manifest[best_item_id] = {
 			"units": best_available_units,
 			"is_resource": best_item_is_resource,
-			"purchase_price": best_origin_price
+			"purchase_price": best_origin_price,
+			"base_value": best_base_value
 		}
 		selected_items[best_item_id] = true
 		remaining_capacity -= best_available_units
@@ -484,19 +542,27 @@ func _station_imports_resource(
 	station: GeneratedStationData,
 	resource_id: String
 ) -> bool:
-	if station == null or station.market == null:
+	if station == null or station.station_type == null:
 		return false
 
-	return station.market.demand.has(resource_id)
+	for resource_data: ResourceData in station.station_type.resource_imports:
+		if resource_data != null and resource_data.id == resource_id:
+			return true
+
+	return false
 
 func _station_imports_good(
 	station: GeneratedStationData,
 	good_id: String
 ) -> bool:
-	if station == null or station.market == null:
+	if station == null or station.station_type == null:
 		return false
 
-	return station.market.demand.has(good_id)
+	for good_data: GoodData in station.station_type.good_imports:
+		if good_data != null and good_data.id == good_id:
+			return true
+
+	return false
 
 func _enter_docked_state() -> void:
 	travel_state = TravelState.DOCKED
