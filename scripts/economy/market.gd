@@ -50,25 +50,58 @@ func build_market(planet: GeneratedPlanetData, station: GeneratedStationData) ->
 	_initialize_extraction_supply(market_data, planet, station)
 	_initialize_operational_demand(market_data, station)
 	_initialize_production_demand(market_data, station)
+	refresh_demand(market_data)
 
 	for item_id: String in market_data.supply.keys():
 		var base_value: float = float(market_data.base_values.get(item_id, 1.0))
-		var supply: float = float(market_data.supply[item_id])
-		var demand: float = float(market_data.demand[item_id])
-		market_data.current_prices[item_id] = calculate_price(base_value, supply, demand)
+		var supply: float = float(market_data.supply.get(item_id, 0.0))
+		var demand_rate: float = float(market_data.demand_rate.get(item_id, 0.0))
+		market_data.current_prices[item_id] = calculate_price(
+			base_value,
+			supply,
+			demand_rate
+		)
 
 	return market_data
+
+func refresh_demand(market_data: MarketData) -> void:
+	if market_data == null:
+		return
+
+	for item_id: String in market_data.supply.keys():
+		var supply: float = float(market_data.supply.get(item_id, 0.0))
+		var demand_rate: float = float(market_data.demand_rate.get(item_id, 0.0))
+		var target_stock: float = maxf(
+			demand_rate * PRICE_TARGET_SECONDS,
+			0.0
+		)
+		market_data.demand[item_id] = maxf(target_stock - supply, 0.0)
+
+func calculate_target_stock(demand_rate_per_second: float) -> float:
+	return maxf(
+		demand_rate_per_second * PRICE_TARGET_SECONDS,
+		0.0
+	)
 
 func calculate_price(
 	base_value: float,
 	supply: float,
-	demand_per_second: float
+	demand_rate_per_second: float
 ) -> float:
 	var safe_base_value: float = maxf(base_value, 0.01)
-	var target_stock: float = maxf(demand_per_second * PRICE_TARGET_SECONDS, 1.0)
+	var target_stock: float = calculate_target_stock(demand_rate_per_second)
+
+	if target_stock <= 0.0:
+		return safe_base_value
+
 	var safe_supply: float = maxf(supply, 0.01)
-	var pressure: float = target_stock / safe_supply
-	var price_multiplier: float = clampf(0.5 + (pressure * 0.5), 0.25, 4.0)
+	var stock_ratio: float = safe_supply / target_stock
+	var price_multiplier: float = clampf(
+		1.0 / maxf(stock_ratio, 0.25),
+		0.25,
+		4.0
+	)
+
 	return safe_base_value * price_multiplier
 
 func _register_item(
@@ -81,6 +114,7 @@ func _register_item(
 
 	market_data.supply[item_id] = 0.0
 	market_data.demand[item_id] = 0.0
+	market_data.demand_rate[item_id] = 0.0
 	market_data.operational_demand[item_id] = 0.0
 	market_data.base_values[item_id] = base_value
 	market_data.current_prices[item_id] = base_value
@@ -102,7 +136,9 @@ func _initialize_extraction_supply(
 			0.0,
 			1.0
 		)
-		var extraction_rate: float = station.station_type.resource_extraction_rate * abundance
+		var extraction_rate: float = (
+			station.station_type.resource_extraction_rate * abundance
+		)
 		var starting_supply: float = extraction_rate * INITIAL_STOCK_SECONDS
 
 		market_data.supply[resource_data.id] = starting_supply
@@ -122,12 +158,13 @@ func _initialize_operational_demand(
 			resource_data.category,
 			station.population
 		)
+
 		market_data.operational_demand[resource_data.id] = (
 			float(market_data.operational_demand.get(resource_data.id, 0.0))
 			+ demand_rate
 		)
-		market_data.demand[resource_data.id] = (
-			float(market_data.demand.get(resource_data.id, 0.0))
+		market_data.demand_rate[resource_data.id] = (
+			float(market_data.demand_rate.get(resource_data.id, 0.0))
 			+ demand_rate
 		)
 
@@ -139,12 +176,13 @@ func _initialize_operational_demand(
 			good_data.category,
 			station.population
 		)
+
 		market_data.operational_demand[good_data.id] = (
 			float(market_data.operational_demand.get(good_data.id, 0.0))
 			+ demand_rate
 		)
-		market_data.demand[good_data.id] = (
-			float(market_data.demand.get(good_data.id, 0.0))
+		market_data.demand_rate[good_data.id] = (
+			float(market_data.demand_rate.get(good_data.id, 0.0))
 			+ demand_rate
 		)
 
@@ -167,9 +205,11 @@ func _initialize_production_demand(
 			if item_id.is_empty():
 				continue
 
-			var demand_rate: float = ingredient.quantity / recipe.production_time
-			market_data.demand[item_id] = (
-				float(market_data.demand.get(item_id, 0.0))
+			var demand_rate: float = (
+				ingredient.quantity / recipe.production_time
+			)
+			market_data.demand_rate[item_id] = (
+				float(market_data.demand_rate.get(item_id, 0.0))
 				+ demand_rate
 			)
 
@@ -177,7 +217,10 @@ func calculate_operational_demand(
 	category: String,
 	population: int
 ) -> float:
-	var population_factor: float = maxf(float(population) / 10000.0, 0.1)
+	var population_factor: float = maxf(
+		float(population) / 10000.0,
+		0.1
+	)
 
 	match category:
 		"Biological", "Agricultural", "Consumer":
