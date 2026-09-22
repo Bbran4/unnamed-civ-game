@@ -13,3 +13,6 @@ description = "A professional law enforcement and regulatory organization respon
 faction_category = "law_enforcement"
 preferred_station_types = Array[StationTypeData]([ExtResource("station_military"), ExtResource("station_trade"), ExtResource("station_industrial")])
 preferred_goods = Array[GoodData]([])
+relations = {
+"red_knife_syndicate": -100
+}
