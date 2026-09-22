@@ -19,7 +19,14 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	_remove_invalid_ships()
+
 	if space_system == null:
+		space_system = get_tree().get_first_node_in_group("space_system") as SpaceSystem
+		if space_system == null:
+			return
+
+	if civilian_ships.is_empty():
+		_spawn_initial_traffic()
 		return
 
 	while _count_civilian_ships() < civilian_ship_count:
@@ -29,11 +36,19 @@ func _process(_delta: float) -> void:
 		_spawn_freighter()
 
 func _spawn_initial_traffic() -> void:
+	if space_system == null:
+		return
+
 	for _index: int in range(civilian_ship_count):
 		_spawn_civilian()
 
 	for _index: int in range(freighter_ship_count):
 		_spawn_freighter()
+
+	print("Traffic spawned: %d civilians, %d freighters" % [
+		_count_civilian_ships(),
+		_count_freighter_ships()
+	])
 
 func _spawn_civilian() -> void:
 	if space_system == null:
