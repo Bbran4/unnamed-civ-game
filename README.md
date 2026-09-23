@@ -210,21 +210,17 @@ Turning and rolling do not automatically redirect existing velocity. A ship can 
 
 ### Boost
 
-Boost increases available propulsion rather than directly setting the ship to an arbitrary speed.
+Boost uses its own direct gameplay values.
 
 ~~~
-Normal engine thrust
-		↓
-Normal acceleration
-
-Boost engine thrust
+Boost active
 		↓
 Higher acceleration
 		↓
-Higher practical speed
+Higher speed limit
 ~~~
 
-The exact top speed remains a gameplay constraint because a ship in empty space would otherwise continue accelerating for as long as thrust is applied.
+Each ship can therefore be tuned independently for normal speed, boost speed and how quickly it reaches those speeds.
 
 ## Ship States
 
