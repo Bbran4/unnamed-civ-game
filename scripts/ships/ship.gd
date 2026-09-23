@@ -35,6 +35,8 @@ var destroyed_state: bool = false
 var current_hull: float = 0.0
 var current_shields: float = 0.0
 var current_energy: float = 0.0
+var shield_recharge_delay_remaining: float = 0.0
+var energy_recharge_delay_remaining: float = 0.0
 
 var throttle: float = 0.0
 var boost_active: bool = false
@@ -72,6 +74,8 @@ func _ready() -> void:
 	_initialize_weapon_slots()
 
 func _physics_process(delta: float) -> void:
+	_update_resource_regeneration(delta)
+
 	if controller == null:
 		return
 
@@ -90,6 +94,8 @@ func _initialize_from_data() -> void:
 	current_hull = ship_data.hull_capacity
 	current_shields = ship_data.shield_capacity
 	current_energy = ship_data.energy_capacity
+	shield_recharge_delay_remaining = 0.0
+	energy_recharge_delay_remaining = 0.0
 	_calculate_flight_characteristics()
 
 func _initialize_controller() -> void:
@@ -249,6 +255,33 @@ func _apply_translation(delta: float, intent: Dictionary) -> void:
 		)
 		velocity = forward * current_forward_speed + corrected_lateral_velocity
 
+func _update_resource_regeneration(delta: float) -> void:
+	if ship_data == null or destroyed_state:
+		return
+
+	shield_recharge_delay_remaining = maxf(
+		shield_recharge_delay_remaining - delta,
+		0.0
+	)
+	energy_recharge_delay_remaining = maxf(
+		energy_recharge_delay_remaining - delta,
+		0.0
+	)
+
+	if shield_recharge_delay_remaining <= 0.0:
+		current_shields = move_toward(
+			current_shields,
+			maxf(ship_data.shield_capacity, 0.0),
+			maxf(ship_data.shield_recharge_rate, 0.0) * delta
+		)
+
+	if energy_recharge_delay_remaining <= 0.0:
+		current_energy = move_toward(
+			current_energy,
+			maxf(ship_data.energy_capacity, 0.0),
+			maxf(ship_data.energy_recharge_rate, 0.0) * delta
+		)
+
 func _apply_weapons(intent: Dictionary) -> void:
 	if not bool(intent.get("fire", false)):
 		return
@@ -398,6 +431,9 @@ func receive_damage(amount: float, source: Node = null) -> void:
 	if damage <= 0.0:
 		return
 
+	if ship_data != null:
+		shield_recharge_delay_remaining = maxf(ship_data.shield_recharge_delay, 0.0)
+
 	var shield_result: Dictionary = ShieldSystem.absorb_damage(
 		current_shields,
 		damage
@@ -459,12 +495,36 @@ func reset_runtime_state() -> void:
 	current_hull = ship_data.hull_capacity
 	current_shields = ship_data.shield_capacity
 	current_energy = ship_data.energy_capacity
+	shield_recharge_delay_remaining = 0.0
+	energy_recharge_delay_remaining = 0.0
 	destroyed_state = false
 	throttle = 0.0
 	boost_active = false
 	brake_active = false
 	velocity = Vector3.ZERO
 	angular_velocity = Vector3.ZERO
+
+func consume_energy(amount: float) -> bool:
+	if ship_data == null:
+		return false
+
+	var cost: float = maxf(amount, 0.0)
+
+	if current_energy < cost:
+		return false
+
+	current_energy -= cost
+	energy_recharge_delay_remaining = maxf(ship_data.energy_recharge_delay, 0.0)
+	return true
+
+
+func get_shield_recharge_delay_remaining() -> float:
+	return shield_recharge_delay_remaining
+
+
+func get_energy_recharge_delay_remaining() -> float:
+	return energy_recharge_delay_remaining
+
 
 func get_speed() -> float:
 	return velocity.length()
