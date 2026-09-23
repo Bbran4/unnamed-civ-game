@@ -1252,6 +1252,8 @@ Current target hull
 
 For the first combat prototype, incoming damage is absorbed by shields first. Any damage remaining after the shield capacity is depleted continues to the hull. Shield regeneration, directional shielding and shield-generator behaviour are deliberately deferred until they are needed.
 
+The HullSystem now owns the basic hull damage calculation. The runtime Ship stores the current hull value and delegates overflow damage to HullSystem, keeping future armour, subsystem damage and destruction rules outside the projectile and damage dispatcher.
+
 
 ## Runtime State
 
@@ -1409,7 +1411,7 @@ Before combat, the prototype flight code will be refactored into## Milestone 2 -
 - [x] Projectile runtime
 - [x] Damage system
 - [x] Shields
-- [ ] Hull
+- [x] Hull
 - [ ] Destruction
 - [ ] Targeting system
 - [ ] Combat HUD
