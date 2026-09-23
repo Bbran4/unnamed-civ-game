@@ -15,6 +15,8 @@ extends ShipController
 
 @export_category("Camera")
 @export var camera_path: NodePath = NodePath("../Camera3D")
+## Distance in metres used to construct the free-aim point when no target is locked.
+@export var free_aim_distance: float = 1000.0
 
 @export_category("Targeting")
 ## Maximum distance in metres used when locking or cycling targets.
@@ -75,9 +77,34 @@ func _get_fire_direction() -> Vector3:
 	if camera == null:
 		return Vector3.ZERO
 
+	var weapon: Weapon = ship.get_weapon(0)
+
+	if weapon == null or weapon.muzzle == null:
+		return Vector3.ZERO
+
 	var viewport_size: Vector2 = get_viewport().get_visible_rect().size
 	var crosshair_position: Vector2 = viewport_size * 0.5
-	return camera.project_ray_normal(crosshair_position).normalized()
+	var aim_distance: float = maxf(free_aim_distance, 1.0)
+
+	if targeting_system != null:
+		var target: Node3D = targeting_system.get_target()
+
+		if target != null:
+			var target_distance: float = targeting_system.get_target_distance()
+
+			if target_distance > 1.0 and target_distance < 100000.0:
+				aim_distance = target_distance
+
+	# project_position() gives us a world-space point exactly on the camera's
+	# crosshair ray at the chosen depth. The projectile then travels from the
+	# physical muzzle toward that point, eliminating the camera/muzzle parallax
+	# that made shots appear below the crosshair.
+	var aim_point: Vector3 = camera.project_position(
+		crosshair_position,
+		aim_distance
+	)
+
+	return (aim_point - weapon.muzzle.global_position).normalized()
 
 
 func _cycle_target() -> void:
