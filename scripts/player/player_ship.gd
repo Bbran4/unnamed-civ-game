@@ -1,7 +1,8 @@
 extends CharacterBody3D
 
 ## Milestone 1: basic 3D space flight.
-## The flight model is intentionally arcade-like, with acceleration and momentum.
+## Arcade-like acceleration and momentum, designed to become the foundation
+## for combat and exploration.
 
 @export_category("Flight")
 @export var max_speed: float = 35.0
@@ -51,22 +52,22 @@ func _apply_rotation(delta: float) -> void:
 	rotate_object_local(Vector3.RIGHT, mouse_pitch)
 	rotate_y(mouse_yaw)
 
-	var pitch := Input.get_axis("pitch_down", "pitch_up")
-	var yaw := Input.get_axis("yaw_left", "yaw_right")
-	var roll := Input.get_axis("roll_left", "roll_right")
+	var pitch := _axis(KEY_DOWN, KEY_UP)
+	var yaw := _axis(KEY_LEFT, KEY_RIGHT)
+	var roll := _axis(KEY_Q, KEY_E)
 
 	rotate_object_local(Vector3.RIGHT, pitch * keyboard_pitch_speed * delta)
 	rotate_y(yaw * keyboard_yaw_speed * delta)
 	rotate_object_local(Vector3.FORWARD, roll * roll_speed * delta)
 
 func _apply_throttle(delta: float) -> void:
-	var throttle_input := Input.get_axis("throttle_down", "throttle_up")
+	var throttle_input := _axis(KEY_S, KEY_W)
 	throttle = clamp(throttle + throttle_input * delta, -1.0, 1.0)
 
-	if Input.is_action_just_pressed("brake"):
-		throttle = 0.0
+	if Input.is_key_pressed(KEY_SPACE):
+		throttle = move_toward(throttle, 0.0, 3.0 * delta)
 
-	boost_active = Input.is_action_pressed("boost") and throttle > 0.0
+	boost_active = Input.is_key_pressed(KEY_SHIFT) and throttle > 0.0
 
 func _apply_translation(delta: float) -> void:
 	var target_speed := throttle * max_speed
@@ -77,26 +78,32 @@ func _apply_translation(delta: float) -> void:
 	if throttle < 0.0:
 		target_speed = throttle * reverse_speed
 
-	var forward_velocity := -global_transform.basis.z * target_speed
-	var current_forward := velocity.project(-global_transform.basis.z)
+	var forward := -global_transform.basis.z
+	var desired_forward_velocity := forward * target_speed
+	var current_forward := velocity.project(forward)
 
 	var rate := acceleration
-	if target_speed == 0.0:
+	if abs(target_speed) < 0.01:
 		rate = brake_strength
 	elif boost_active:
 		rate = boost_acceleration
 
-	velocity += (forward_velocity - current_forward).limit_length(rate * delta)
+	velocity += (desired_forward_velocity - current_forward).limit_length(rate * delta)
 
-	var strafe_input := Input.get_axis("strafe_left", "strafe_right")
-	var vertical_input := Input.get_axis("strafe_down", "strafe_up")
+	var strafe := _axis(KEY_A, KEY_D)
+	var vertical := _axis(KEY_CTRL, KEY_SPACE)
 
 	var local_strafe := (
-		global_transform.basis.x * strafe_input +
-		global_transform.basis.y * vertical_input
+		global_transform.basis.x * strafe +
+		global_transform.basis.y * vertical
 	) * strafe_speed
 
-	velocity += local_strafe * delta
+	# Strafe is intentionally subtle in Milestone 1. Space is reserved for
+	# braking, so vertical movement will be expanded with a dedicated binding later.
+	velocity += global_transform.basis.x * strafe * strafe_speed * delta
+
+func _axis(negative_key: Key, positive_key: Key) -> float:
+	return float(Input.is_key_pressed(positive_key)) - float(Input.is_key_pressed(negative_key))
 
 func get_speed() -> float:
 	return velocity.length()
