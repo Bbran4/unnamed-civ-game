@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/flight_hud.gd" id="1_hud"]
+[ext_resource type="Script" path="res://scripts/ui/target_lock_bracket.gd" id="2_bracket"]
 
 [sub_resource type="StyleBoxFlat" id="Style_panel"]
 bg_color = Color(0.008, 0.016, 0.035, 0.82)
@@ -20,6 +21,13 @@ content_margin_bottom = 10.0
 
 [node name="FlightHUD" type="CanvasLayer"]
 script = ExtResource("1_hud")
+
+[node name="TargetLockBracket" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+mouse_filter = 2
+script = ExtResource("2_bracket")
+ship_path = NodePath("../../PlayerShip")
 
 [node name="PlayerPanel" type="PanelContainer" parent="."]
 offset_left = 24.0
