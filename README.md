@@ -1025,7 +1025,33 @@ The prototype HUD reads directly from runtime ship and targeting state. It curre
 - Equipped weapon and firing readiness.
 - The existing flight reticle and controls.
 
-The HUD does not own targeting behaviour. Target selection and locking remain gameplay/controller responsibilities. The current main-scene test assigns the spawned enemy as the player's target so the combat UI can be exercised before target-lock input exists.
+The HUD does not own targeting behaviour. Target selection and locking remain gameplay/controller responsibilities. The player can now acquire and cycle targets directly during the combat test.
+
+## Target Locking
+
+Target locking is now player-driven.
+
+**T:** Lock the nearest valid ship. Press **T** again to cycle through nearby valid ships by distance.
+
+The player controller decides when the input occurs, while TargetingSystem provides the valid target list, current target state and cycling logic. Destroyed or out-of-range ships are ignored.
+
+~~~text
+T
+↓
+TargetingSystem
+↓
+Valid ships within 1500 m
+↓
+Nearest target
+↓
+T again
+↓
+Next target
+↓
+Wrap around
+~~~
+
+The current target remains selected until the player cycles to another target or the target becomes invalid. The HUD reflects the active target lock immediately.
 
 ## Enemy AI State Machine
 
@@ -1078,6 +1104,7 @@ Projectile collision
 The current test controls include:
 
 - **Left Mouse Button:** Fire equipped weapon.
+- **T:** Lock the nearest valid target or cycle to the next nearby target.
 - The weapon consumes ship energy and observes its configured fire rate.
 - A projectile is spawned at the weapon muzzle and travels in the weapon's forward direction.
 - Projectile collision routes through the DamageSystem, which applies damage to the target ship's shields and hull.
@@ -1474,7 +1501,7 @@ The reusable ship, controller and flight model foundation is in place.
 ### Dogfight
 
 - [x] Enemy AI
-- [ ] Target locking
+- [x] Target locking
 - [ ] Basic weapon
 - [ ] Projectile firing
 - [ ] Player damage
