@@ -10,7 +10,7 @@ var ship: Node3D
 
 func _ready() -> void:
 	ship = get_node_or_null(ship_path)
-	help_label.text = "W/S Throttle  |  Mouse Pitch/Yaw  |  Q/E Roll  |  A/D Strafe  |  Shift Boost  |  Space Brake  |  Esc Release Mouse"
+	help_label.text = "W/S Throttle  |  Mouse Pitch/Yaw  |  Q/E Roll  |  A/D Strafe  |  Shift Boost  |  Space Brake  |  LMB Fire  |  Esc Release Mouse"
 
 func _process(_delta: float) -> void:
 	if ship == null:
