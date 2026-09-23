@@ -377,12 +377,13 @@ func get_moment_of_inertia_kg_m2() -> Vector3:
 	return moment_of_inertia
 
 signal damage_received(amount: float, source: Node, remaining_hull: float)
+signal shields_hit(amount: float, source: Node, remaining_shields: float)
+signal hull_hit(amount: float, source: Node, remaining_hull: float)
 
 ## Entry point used by DamageSystem.
 ##
-## Hull absorption is intentionally the simplest implementation for now.
-## The dedicated Shields and Hull systems will take ownership of these rules
-## later without changing how projectiles deliver damage.
+## Incoming damage is processed by shields first. Any damage that remains
+## after shields are depleted is applied to the hull.
 func receive_damage(amount: float, source: Node = null) -> void:
 	if is_destroyed():
 		return
@@ -392,7 +393,22 @@ func receive_damage(amount: float, source: Node = null) -> void:
 	if damage <= 0.0:
 		return
 
-	current_hull = maxf(current_hull - damage, 0.0)
+	var shield_result: Dictionary = ShieldSystem.absorb_damage(
+		current_shields,
+		damage
+	)
+
+	current_shields = float(shield_result["remaining_shields"])
+	var shield_damage: float = float(shield_result["shield_damage"])
+	var overflow_damage: float = float(shield_result["overflow_damage"])
+
+	if shield_damage > 0.0:
+		shields_hit.emit(shield_damage, source, current_shields)
+
+	if overflow_damage > 0.0:
+		current_hull = maxf(current_hull - overflow_damage, 0.0)
+		hull_hit.emit(overflow_damage, source, current_hull)
+
 	damage_received.emit(damage, source, current_hull)
 
 
