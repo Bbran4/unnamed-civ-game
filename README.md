@@ -942,6 +942,78 @@ Ship
 
 The same ship implementation can therefore be controlled by the player, an enemy AI, an escort AI or another future controller without duplicating flight physics.
 
+## Ship Loadouts and Weapon Mounts
+
+Ship equipment is divided between **static capacity** and **runtime loadout**.
+
+~~~
+ShipData
+├── weapon_slots
+├── missile_slots
+└── utility_slots
+~~~
+
+These values describe how many equipment slots the ship can support. They do not contain the weapons currently installed.
+
+The runtime Ship owns the actual loadout:
+
+~~~
+Ship
+├── ShipData
+├── Runtime State
+├── Weapon Loadout
+│   ├── Weapon Slot 0
+│   ├── Weapon Slot 1
+│   └── ...
+└── Equipment
+~~~
+
+A weapon is installed by taking a WeaponData definition, finding a compatible free slot, creating a runtime Weapon instance, attaching it to the ship's physical mount and assigning the owning Ship.
+
+~~~
+WeaponData
+    ↓
+Equip
+    ↓
+Available Weapon Slot
+    ↓
+Weapon runtime instance
+    ↓
+Physical Weapon Mount
+    ↓
+Muzzle
+    ↓
+Projectile
+~~~
+
+The physical ship scene contains named weapon mount points, for example:
+
+~~~
+Ship
+└── WeaponMounts
+    ├── WeaponMount_0
+    ├── WeaponMount_1
+    └── ...
+~~~
+
+`ShipData.weapon_slots` remains the gameplay capacity, while the scene's mount points determine where those weapons appear visually.
+
+The same ShipData can therefore be reused by many different loadouts:
+
+~~~
+Starter Fighter
+    ↓
+Player Ship
+    └── Starter Laser
+
+Starter Fighter
+    ↓
+Enemy Ship
+    └── Plasma Cannon
+~~~
+
+Weapon mass remains part of the runtime ship's total mass because WeaponData inherits from EquipmentData.
+
 ## Composition Over Ship Inheritance
 
 Ships should not become a deep inheritance tree such as:
