@@ -4,8 +4,8 @@ extends Node
 ## Reusable runtime targeting system.
 ##
 ## TargetingSystem owns the current target for one ship and provides safe
-## helpers for acquiring and validating targets. It does not decide when the
-## player or AI should lock a target. That behaviour belongs to the higher-level
+## helpers for acquiring, cycling and validating targets. It does not decide
+## when the player or AI should lock or cycle targets. That behaviour belongs to the higher-level
 ## target-lock and AI systems.
 ##
 ## Ships are registered in the "ships" group so the system can find nearby
@@ -107,6 +107,70 @@ func acquire_nearest_target(max_distance: float = INF) -> Ship:
 
 	return nearest_target
 
+
+
+## Return all valid ships within max_distance, ordered by distance.
+func get_valid_targets(max_distance: float = INF) -> Array[Ship]:
+	var targets: Array[Ship] = []
+
+	if ship == null:
+		return targets
+
+	var max_distance_squared: float = max_distance * max_distance
+
+	for candidate_node: Node in get_tree().get_nodes_in_group("ships"):
+		var candidate: Ship = candidate_node as Ship
+
+		if candidate == null or candidate == ship:
+			continue
+
+		if candidate.is_destroyed():
+			continue
+
+		var distance_squared: float = ship.global_position.distance_squared_to(
+			candidate.global_position
+		)
+
+		if distance_squared <= max_distance_squared:
+			targets.append(candidate)
+
+	targets.sort_custom(_sort_targets_by_distance)
+	return targets
+
+
+## Select the next valid target in distance order.
+##
+## When there is no current target, the nearest valid target is selected.
+## When a target is already selected, the next target in the ordered list is
+## selected, wrapping back to the nearest target at the end.
+func cycle_target(max_distance: float = INF) -> Ship:
+	var targets: Array[Ship] = get_valid_targets(max_distance)
+
+	if targets.is_empty():
+		clear_target()
+		return null
+
+	var current_ship: Ship = get_target() as Ship
+
+	if current_ship == null:
+		set_target(targets[0])
+		return targets[0]
+
+	var current_index: int = targets.find(current_ship)
+
+	if current_index < 0:
+		set_target(targets[0])
+		return targets[0]
+
+	var next_index: int = (current_index + 1) % targets.size()
+	set_target(targets[next_index])
+	return targets[next_index]
+
+
+func _sort_targets_by_distance(a: Ship, b: Ship) -> bool:
+	var distance_a: float = ship.global_position.distance_squared_to(a.global_position)
+	var distance_b: float = ship.global_position.distance_squared_to(b.global_position)
+	return distance_a < distance_b
 
 ## Returns the distance to the current target in metres.
 func get_target_distance() -> float:
