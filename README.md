@@ -1381,7 +1381,7 @@ The final Milestone 1 flight model should use:
 - [x] WeaponData Resource
 - [x] Weapon runtime
 - [x] ProjectileData Resource
-- [ ] Projectile runtime
+- [x] Projectile runtime
 - [ ] Damage system
 - [ ] Shields
 - [ ] Hull
