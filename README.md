@@ -1,734 +1,929 @@
-# Unnamed Civilization Game
+# Unnamed Space Game
 
-A persistent-world civilization idle/strategy game where the player acts as a **guiding god** rather than a traditional ruler.
+A **3D single-player space RPG inspired by Freelancer**, built in **Godot 4.x with GDScript**.
 
-Civilizations gather resources, grow their populations, expand, discover technologies, trade, form alliances and fight wars largely on their own. The player's role is to give them direction by deciding what to build, what knowledge to pursue and when to begin a new era.
+The goal is to take the accessible space-flight, trading, combat and mission structure of classic space RPGs and combine it with newer ideas: **hybrid world structure, explorable station interiors, varied boarding, dynamic missions, reactive factions and a living local economy**.
 
-The world persists between civilizations. Ancient roads, cities, monuments, ruins and other changes can remain for future civilizations to discover and use.
-
-> **Build a civilization. Shape a world. Leave a legacy.**
+> **Fly anywhere. Take any job. Make your own reputation.**
 
 ---
 
-# Core Identity
+# Core Vision
 
-The game combines:
+The player starts as a small-time pilot with a basic ship and very little money.
 
-- **Idle progression** - civilizations gather, grow and develop automatically.
-- **God-game guidance** - the player influences priorities rather than micromanaging individual citizens.
-- **Roguelite progression** - civilizations eventually reset, while permanent knowledge and legacy bonuses carry forward.
-- **Civilization simulation** - independent AI civilizations develop at their own pace.
-- **Persistent procedural world** - the map is generated once and remains the same across every era.
-- **Emergent history** - civilizations can trade, cooperate, compete and go to war, creating a history that is different in every world.
+From there, they can become a:
 
-The goal is not to build one perfect civilization. The goal is to create an increasingly developed world and watch history unfold across many civilizations.
+- Mercenary
+- Trader
+- Explorer
+- Miner
+- Salvager
+- Smuggler
+- Pirate
+- Bounty hunter
+- Faction operative
+
+The game should support a strong story, but the player should also be able to ignore it and create their own career.
+
+The universe should feel like a place that already exists rather than a sequence of mission arenas.
 
 ---
 
 # Design Pillars
 
-1. **The civilization lives without the player.** Citizens gather resources, reproduce, explore, build and make decisions automatically.
-2. **The player is a guide, not a micromanager.** The player chooses priorities and unlocks opportunities; the civilization handles the details.
-3. **The world persists.** Geography, settlements, monuments, roads and ruins can survive across eras.
-4. **Progression unlocks possibilities, not just bigger numbers.** Fishing should create new ways to live, not simply provide +10% food.
-5. **AI civilizations are part of the world.** They should develop, trade, ally, compete and fight without requiring player involvement.
-6. **Every era should leave something behind.** A civilization's achievements should matter after it is gone.
-7. **Keep the core understandable.** The simulation can be deep, but the player's decisions should remain clear.
-8. **Keep the project finishable.** Build a convincing small civilization simulation before expanding its scope.
+1. **Flying is the foundation.** Space combat and navigation must be fun before anything else is added.
+2. **Freedom without aimlessness.** The player should always have several worthwhile things they can do.
+3. **Progression changes gameplay.** Ships and equipment should unlock different approaches, not only bigger numbers.
+4. **The universe reacts.** Factions, economies and encounters should respond to player actions.
+5. **The player can leave the cockpit.** Stations and selected planetary locations are playable spaces.
+6. **Boarding matters.** Disabled ships can become opportunities rather than automatic explosions.
+7. **Build vertically first.** One excellent playable system is more valuable than twenty unfinished systems.
+8. **Keep it finishable.** Simulation depth should serve gameplay, not become the project.
 
 ---
 
 # Core Gameplay Loop
 
-The primary loop is:
-
-**Observe → Choose a direction → Build → Civilization develops → Unlock knowledge → Leave a legacy → Begin a new era → Return to the same world**
-
-A typical early game might look like:
-
 ```text
-Settlers arrive
-      ↓
-Build Fire Pit
-      ↓
-Population begins growing
-      ↓
-Build House
-      ↓
-Population growth increases
-      ↓
-Build more infrastructure
-      ↓
-Generate Research Points
-      ↓
-Unlock new technology
-      ↓
-Civilization expands
-      ↓
-Player chooses when to begin a new era
-      ↓
-New civilization starts with inherited knowledge
+Leave station
+    ↓
+Choose a job / destination / activity
+    ↓
+Fly through space
+    ↓
+Encounter the universe
+    ↓
+Fight / trade / explore / salvage
+    ↓
+Dock / land / board / interact
+    ↓
+Receive money, reputation and information
+    ↓
+Upgrade ship
+    ↓
+Choose what to do next
 ```
 
-The player does not directly command every citizen. The civilization interprets the player's choices and acts on them automatically.
-
----
-
-# The Player as a God
-
-The player's role is deliberately indirect.
-
-You do not tell individual citizens:
-
-> "Bob, go cut down that tree."
-
-Instead, you tell the civilization:
-
-> **"Build a Lumber Camp."**
-
-The citizens decide who constructs it, gather the required materials and complete the building themselves.
-
-The player provides **direction and opportunity**. The civilization provides the labour.
-
-This should make the world feel alive even when the player is doing very little.
-
----
-
-# Buildings
-
-Buildings are the primary way the player influences the civilization.
-
-A civilization begins with only a few basic options.
-
-### Fire Pit
-
-The first settlement structure.
-
-Example effects:
-
-- Improves gathering efficiency.
-- Provides an initial population-growth bonus.
-- Acts as the centre of the settlement.
-
-### House
-
-Provides shelter and increases population growth.
-
-The player can select the House action repeatedly to encourage further housing development. The civilization automatically determines suitable locations and constructs the buildings.
-
-Example progression:
+A typical session might become:
 
 ```text
-House I   → +5% population growth
-House II  → +10% population growth
-House III → +15% population growth
+Accept delivery
+    ↓
+Detect distress signal
+    ↓
+Investigate
+    ↓
+Fight pirates
+    ↓
+Rescue merchant
+    ↓
+Gain faction reputation
+    ↓
+Complete delivery
+    ↓
+Sell cargo
+    ↓
+Buy new weapon
+    ↓
+Accept bounty
+    ↓
+Launch again
 ```
 
-The exact values are subject to balancing.
-
-Other planned buildings include:
-
-- Lumber Camp
-- Quarry
-- Farm
-- Fishing Camp
-- Storage Hut
-- Workshop
-- Research Centre
-- Mine
-- Market
-- Barracks
-- Harbour
-- Monument
-- Road
-- Temple
-- Government buildings
-
-Buildings should change how the civilization behaves, not simply increase an income number.
+The entire galaxy does not need to exist for this loop to be fun.
 
 ---
 
-# Autonomous Civilization Simulation
+# World Structure
 
-The player's civilization should continue functioning without direct input.
+The game uses a **hybrid world structure**.
 
-Citizens can automatically:
-
-- Gather food.
-- Gather wood.
-- Gather stone and other resources.
-- Construct player-selected buildings.
-- Find suitable places to settle.
-- Grow the population.
-- Explore nearby territory.
-- Use available technologies.
-- Establish trade.
-- Defend the civilization.
-- Expand into new territory.
-
-The player acts as a high-level decision maker while the simulation handles individual citizens.
-
-The intended feeling is:
-
-> **"I gave them the tools. Now let's see what they do with them."**
-
----
-
-# Resources and Idle Production
-
-Resources are gathered automatically by the civilization.
-
-Early resources may include:
-
-- Food
-- Wood
-- Stone
-- Water
-
-Later technologies can introduce resources such as:
-
-- Iron
-- Coal
-- Copper
-- Gold
-- Fertile Land
-- Fish
-- Livestock
-- Luxury goods
-- Strategic resources
-
-Production is intentionally idle in nature. Once the civilization has access to a resource or production method, it continues operating automatically.
-
-The player's main decisions are therefore about **what production to enable and how to develop it**, rather than manually clicking every resource.
-
----
-
-# Population
-
-Population is one of the most important resources in the simulation.
-
-Population growth is affected by factors such as:
-
-- Housing
-- Food availability
-- Water
-- Health
-- Technology
-- Civilization traits
-- Buildings
-- Events
-
-Population provides the workforce needed to support the civilization.
-
-As the civilization grows, it can support increasingly specialised roles such as:
-
-- Farmers
-- Gatherers
-- Builders
-- Miners
-- Researchers
-- Merchants
-- Soldiers
-- Explorers
-
-The exact workforce allocation should be handled primarily by the civilization AI rather than by constant player micromanagement.
-
----
-
-# Research and Technology
-
-Research is the long-term progression system.
-
-Civilizations generate **Research Points** through development, population, buildings, discoveries and other achievements.
-
-Research unlocks new capabilities.
-
-Early technologies might include:
+It is not intended to be one completely seamless galaxy. Instead, the universe combines large navigable space regions with detailed stations, planetary locations and interior spaces.
 
 ```text
-Fire
- ├── Basic Shelter
- └── Cooking
-
-Agriculture
- ├── Farming
- └── Animal Husbandry
-
-Fishing
- ├── Fishing Camps
- └── Boats
-
-Stoneworking
- ├── Stone Buildings
- └── Monuments
+Galaxy
+ ├── Sector
+ │    ├── Star System
+ │    │    ├── Planet
+ │    │    ├── Orbital Station
+ │    │    ├── Asteroid Field
+ │    │    ├── Trade Route
+ │    │    └── Hidden Location
+ │    └── ...
+ └── ...
 ```
 
-Later technologies can progress toward:
+This lets the project create detailed locations without requiring an enormous seamless world.
 
-- Writing
-- Mathematics
+---
+
+# Space Flight
+
+Space flight is the first major system.
+
+The player controls a 3D spacecraft using an accessible **twin-stick-inspired control scheme** rather than a full flight simulator.
+
+## Controls
+
+- Pitch
+- Yaw
+- Roll
+- Throttle
+- Boost
+- Brake
+- Strafe
+- Target selection
+- Weapon firing
+- Missile firing
+- Scanner
+- Cruise / travel mode
+
+The ship should have acceleration and momentum while remaining responsive enough for close combat.
+
+## Ship States
+
+```text
+DOCKED
+  ↓
+LAUNCHING
+  ↓
+FLYING
+  ↓
+COMBAT
+  ↓
+CRUISE
+  ↓
+DOCKING
+  ↓
+DOCKED
+```
+
+Other states can include:
+
+- Disabled
+- Boarding
+- Jumping
+- Salvaging
+- Destroyed
+
+---
+
+# Combat
+
+Combat should be readable and action-focused.
+
+The player needs to understand:
+
+- Current target
+- Target distance
+- Shields
+- Hull
+- Missile threats
+- Friendly / hostile status
+- Weapon range
+- Energy state
+
+## Initial combat systems
+
+- Energy weapons
+- Projectile weapons
+- Missiles
+- Shields
+- Hull
+- Target locking
+- Weapon energy
+- Missile locks
+- Countermeasures
+- Ship destruction
+
+## Later systems
+
+- Subsystem targeting
+- Engine damage
+- Weapon damage
+- Shield generators
+- Cargo destruction
+- Disabled ships
+- Boarding opportunities
+
+Combat should create decisions instead of becoming a simple DPS contest.
+
+---
+
+# Ships
+
+Ships are modular gameplay objects.
+
+```text
+Ship
+├── Hull
+├── Shields
+├── Power
+├── Engines
+├── Cargo
+├── Weapons
+├── Utility Modules
+├── Scanner
+└── Special Equipment
+```
+
+## Example Ship Classes
+
+### Fighter
+Fast and combat-focused.
+
+### Freighter
+Large cargo capacity and weaker combat capability.
+
+### Gunship
+Slow, durable and heavily armed.
+
+### Explorer
+Long range with advanced sensors.
+
+### Utility Ship
+Designed around salvage, mining, boarding or support equipment.
+
+These are gameplay archetypes, not final restrictions.
+
+---
+
+# Equipment
+
+Equipment should be modular and data-driven.
+
+Possible categories:
+
+- Weapons
+- Shields
+- Engines
+- Power generators
+- Cargo modules
+- Scanners
+- Mining lasers
+- Salvage equipment
+- Tractor beams
+- Cloaking devices
+- Countermeasures
+- Boarding equipment
+- Jump equipment
+
+A module should ideally create a new possibility.
+
+For example:
+
+> A better scanner should reveal something the player could not previously discover, not simply provide +10% scan range.
+
+---
+
+# Docking and Stations
+
+Stations are important gameplay hubs.
+
+```text
+SPACE
+  ↓
+DOCKING
+  ↓
+STATION
+  ↓
+INTERIOR
+```
+
+At a station the player can:
+
+- Repair.
+- Buy and sell goods.
+- Upgrade equipment.
+- Accept missions.
+- Talk to NPCs.
+- Access terminals.
+- Manage reputation.
+- Save.
+- Leave the ship.
+
+---
+
+# Leaving the Ship
+
+One of the major additions beyond classic Freelancer-style gameplay is the ability to **leave the cockpit**.
+
+This is deliberately scoped.
+
+We are **not** trying to build a second giant open-world game.
+
+Instead, selected locations are focused third-person environments.
+
+## On-foot activities
+
+- Talk to NPCs.
+- Accept missions.
+- Visit shops.
+- Use terminals.
+- Investigate locations.
+- Meet faction contacts.
+- Explore station interiors.
+- Reach restricted areas.
+- Begin boarding sequences.
+
+Planetary locations follow the same principle.
+
+A planet may contain a detailed:
+
+- Spaceport
+- Mining town
+- Research facility
+- Military base
+- Industrial colony
+- Frontier settlement
+
+rather than an entire explorable planet.
+
+---
+
+# Boarding
+
+Boarding is a major differentiating system.
+
+A disabled ship does not automatically mean:
+
+> **BOOM.**
+
+It can mean:
+
+> **Opportunity.**
+
+Possible flow:
+
+```text
+Disable target
+    ↓
+Approach
+    ↓
+Board
+    ↓
+Enter ship
+    ↓
+Resolve boarding situation
+    ↓
+Steal / sabotage / rescue / capture
+    ↓
+Escape
+```
+
+## Boarding approaches
+
+### Forced Boarding
+Fight through the crew.
+
+### Stealth Boarding
+Disable security systems and avoid detection.
+
+### Negotiated Boarding
+Use dialogue, reputation or intimidation.
+
+### Emergency Boarding
+Board a damaged vessel before it is destroyed.
+
+### Rescue Boarding
+Save friendly or civilian crews.
+
+Boarding should be optional and should never become a mandatory minigame for ordinary combat.
+
+---
+
+# Missions
+
+Missions provide structured reasons to fly.
+
+## Mission Types
+
+- Delivery
+- Escort
+- Bounty
+- Patrol
+- Salvage
+- Rescue
+- Investigation
+- Smuggling
 - Mining
-- Metallurgy
-- Sailing
-- Engineering
-- Trade
-- Government
-- Astronomy
-- Industry
-- Electricity
-- Modern technology
+- Exploration
+- Assassination
+- Boarding
+- Story missions
 
-Technology should provide **new options** as well as efficiency improvements.
+Missions should be data-driven.
 
-For example:
-
-> **Fishing** does not simply mean +20% food.
->
-> It allows civilizations near rivers and oceans to develop a completely new food source and settlement strategy.
+A mission should describe objectives, conditions, targets, rewards and consequences rather than requiring a unique script for every contract.
 
 ---
 
-# Roguelite Era Progression
+# Dynamic Missions
 
-A civilization is temporary.
-
-The player decides when the current civilization has reached a suitable point to end its era.
-
-Ending an era resets the civilization's temporary progress, but permanent progression is retained.
-
-### Temporary
-
-- Population
-- Current resource stockpiles
-- Current buildings
-- Current workforce
-- Temporary military strength
-- Current political relationships
-
-### Permanent
-
-- Research discoveries
-- Technology unlocks
-- Legacy bonuses
-- Certain monuments and structures
-- World changes
-- Historical records
-
-This creates a classic idle/roguelite progression loop without forcing every civilization into a fixed 20-minute timer.
-
----
-
-# Civilization Legacy
-
-Every civilization should have the opportunity to leave something behind.
-
-Examples:
-
-### Ancient Road
-
-Future civilizations can use it to move through the region more efficiently.
-
-### Great Granary
-
-Provides a food-production or storage bonus to future civilizations.
-
-### Ancient Library
-
-Provides a research bonus.
-
-### Monument
-
-Records the existence and achievements of the civilization that built it.
-
-### Ancient City
-
-A future civilization may settle on or near the ruins and gain access to inherited infrastructure.
-
-Not every legacy needs to be economically optimal. Some structures exist simply because the civilization built them and they became part of the world's history.
-
----
-
-# The Persistent World
-
-The procedural world is generated at the beginning of a game and persists throughout the entire playthrough.
-
-The player does **not** receive a completely new map after each reset.
-
-The same:
-
-- Mountains
-- Rivers
-- Lakes
-- Coastlines
-- Forests
-- Deserts
-- Fertile regions
-- Resource deposits
-- Strategic locations
-
-remain in place.
-
-Civilizations gradually alter this landscape.
-
-```text
-Wilderness
-    ↓
-Settlement
-    ↓
-Village
-    ↓
-Town
-    ↓
-City
-    ↓
-Abandoned Ruins
-    ↓
-New Civilization
-    ↓
-Rebuilt City
-```
-
-The map becomes a record of everything that happened there.
-
----
-
-# AI Civilizations
-
-The player is not alone.
-
-Other civilizations are generated and placed around the world.
-
-AI civilizations:
-
-- Start in different locations.
-- Have their own civilization traits.
-- Gather resources automatically.
-- Build and expand automatically.
-- Research technologies independently.
-- Grow their populations.
-- Develop at different rates.
-- Establish trade routes.
-- Form diplomatic relationships.
-- Make alliances.
-- Compete for territory and resources.
-- Declare and fight wars.
-- Can rise, decline and potentially disappear.
-
-AI civilizations should not simply be decorative factions. They should be running through the same broad simulation rules as the player's civilization.
-
-Their development should create a world that continues changing even when the player is focused elsewhere.
-
----
-
-# Civilization Selection
-
-At the beginning of an era, the player chooses from **three civilization options**.
-
-Each civilization has its own strengths, weaknesses and unique bonuses.
-
-Example archetypes:
-
-### The Agrarians
-
-- Strong food production.
-- Faster population growth.
-- Stronger farming technologies.
-
-### The Traders
-
-- Improved trade.
-- Larger markets.
-- Better diplomatic relationships.
-
-### The Builders
-
-- Faster construction.
-- Cheaper buildings.
-- Stronger infrastructure.
-
-These are examples only. The final civilization roster will be designed around meaningful differences in playstyle rather than simple percentage upgrades.
-
-AI civilizations receive randomly selected civilization traits so that each world develops differently.
-
----
-
-# Diplomacy
-
-Civilizations can interact with one another through a diplomatic system.
-
-Planned relationships include:
-
-- Neutral
-- Friendly
-- Trade Partner
-- Allied
-- Rival
-- Hostile
-- At War
-
-Diplomatic relationships can change based on factors such as:
-
-- Territory
-- Trade
-- Shared borders
-- Military strength
-- Resources
-- Previous conflicts
-- Civilization traits
-- Player actions
-
-The goal is for diplomacy to emerge from the world rather than being a list of scripted missions.
-
----
-
-# Trade
-
-Civilizations can exchange resources and goods.
-
-Trade should create meaningful relationships and economic opportunities.
-
-For example:
-
-```text
-Civilization A
-Rich in food
-Poor in stone
-	   ↓
-	 TRADE
-	   ↓
-Civilization B
-Rich in stone
-Poor in food
-```
-
-A civilization with access to the coast may develop around fishing and trade, while a civilization surrounded by mountains may develop mining and metallurgy.
-
-Geography should therefore influence economic development.
-
----
-
-# War
-
-Conflict is a natural part of the world simulation.
-
-Civilizations may fight over:
-
-- Territory
-- Resources
-- Strategic locations
-- Trade routes
-- Diplomatic disputes
-- Historical rivalries
-
-The player should not need to manually command every soldier.
-
-War is primarily a high-level simulation between civilizations, with the player's influence coming from development choices such as population, military infrastructure, technology and strategic expansion.
-
-Possible outcomes include:
-
-- Territory changing hands.
-- Cities being damaged or destroyed.
-- Populations declining.
-- Resources becoming scarce.
-- New borders being established.
-- Long-term rivalries developing.
-- Ancient battlefields becoming part of the persistent world.
-
----
-
-# Emergent History
-
-One of the main goals of the project is for every world to develop its own history.
-
-A world might produce a history such as:
-
-```text
-Era 1
-The River People establish the first settlement.
-
-Era 2
-The first farms are developed.
-
-Era 3
-The Stone Kingdom builds a road network.
-
-Era 4
-The River People and Stone Kingdom begin trading.
-
-Era 5
-A border dispute causes war.
-
-Era 6
-The Stone Kingdom captures an ancient city.
-
-Era 7
-The empire collapses.
-
-Era 8
-A new civilization settles among the ruins.
-```
-
-The player should eventually be able to look across the map and recognise that these events actually happened there.
-
----
-
-# Civilization Records
-
-Each completed civilization should produce a historical record.
+The universe should be capable of generating missions from its current state.
 
 Example:
 
-> ## The Kingdom of Brendonia
->
-> **Era:** 12  
-> **Peak Population:** 8,421  
-> **Territory:** 37 regions  
-> **Technologies Discovered:** 14  
-> **Monuments Built:** 3  
-> **Wars:** 2  
-> **Trade Agreements:** 6
->
-> **Greatest Achievement:** The Great Library
->
-> **Legacy:** +10% research speed for future civilizations beginning near the capital.
+```text
+Pirates attack trade route
+        ↓
+Merchants suffer losses
+        ↓
+Station reports increased danger
+        ↓
+Escort missions appear
+        ↓
+Bounty contracts appear
+        ↓
+Pirate hideout may be discovered
+        ↓
+Destroying hideout changes local activity
+```
 
-Historical records should make the player's persistent world feel like a collection of stories rather than a sequence of resets.
+The important question is:
+
+> **Why does this mission exist?**
+
+A mission should ideally have an explanation inside the simulated world.
 
 ---
 
-# Procedural World Generation
+# Economy
 
-The world should be generated from data-driven rules rather than hand-authored maps.
+Trading should provide a complete alternative career.
 
-The generator should determine things such as:
+Possible commodities:
 
-- World size
-- Terrain
-- Rivers and lakes
-- Climate
-- Resource distribution
-- Fertile regions
-- Mountain ranges
-- Coastlines
-- Strategic locations
-- Starting locations
-- AI civilization locations
+- Food
+- Water
+- Fuel
+- Minerals
+- Metals
+- Electronics
+- Machinery
+- Medical supplies
+- Luxury goods
+- Illegal goods
 
-The important rule is:
+Locations produce and consume different goods.
 
-> **Generate the world once. Simulate it for the rest of the game.**
+```text
+Mining Colony
+Produces:
+  Ore
+  Metals
+
+Consumes:
+  Food
+  Medical Supplies
+  Machinery
+
+        ↓
+
+Trade Route
+
+        ↓
+
+Industrial Station
+Produces:
+  Machinery
+  Electronics
+
+Consumes:
+  Metals
+  Fuel
+```
+
+The first economy will use simple production and consumption rules.
+
+Dynamic shortages and larger economic simulation come later.
 
 ---
 
-# Simulation Architecture
+# Factions
 
-The project should separate data, simulation and presentation.
+Factions are autonomous groups with their own interests.
 
-```text
-Data
-  ↓
-World Generation
-  ↓
-World State
-  ↓
-Simulation Systems
-  ↓
-Civilization AI
-  ↓
-World Changes
-  ↓
-Scenes / UI
-```
+Possible factions:
 
-### Data
+- Governments
+- Militaries
+- Corporations
+- Mining guilds
+- Traders
+- Pirates
+- Smugglers
+- Mercenaries
+- Colonists
+- Scientists
+- Criminal organisations
 
-Defines what exists:
+Each faction can have:
 
-```text
-data/
-├── civilizations/
-├── technologies/
-├── buildings/
-├── resources/
-├── terrain/
-├── traits/
-├── diplomacy/
-└── events/
-```
+- Territory
+- Stations
+- Ships
+- Economy
+- Reputation
+- Mission types
+- Allies
+- Enemies
+- Goals
 
-### Generators
+---
 
-Create the initial world:
+# Reputation
+
+Reputation is a major progression system.
+
+Example:
 
 ```text
-scripts/
-├── world/
-├── terrain/
-├── resources/
-└── civilizations/
+Government     +42 Friendly
+Mining Guild   +71 Trusted
+Pirates        -18 Hostile
+Corporation    +5 Neutral
 ```
 
-### Simulation
+Reputation can affect:
 
-Handles changing world state:
+- Mission availability
+- Prices
+- Docking permissions
+- Police behaviour
+- Dialogue
+- Equipment
+- Faction assistance
+- Story branches
+- Restricted locations
+
+The player's reputation should be a consequence of what they actually do.
+
+---
+
+# Living Universe
+
+NPC ships should have purposes.
+
+They can:
+
+- Trade
+- Patrol
+- Mine
+- Escort
+- Hunt pirates
+- Flee combat
+- Respond to distress calls
+- Dock
+- Repair
+- Deliver cargo
+- Become stranded
+- Be destroyed
+
+The simulation does not need to render every ship all the time.
+
+Logical NPC state should be able to exist independently from the visible scene.
+
+---
+
+# Encounters
+
+Space should contain more than enemies waiting for the player.
+
+Possible encounters:
+
+- Merchant convoy
+- Police patrol
+- Pirate ambush
+- Distress signal
+- Derelict ship
+- Mining operation
+- Smuggler rendezvous
+- Military operation
+- Rescue operation
+- Unknown signal
+- Abandoned station
+- Asteroid anomaly
+- Rare trader
+- Faction patrol
+
+Encounters should use the current world state where practical.
+
+---
+
+# Exploration
+
+The scanner is a gameplay system.
+
+Players can discover:
+
+- Hidden jump points
+- Derelict ships
+- Secret bases
+- Resource fields
+- Ancient structures
+- Distress signals
+- Smuggling routes
+- Unmarked stations
+- Unknown factions
+- Rare equipment
+- Story clues
+
+Exploration should reward curiosity.
+
+---
+
+# Story
+
+A central story provides direction, but it should not imprison the player.
 
 ```text
-scripts/simulation/
-├── population/
-├── economy/
-├── construction/
-├── research/
-├── diplomacy/
-├── warfare/
-└── world/
+Main Story
+ ├── Story Missions
+ ├── Faction Stories
+ ├── Side Contracts
+ ├── Exploration
+ └── Emergent Events
 ```
 
-### Scenes
+The story introduces the setting, factions, characters and major conflicts.
 
-Display and interact with the simulated world.
+The player can then spend hours doing something completely different.
 
-The simulation should not depend on visual scenes wherever possible. A civilization should be able to continue simulating even when the player is zoomed far away or viewing another part of the map.
+---
+
+# Progression
+
+Progression comes from several connected systems.
+
+## Wealth
+
+Earn money through:
+
+- Missions
+- Trading
+- Salvage
+- Bounties
+- Mining
+- Piracy
+- Exploration
+
+## Ship
+
+Improve through:
+
+- New ships
+- Weapons
+- Modules
+- Cargo capacity
+- Engines
+- Shields
+- Utility equipment
+
+## Reputation
+
+Faction relationships unlock opportunities.
+
+## Knowledge
+
+The player gradually learns about:
+
+- Systems
+- Factions
+- Trade routes
+- Hidden locations
+- Equipment
+- Mission chains
+
+The player should become more capable because of the choices they make, not simply because an XP bar became larger.
+
+---
+
+# Save System
+
+The save system should preserve the player's state and important universe state.
+
+```text
+Player
+├── Credits
+├── Reputation
+├── Current Ship
+├── Ship Equipment
+├── Cargo
+├── Missions
+└── Discoveries
+
+Universe
+├── Systems
+├── Stations
+├── Factions
+├── Economy
+├── Encounters
+└── World Events
+
+History
+├── Completed Missions
+├── Major Events
+├── Faction Changes
+└── Player Choices
+```
+
+Save data should remain independent from scene nodes wherever practical.
+
+---
+
+# Technical Direction
+
+## Engine
+
+**Godot 4.x**
+
+## Language
+
+**GDScript**
+
+## Rendering
+
+**3D**
+
+The project should favour readable, stylised visuals over photorealism.
+
+That keeps the art workload realistic while allowing strong silhouettes, lighting, effects and atmosphere.
+
+---
+
+# Architecture
+
+The project should separate simulation, data, gameplay and presentation.
+
+```text
+Game
+│
+├── Universe
+│   ├── Systems
+│   ├── Factions
+│   ├── Economy
+│   ├── Missions
+│   └── Encounters
+│
+├── Player
+│   ├── Ship
+│   ├── Character
+│   ├── Inventory
+│   └── Reputation
+│
+├── Simulation
+│   ├── AI
+│   ├── Economy
+│   ├── Factions
+│   ├── Missions
+│   └── Encounters
+│
+├── Presentation
+│   ├── Space
+│   ├── Stations
+│   ├── Planets
+│   ├── Characters
+│   └── UI
+│
+└── Save
+```
+
+The project should avoid a giant `GameManager.gd` that eventually knows about every system.
+
+---
+
+# Proposed Project Structure
+
+```text
+res://
+├── assets/
+│   ├── models/
+│   ├── textures/
+│   ├── materials/
+│   ├── audio/
+│   └── ui/
+│
+├── data/
+│   ├── ships/
+│   ├── weapons/
+│   ├── equipment/
+│   ├── factions/
+│   ├── missions/
+│   ├── commodities/
+│   ├── systems/
+│   └── characters/
+│
+├── scenes/
+│   ├── player/
+│   ├── ships/
+│   ├── space/
+│   ├── stations/
+│   ├── planets/
+│   ├── characters/
+│   ├── missions/
+│   └── ui/
+│
+├── scripts/
+│   ├── core/
+│   ├── player/
+│   ├── ships/
+│   ├── combat/
+│   ├── missions/
+│   ├── factions/
+│   ├── economy/
+│   ├── ai/
+│   ├── world/
+│   ├── boarding/
+│   └── save/
+│
+└── shaders/
+```
+
+---
+
+# Data-Driven Design
+
+Static game content should use Godot Resources.
+
+Example:
+
+```text
+ShipData
+├── display_name
+├── hull
+├── shield
+├── cargo_capacity
+├── acceleration
+├── turn_rate
+├── weapon_slots
+├── utility_slots
+└── price
+```
+
+And:
+
+```text
+WeaponData
+├── display_name
+├── damage
+├── range
+├── fire_rate
+├── energy_cost
+├── projectile_speed
+└── weapon_type
+```
+
+Runtime state should be separate from static definitions.
+
+This lets us add ships, weapons and missions without rewriting core gameplay code.
 
 ---
 
 # Architecture Rules
 
-- Data resources describe the game world.
-- Generators create initial world state.
-- Simulation systems modify world state.
-- Civilization AI makes decisions using simulation data.
-- Scenes display the world.
-- UI communicates player choices to simulation systems.
-- The world state should be saveable independently from scene state.
-- AI civilizations should use the same core systems as the player wherever practical.
-- Avoid giant manager scripts when a smaller domain system is sufficient.
-- Systems should be testable independently.
-- Keep the simulation deterministic where practical so bugs and historical events can be reproduced.
+- Keep gameplay data separate from presentation.
+- Use Resources for static definitions.
+- Keep runtime state separate from static data.
+- Prefer composition over giant inheritance trees.
+- Keep ships modular.
+- Keep factions data-driven.
+- Keep missions data-driven.
+- Keep save data independent from scenes.
+- Use signals for loosely coupled events.
+- Avoid unnecessary global state.
+- Keep systems small enough to test.
+- Prefer deterministic simulation where practical.
+- Do not build a system until the gameplay needs it.
 
 ---
 
-# Scope Philosophy
+# Prototype Philosophy
 
-The previous concept for this project grew toward a large space RPG. This project deliberately takes a different approach.
+The biggest trap is:
 
-The goal is not to simulate every aspect of human civilisation.
+> **"We need a galaxy before we can make the game."**
 
-The goal is to make a **small, understandable simulation that produces interesting history**.
+We do not.
 
-The first playable version should prove the following:
+The first prototype should contain only:
 
-1. A civilization can gather resources automatically.
-2. The player can choose buildings.
-3. Buildings affect civilization development.
-4. Population grows automatically.
-5. Research unlocks new capabilities.
-6. The player can end an era.
-7. Permanent progression survives the reset.
-8. The same world remains.
-9. At least one AI civilization develops independently.
-10. The player can observe meaningful interaction between civilizations.
+- One small space environment
+- One player ship
+- One enemy ship
+- One station
+- Basic flight
+- Basic combat
+- Docking
+- One mission
+- Credits
+- One upgrade
+- Save/load
 
-If those ten things are fun, the project has a foundation worth expanding.
+If flying between a station and an enemy encounter is fun, we have a foundation.
+
+If it is not fun, adding forty star systems only gives us forty places where the game is not fun.
 
 ---
 
@@ -736,187 +931,363 @@ If those ten things are fun, the project has a foundation worth expanding.
 
 ## Milestone 0 - Project Foundation
 
-**Status: COMPLETE**
+**Status: RESET / NEW DIRECTION**
 
-- [x] Godot project configuration
-- [x] Repository structure
-- [x] Civilization-focused scene structure
-- [x] Core world state
-- [x] Save/load foundation
-
-### Foundation implemented
-
-The project now has a minimal runnable civilization-focused foundation:
-
-- `WorldState` is a persistent autoload containing the world seed, era, simulation time, civilizations, world data and permanent legacy data.
-- `SaveManager` is a persistent autoload providing JSON save/load to `user://civilization_save.json`.
-- The main game scene loads an existing world or creates and saves a new one automatically.
-- Civilization, world and main scene boundaries are established under `scenes/`.
-- The project has been renamed from the original space-game prototype to **Unnamed Civilization Game**.
-- The world state is intentionally independent from visual scenes so simulation data can later continue running while the player changes views.
-
-Milestone 0 is deliberately small. It establishes the foundation needed for the procedural world, autonomous civilizations and persistent eras without prematurely implementing the simulation itself.
-
-## Milestone 1 - Persistent Procedural World
-
-**Status: IN PROGRESS**
-
-- [x] Generate a persistent world map
-- [x] Generate terrain
-- [ ] Generate resources
-- [ ] Generate starting locations
-- [x] Save generated world seed
-- [x] Load the same world after restart
-
-### Persistent world map implemented
-
-The first Milestone 1 slice is now implemented and tested.
-
-The game:
-
-- Generates a deterministic **64×64** world map from a world seed.
-- Uses FastNoiseLite to generate the initial terrain distribution.
-- Currently supports five basic terrain types: water, plains, forest, mountain and desert.
-- Stores the generated map in WorldState.
-- Renders the map directly from world state.
-- Includes the generated world data in the existing JSON save system.
-- Loads the saved map after restarting instead of generating a different world.
-- Has been verified by running the game and confirming that the world is visible and remains identical after restart.
-
-The current map is intentionally a simple prototype renderer. It is a foundation for the later terrain, resource, civilization and visual systems rather than final map art.
-
-This slice deliberately stops before resources and civilization starting locations are implemented. Those remain separate Milestone 1 tasks.
-
-### Current Milestone 1 checkpoint
-
-**Status: TESTED**
-
-The persistent procedural world slice has been committed as:
-
-    Checkpoint: persistent procedural world
-    Commit: e13e7ee6d553de39dfd1a1eac78ecdb426464194
-
-The repository is intentionally paused at this checkpoint before the next Milestone 1 task.
-
-## Milestone 2 - First Civilization
-
-- [ ] Spawn player civilization
-- [ ] Spawn initial population
-- [ ] Automatic food gathering
-- [ ] Automatic wood gathering
-- [ ] Automatic population growth
-- [ ] Fire Pit
-- [ ] House
-- [ ] Basic construction system
-- [ ] Basic civilization simulation
-
-## Milestone 3 - Idle Development
-
-- [ ] Resource production rates
-- [ ] Storage
-- [ ] Building upgrades
-- [ ] Population modifiers
-- [ ] Additional resource types
-- [ ] Civilization statistics
-
-## Milestone 4 - Research
-
-- [ ] Research Points
-- [ ] Technology tree
-- [ ] Technology unlocks
-- [ ] Agriculture
-- [ ] Fishing
-- [ ] Stoneworking
-- [ ] First permanent legacy unlocks
-
-## Milestone 5 - Era Reset
-
-- [ ] End-era system
-- [ ] Permanent research progression
-- [ ] Civilization selection
-- [ ] Three initial civilization archetypes
-- [ ] New civilization starts on the same world
-- [ ] Historical records
-
-## Milestone 6 - AI Civilizations
-
-- [ ] AI civilization spawning
-- [ ] Autonomous resource gathering
-- [ ] Autonomous construction
-- [ ] Autonomous research
-- [ ] AI population growth
-- [ ] AI expansion
-- [ ] AI civilization traits
-
-## Milestone 7 - Diplomacy and Trade
-
-- [ ] Civilization relationships
-- [ ] Trade agreements
-- [ ] Resource exchange
-- [ ] Alliances
-- [ ] Diplomatic state changes
-
-## Milestone 8 - Warfare
-
-- [ ] Military development
-- [ ] Territory control
-- [ ] Wars
-- [ ] Battles
-- [ ] City damage
-- [ ] Territory changes
-- [ ] War history
-
-## Milestone 9 - Persistent History
-
-- [ ] Ancient ruins
-- [ ] Persistent monuments
-- [ ] Persistent roads
-- [ ] Ancient cities
-- [ ] Historical events
-- [ ] Civilization history screen
-- [ ] World history timeline
-
-## Milestone 10 - Polish and Expansion
-
-- [ ] More civilizations
-- [ ] More technologies
-- [ ] More buildings
-- [ ] More terrain types
-- [ ] More diplomatic behaviours
-- [ ] Events
-- [ ] Better visual feedback
-- [ ] Audio
-- [ ] UI polish
-- [ ] Balance and progression tuning
+- [ ] Establish 3D project structure
+- [ ] Establish core autoloads
+- [ ] Establish save/load architecture
+- [ ] Establish data-resource conventions
+- [ ] Establish main game scene
+- [ ] Remove old civilization prototype assumptions
 
 ---
 
-# Long-Term Vision
+## Milestone 1 - First Flight
 
-The ideal end result is a game where the player can leave the simulation running, return later and discover that the world has changed.
+**Goal: Make flying a spaceship fun.**
 
-A civilization that was once a tiny settlement may have become an empire.
+- [ ] Player ship scene
+- [ ] Third-person space camera
+- [ ] Pitch
+- [ ] Yaw
+- [ ] Roll
+- [ ] Throttle
+- [ ] Boost
+- [ ] Brake
+- [ ] Strafe
+- [ ] Acceleration
+- [ ] Targeting
+- [ ] Basic HUD
 
-A trading partner may have become a rival.
+**Definition of done:** The player can spawn in space and comfortably fly for several minutes without needing another system.
 
-A mountain pass that was once empty may now contain a city.
+---
 
-A monument built dozens of eras ago may still stand.
+## Milestone 2 - Combat
 
-And somewhere beneath the new civilization's foundations may be the ruins of a city the player themselves created many resets ago.
+**Goal: Make one dogfight fun.**
 
-The ultimate progression is therefore not simply:
+- [ ] Enemy ship
+- [ ] Enemy AI
+- [ ] Target locking
+- [ ] Basic weapon
+- [ ] Projectile system
+- [ ] Shields
+- [ ] Hull
+- [ ] Damage
+- [ ] Destruction
+- [ ] Combat HUD
+- [ ] Basic reward
 
-> **Make the numbers bigger.**
+**Definition of done:** The player can fight one enemy, win or lose, and immediately understand what happened.
 
-It is:
+---
 
-> **Make the world older, stranger and more interesting.**
+## Milestone 3 - First Station
+
+**Goal: Give the player somewhere to go.**
+
+- [ ] Space station
+- [ ] Docking detection
+- [ ] Docking sequence
+- [ ] Station scene
+- [ ] Repair
+- [ ] Equipment shop
+- [ ] Basic station UI
+- [ ] Save at station
+
+---
+
+## Milestone 4 - Missions
+
+**Goal: Give the player a reason to fly.**
+
+- [ ] Mission Resources
+- [ ] Mission manager
+- [ ] Mission board
+- [ ] Delivery mission
+- [ ] Combat mission
+- [ ] Objectives
+- [ ] Rewards
+- [ ] Completion
+- [ ] Failure
+- [ ] Persistence
+
+---
+
+## Milestone 5 - Economy
+
+- [ ] Commodities
+- [ ] Cargo hold
+- [ ] Buy cargo
+- [ ] Sell cargo
+- [ ] Station inventories
+- [ ] Basic price differences
+- [ ] Trading mission
+- [ ] Cargo UI
+- [ ] Cargo upgrades
+
+---
+
+## Milestone 6 - Player Progression
+
+- [ ] Credits
+- [ ] Ship upgrades
+- [ ] Equipment slots
+- [ ] Multiple weapons
+- [ ] Multiple ships
+- [ ] Ship purchasing
+- [ ] Ship switching
+
+---
+
+## Milestone 7 - Factions and Reputation
+
+- [ ] Faction data
+- [ ] Reputation
+- [ ] Friendly / neutral / hostile states
+- [ ] Faction mission pools
+- [ ] Reputation rewards
+- [ ] Reputation penalties
+- [ ] Restricted stations
+- [ ] Faction equipment
+
+---
+
+## Milestone 8 - Living Space
+
+- [ ] Third-person character controller
+- [ ] Station interior
+- [ ] NPC interaction
+- [ ] Dialogue
+- [ ] Mission contacts
+- [ ] Shops
+- [ ] Terminals
+- [ ] First planetary location
+
+This remains focused. We are building playable locations, not an entire open-world planet.
+
+---
+
+## Milestone 9 - Boarding
+
+- [ ] Disable enemy ship
+- [ ] Boarding trigger
+- [ ] Boarding transition
+- [ ] Ship interior
+- [ ] Enemy crew
+- [ ] Boarding objectives
+- [ ] Cargo theft
+- [ ] Sabotage
+- [ ] Ship capture
+- [ ] Boarding rewards
+- [ ] Boarding failure
+
+---
+
+## Milestone 10 - Dynamic Universe
+
+- [ ] NPC traffic
+- [ ] Traders
+- [ ] Police
+- [ ] Pirates
+- [ ] Mining ships
+- [ ] Convoys
+- [ ] Distress calls
+- [ ] Dynamic encounters
+- [ ] Local faction activity
+- [ ] World events
+
+---
+
+## Milestone 11 - Exploration
+
+- [ ] Scanner
+- [ ] Unknown contacts
+- [ ] Derelicts
+- [ ] Hidden locations
+- [ ] Resource fields
+- [ ] Anomalies
+- [ ] Secret stations
+- [ ] Discovery rewards
+
+---
+
+## Milestone 12 - Larger Universe
+
+Only after the core game works:
+
+- [ ] Multiple systems
+- [ ] Jump gates
+- [ ] Fast travel
+- [ ] System maps
+- [ ] Inter-system economy
+- [ ] More factions
+- [ ] More stations
+- [ ] More ships
+- [ ] More mission types
+
+---
+
+# Long-Term Ideas
+
+These are deliberately **not** early-development requirements.
+
+Potential future systems:
+
+- Ship capture
+- Persistent ship interiors
+- Crew with skills and personalities
+- Faction wars
+- Dynamic economy
+- Procedural contracts
+- Persistent important NPCs
+- Smuggling
+- Salvage fields
+- Detailed subsystem damage
+- Destructible cargo
+- Player-owned stations
+- Larger faction territories
+- More sophisticated AI
+
+---
+
+# What Makes This Different
+
+The classic foundation remains:
+
+- Open space travel
+- Space combat
+- Trading
+- Missions
+- Factions
+- Reputation
+- Ship upgrades
+- Story progression
+
+The newer direction adds:
+
+- **Hybrid world structure**
+- **Playable station and planetary interiors**
+- **Varied boarding**
+- **Dynamic mission generation**
+- **Reactive factions**
+- **Living local economies**
+- **NPCs with actual purposes**
+- **Player actions that can alter local situations**
+- **Modular ships and equipment**
+- **Scanner-driven exploration**
+
+The goal is not to make a larger Freelancer.
+
+The goal is to make a **modern space RPG that starts from the same appealing foundation**.
+
+---
+
+# Current Design Target
+
+The first complete gameplay session should feel like this:
+
+```text
+Start with a cheap ship
+        ↓
+Leave frontier station
+        ↓
+Accept delivery contract
+        ↓
+Fly through open space
+        ↓
+Detect distress signal
+        ↓
+Investigate
+        ↓
+Fight pirates
+        ↓
+Rescue merchant
+        ↓
+Gain reputation
+        ↓
+Complete delivery
+        ↓
+Return to station
+        ↓
+Sell cargo
+        ↓
+Repair ship
+        ↓
+Buy better weapon
+        ↓
+Accept bounty
+        ↓
+Launch again
+```
+
+That loop is the heart of the project.
+
+---
+
+# Development Rules
+
+## Build vertically before horizontally
+
+One complete playable loop is more valuable than ten unfinished systems.
+
+## Prototype with ugly assets
+
+Primitive meshes are fine.
+
+A grey spaceship that is fun to fly is more useful than a beautiful spaceship that cannot fly.
+
+## Avoid premature complexity
+
+Start with the simplest implementation that proves the gameplay.
+
+Complexity should be earned.
+
+## Every major system needs a reason
+
+Every feature should answer:
+
+> **What does this allow the player to do?**
+
+If the only answer is "make the simulation more realistic", it probably does not belong in the early game.
 
 ---
 
 # Current Status
 
-**Early concept / active development.**
+**Early prototype / major redesign.**
 
-The repository is being rebuilt around the persistent civilization simulation described above. Features listed as planned are design targets rather than promises of the current prototype.
+The repository previously contained an experimental civilization simulation.
+
+The project is now being redirected toward a **3D Freelancer-inspired space RPG built in Godot and GDScript**.
+
+The immediate objective is:
+
+> **Build one excellent spaceship before building a universe.**
+
+---
+
+# Ultimate Vision
+
+The long-term game should let the player:
+
+- Fly through a connected universe.
+- Make money through different careers.
+- Upgrade and customise ships.
+- Build relationships with factions.
+- Leave the cockpit.
+- Explore stations and planetary locations.
+- Board enemy vessels.
+- Discover hidden locations.
+- Follow the main story or ignore it.
+- Encounter situations that emerge from the world.
+- Become a trader, mercenary, explorer, pirate, smuggler or something in between.
+
+The universe should not ask:
+
+> **"What mission are you supposed to do?"**
+
+It should ask:
+
+> **"What are you going to do?"**
