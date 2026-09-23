@@ -42,6 +42,18 @@ extends Resource
 @export var shield_capacity: float = 50.0
 @export var energy_capacity: float = 100.0
 
+## Seconds after taking damage before shield regeneration starts.
+@export var shield_recharge_delay: float = 3.0
+
+## Shield points restored per second after the recharge delay.
+@export var shield_recharge_rate: float = 8.0
+
+## Seconds after spending energy before energy regeneration starts.
+@export var energy_recharge_delay: float = 1.5
+
+## Energy points restored per second after the recharge delay.
+@export var energy_recharge_rate: float = 20.0
+
 @export_category("Slots")
 @export var weapon_slots: int = 1
 @export var missile_slots: int = 0
