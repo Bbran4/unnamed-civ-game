@@ -24,4 +24,4 @@ func _process(delta: float) -> void:
 	var current_rotation := global_basis.orthonormalized().get_rotation_quaternion()
 	var target_rotation := target_basis.get_rotation_quaternion()
 	var rotation_weight := 1.0 - exp(-rotation_smoothing * delta)
-	global_basis = current_rotation.slerp(target_rotation, rotation_weight).get_basis()
+	global_transform.basis = Basis(current_rotation.slerp(target_rotation, rotation_weight))
