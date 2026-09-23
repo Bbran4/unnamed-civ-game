@@ -1529,7 +1529,7 @@ The combat HUD should communicate spatial information in 2D while remaining driv
 ### Target Feedback
 
 - [x] Target lock bracket that follows the current target on screen
-- [ ] Off-screen target direction arrow
+- [x] Off-screen target direction arrow
 - [ ] Target bracket / off-screen indicator transition and screen-edge clamping
 
 ### Incoming Damage Feedback
