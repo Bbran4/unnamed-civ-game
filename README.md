@@ -47,21 +47,21 @@ The universe should feel like a place that already exists rather than a sequence
 
 ```text
 Leave station
-    ↓
+	↓
 Choose a job / destination / activity
-    ↓
+	↓
 Fly through space
-    ↓
+	↓
 Encounter the universe
-    ↓
+	↓
 Fight / trade / explore / salvage
-    ↓
+	↓
 Dock / land / board / interact
-    ↓
+	↓
 Receive money, reputation and information
-    ↓
+	↓
 Upgrade ship
-    ↓
+	↓
 Choose what to do next
 ```
 
@@ -69,25 +69,25 @@ A typical session might become:
 
 ```text
 Accept delivery
-    ↓
+	↓
 Detect distress signal
-    ↓
+	↓
 Investigate
-    ↓
+	↓
 Fight pirates
-    ↓
+	↓
 Rescue merchant
-    ↓
+	↓
 Gain faction reputation
-    ↓
+	↓
 Complete delivery
-    ↓
+	↓
 Sell cargo
-    ↓
+	↓
 Buy new weapon
-    ↓
+	↓
 Accept bounty
-    ↓
+	↓
 Launch again
 ```
 
@@ -358,17 +358,17 @@ Possible flow:
 
 ```text
 Disable target
-    ↓
+	↓
 Approach
-    ↓
+	↓
 Board
-    ↓
+	↓
 Enter ship
-    ↓
+	↓
 Resolve boarding situation
-    ↓
+	↓
 Steal / sabotage / rescue / capture
-    ↓
+	↓
 Escape
 ```
 
@@ -427,17 +427,17 @@ Example:
 
 ```text
 Pirates attack trade route
-        ↓
+		↓
 Merchants suffer losses
-        ↓
+		↓
 Station reports increased danger
-        ↓
+		↓
 Escort missions appear
-        ↓
+		↓
 Bounty contracts appear
-        ↓
+		↓
 Pirate hideout may be discovered
-        ↓
+		↓
 Destroying hideout changes local activity
 ```
 
@@ -479,11 +479,11 @@ Consumes:
   Medical Supplies
   Machinery
 
-        ↓
+		↓
 
 Trade Route
 
-        ↓
+		↓
 
 Industrial Station
 Produces:
@@ -1190,35 +1190,35 @@ The first complete gameplay session should feel like this:
 
 ```text
 Start with a cheap ship
-        ↓
+		↓
 Leave frontier station
-        ↓
+		↓
 Accept delivery contract
-        ↓
+		↓
 Fly through open space
-        ↓
+		↓
 Detect distress signal
-        ↓
+		↓
 Investigate
-        ↓
+		↓
 Fight pirates
-        ↓
+		↓
 Rescue merchant
-        ↓
+		↓
 Gain reputation
-        ↓
+		↓
 Complete delivery
-        ↓
+		↓
 Return to station
-        ↓
+		↓
 Sell cargo
-        ↓
+		↓
 Repair ship
-        ↓
+		↓
 Buy better weapon
-        ↓
+		↓
 Accept bounty
-        ↓
+		↓
 Launch again
 ```
 
