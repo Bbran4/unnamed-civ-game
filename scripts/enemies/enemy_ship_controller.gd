@@ -23,22 +23,26 @@ extends ShipController
 ## Small local-direction deadzone to prevent constant micro-corrections.
 @export var steering_deadzone: float = 0.05
 
-var target: Node3D
+var targeting_system: TargetingSystem
 
 
 func _ready() -> void:
 	super._ready()
+	targeting_system = ship.get_node_or_null("TargetingSystem") as TargetingSystem
 
-	if target_path != NodePath():
-		target = get_node_or_null(target_path) as Node3D
+	if targeting_system != null and target_path != NodePath():
+		var initial_target: Node3D = get_node_or_null(target_path) as Node3D
+		targeting_system.set_target(initial_target)
 
 
 func set_target(new_target: Node3D) -> void:
-	target = new_target
+	if targeting_system != null:
+		targeting_system.set_target(new_target)
 
 
 func clear_target() -> void:
-	target = null
+	if targeting_system != null:
+		targeting_system.clear_target()
 
 
 ## Converts the current pursuit goal into reusable Ship flight intent.
@@ -51,7 +55,12 @@ func clear_target() -> void:
 func get_flight_intent(_delta: float) -> Dictionary:
 	var intent := super.get_flight_intent(_delta)
 
-	if ship == null or target == null or not is_instance_valid(target):
+	if ship == null or targeting_system == null:
+		return intent
+
+	var target: Node3D = targeting_system.get_target()
+
+	if target == null:
 		return intent
 
 	var to_target: Vector3 = target.global_position - ship.global_position
