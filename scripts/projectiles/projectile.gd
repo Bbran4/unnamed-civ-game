@@ -6,8 +6,9 @@ extends CharacterBody3D
 ## ProjectileData defines the static projectile design.
 ## Projectile stores runtime state such as velocity, lifetime and ownership.
 ##
-## The projectile detects collisions and emits a hit signal, but it does not
-## apply damage yet. Damage handling belongs to the DamageSystem task.
+## The projectile detects collisions and forwards valid hits to DamageSystem.
+## DamageSystem handles delivery while shields, hull and destruction remain
+## separate gameplay systems.
 
 signal hit(projectile: Projectile, target: Node3D)
 signal expired(projectile: Projectile)
@@ -56,6 +57,7 @@ func _physics_process(delta: float) -> void:
 	if target_node == null:
 		return
 
+	DamageSystem.apply_damage(owner_ship, target_node, get_damage())
 	hit.emit(self, target_node)
 	queue_free()
 
