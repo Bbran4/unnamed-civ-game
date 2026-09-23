@@ -28,4 +28,7 @@ shape = SubResource("Shape_hull")
 [node name="WeaponMounts" type="Node3D" parent="." unique_id=804280016]
 
 [node name="WeaponMount_0" type="Marker3D" parent="WeaponMounts" unique_id=1445967713]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1, 0, -2.2)
+
+[node name="WeaponMount_1" type="Marker3D" parent="WeaponMounts" unique_id=3763320181]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1, 0, -2.2)
