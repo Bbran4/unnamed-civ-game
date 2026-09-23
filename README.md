@@ -120,7 +120,7 @@ This lets the project create detailed locations without requiring an enormous se
 
 # Space Flight
 
-Space flight is the first major system.
+Space flight is the foundation of the game.
 
 The player controls a 3D spacecraft using an accessible **twin-stick-inspired control scheme** rather than a full flight simulator.
 
@@ -141,9 +141,114 @@ The player controls a 3D spacecraft using an accessible **twin-stick-inspired co
 
 The ship should have acceleration and momentum while remaining responsive enough for close combat.
 
+## Flight Model
+
+Flight characteristics are **derived from the physical properties of the ship and its propulsion**, rather than being manually assigned values for every ship.
+
+The model is intentionally **physical-feeling**, not a full spacecraft simulator.
+
+Each ship defines a small set of approximate design specifications:
+
+text
+Hull dimensions
+Hull mass
+Main engine thrust
+Reverse thrust
+Maneuvering / RCS thrust
+Boost thrust
+Equipment
+Cargo
+text
+
+From these values the runtime ship derives:
+
+text
+Total mass
+Acceleration
+Reverse acceleration
+Brake acceleration
+Strafe acceleration
+Boost acceleration
+Pitch behaviour
+Yaw behaviour
+Roll behaviour
+Stopping time
+Stopping distance
+text
+
+The basic relationships are:
+
+text
+Linear acceleration = thrust / mass
+
+Braking acceleration = reverse thrust / mass
+
+Stopping time = current speed / braking acceleration
+
+Stopping distance = current speed² / (2 × braking acceleration)
+
+Angular acceleration = torque / moment of inertia
+text
+
+For rotational behaviour, ship dimensions and total mass are used to **approximate the ship's moment of inertia**. The game does not simulate the physical position of individual components such as reactors, cargo or weapons.
+
+This gives larger and heavier ships naturally different handling from small, agile ships without requiring individually hand-tuned flight statistics.
+
+### Throttle and Momentum
+
+Throttle and velocity are separate concepts.
+
+text
+W
+↓
+Increase forward throttle
+↓
+Ship accelerates
+
+Release W
+↓
+Throttle remains
+↓
+Ship maintains its current cruising speed
+
+Space
+↓
+Apply braking thrust
+↓
+Momentum decreases
+
+S
+↓
+Apply reverse thrust
+↓
+Ship can slow down, stop and eventually move backwards
+text
+
+The brake therefore **kills momentum rather than simply setting throttle to zero**.
+
+Turning and rolling do not automatically redirect existing velocity. A ship can rotate while continuing along its current trajectory.
+
+### Boost
+
+Boost increases available propulsion rather than directly setting the ship to an arbitrary speed.
+
+text
+Normal engine thrust
+        ↓
+Normal acceleration
+
+Boost engine thrust
+        ↓
+Higher acceleration
+        ↓
+Higher practical speed
+text
+
+The exact top speed remains a gameplay constraint because a ship in empty space would otherwise continue accelerating for as long as thrust is applied.
+
 ## Ship States
 
-```text
+text
 DOCKED
   ↓
 LAUNCHING
@@ -157,7 +262,7 @@ CRUISE
 DOCKING
   ↓
 DOCKED
-```
+text
 
 Other states can include:
 
@@ -166,8 +271,6 @@ Other states can include:
 - Jumping
 - Salvaging
 - Destroyed
-
----
 
 # Combat
 
@@ -755,9 +858,13 @@ That keeps the art workload realistic while allowing strong silhouettes, lightin
 
 # Architecture
 
-The project should separate simulation, data, gameplay and presentation.
+The project separates **static data, runtime ship state, controllers, simulation and presentation**.
 
-```text
+The central rule is:
+
+> **The ship knows how to operate. The controller decides what it wants to do.**
+
+text
 Game
 │
 ├── Universe
@@ -767,11 +874,14 @@ Game
 │   ├── Missions
 │   └── Encounters
 │
-├── Player
+├── Ships
+│   ├── ShipData
 │   ├── Ship
-│   ├── Character
-│   ├── Inventory
-│   └── Reputation
+│   ├── Controllers
+│   │   ├── Player
+│   │   └── Enemy
+│   ├── Weapons
+│   └── Equipment
 │
 ├── Simulation
 │   ├── AI
@@ -788,15 +898,80 @@ Game
 │   └── UI
 │
 └── Save
-```
+text
 
-The project should avoid a giant `GameManager.gd` that eventually knows about every system.
+The project should avoid a giant GameManager.gd that eventually knows about every system.
 
----
+## Ship and Controller Separation
+
+A ship is a reusable gameplay object.
+
+text
+Ship
+├── ShipData
+├── Runtime State
+├── Flight Physics
+├── Shields
+├── Hull
+├── Weapon System
+├── Targeting
+└── Equipment
+text
+
+Controllers provide intent to the ship.
+
+text
+PlayerShipController
+    ↓
+Mouse / Keyboard Input
+    ↓
+Flight Intent
+    ↓
+Ship
+text
+
+text
+EnemyShipController
+    ↓
+AI Decisions
+    ↓
+Flight Intent
+    ↓
+Ship
+text
+
+The same ship implementation can therefore be controlled by the player, an enemy AI, an escort AI or another future controller without duplicating flight physics.
+
+## Composition Over Ship Inheritance
+
+Ships should not become a deep inheritance tree such as:
+
+text
+Ship
+├── Fighter
+│   └── PlayerFighter
+├── EnemyFighter
+├── Freighter
+└── Gunship
+text
+
+Instead, ship identity comes from data and composition:
+
+text
+Ship
+├── ShipData
+├── Controller
+├── Weapons
+├── Shields
+├── Equipment
+└── Cargo
+text
+
+A player and an enemy can use the same ship definition while having different controllers.
 
 # Proposed Project Structure
 
-```text
+text
 res://
 ├── assets/
 │   ├── models/
@@ -807,7 +982,17 @@ res://
 │
 ├── data/
 │   ├── ships/
+│   │   ├── ship_data.gd
+│   │   └── *.tres
+│   │
 │   ├── weapons/
+│   │   ├── weapon_data.gd
+│   │   └── *.tres
+│   │
+│   ├── projectiles/
+│   │   ├── projectile_data.gd
+│   │   └── *.tres
+│   │
 │   ├── equipment/
 │   ├── factions/
 │   ├── missions/
@@ -816,8 +1001,16 @@ res://
 │   └── characters/
 │
 ├── scenes/
-│   ├── player/
 │   ├── ships/
+│   │   ├── ship.tscn
+│   │   ├── player_ship.tscn
+│   │   └── enemy_ship.tscn
+│   │
+│   ├── projectiles/
+│   │   └── projectile.tscn
+│   │
+│   ├── weapons/
+│   ├── player/
 │   ├── space/
 │   ├── stations/
 │   ├── planets/
@@ -827,9 +1020,19 @@ res://
 │
 ├── scripts/
 │   ├── core/
-│   ├── player/
 │   ├── ships/
+│   │   ├── ship.gd
+│   │   ├── ship_controller.gd
+│   │   ├── player_ship_controller.gd
+│   │   └── enemy_ship_controller.gd
+│   │
 │   ├── combat/
+│   │   ├── weapon.gd
+│   │   ├── projectile.gd
+│   │   ├── damage_system.gd
+│   │   ├── shield_system.gd
+│   │   └── targeting_system.gd
+│   │
 │   ├── missions/
 │   ├── factions/
 │   ├── economy/
@@ -839,63 +1042,133 @@ res://
 │   └── save/
 │
 └── shaders/
-```
-
----
+text
 
 # Data-Driven Design
 
-Static game content should use Godot Resources.
+Static game content should use Godot **Resources**.
 
-Example:
+Runtime state should remain separate from the static definitions.
 
-```text
+## ShipData
+
+A ship resource describes the physical and gameplay design of a ship.
+
+text
 ShipData
-├── display_name
-├── hull
-├── shield
-├── cargo_capacity
-├── acceleration
-├── turn_rate
-├── weapon_slots
-├── utility_slots
-└── price
-```
+├── Identity
+│   ├── id
+│   ├── display_name
+│   └── description
+│
+├── Physical
+│   ├── dimensions
+│   └── hull_mass
+│
+├── Propulsion
+│   ├── main_engine_thrust
+│   ├── reverse_engine_thrust
+│   ├── maneuvering_thrust
+│   └── boost_thrust
+│
+├── Combat
+│   ├── hull_capacity
+│   ├── shield_capacity
+│   └── energy_capacity
+│
+├── Slots
+│   ├── weapon_slots
+│   ├── missile_slots
+│   └── utility_slots
+│
+├── Cargo
+│   └── cargo_capacity
+│
+└── Economy
+    └── base_price
+text
 
-And:
+A ship resource contains **design inputs**, not derived flight results.
 
-```text
+The runtime ship calculates its actual handling from those inputs.
+
+For the first implementation, dimensions and mass are deliberately approximate. We do not simulate the exact physical position of every component inside the hull.
+
+## WeaponData
+
+text
 WeaponData
+├── id
 ├── display_name
+├── weapon_type
+├── mass
 ├── damage
 ├── range
 ├── fire_rate
 ├── energy_cost
 ├── projectile_speed
-└── weapon_type
-```
+└── projectile_data
+text
 
-Runtime state should be separate from static definitions.
+Adding or removing a weapon changes the ship's total mass.
 
-This lets us add ships, weapons and missions without rewriting core gameplay code.
+## ProjectileData
 
----
+text
+ProjectileData
+├── id
+├── damage
+├── speed
+├── lifetime
+├── radius
+├── homing
+├── turn_rate
+└── visual_scene
+text
+
+The projectile definition is data. The runtime projectile handles movement, collision and applying the defined damage.
+
+## Runtime State
+
+Static data should not contain changing gameplay state.
+
+text
+ShipData
+    ↓
+Static definition
+
+Ship
+    ↓
+Current hull
+Current shields
+Current energy
+Current velocity
+Current throttle
+Current equipment
+Current cargo
+text
+
+This lets one ShipData resource be reused by many ships while every ship maintains its own runtime state.
 
 # Architecture Rules
 
 - Keep gameplay data separate from presentation.
 - Use Resources for static definitions.
 - Keep runtime state separate from static data.
+- Separate controllers from reusable gameplay objects.
 - Prefer composition over giant inheritance trees.
+- Ship flight physics should not depend on whether the controller is human or AI.
+- Calculate derived flight characteristics from physical inputs.
+- Approximate ship dimensions and mass rather than simulating exact component positions.
+- Equipment should contribute to runtime ship mass where appropriate.
 - Keep ships modular.
-- Keep factions data-driven.
-- Keep missions data-driven.
-- Keep save data independent from scenes.
+- Keep weapons and projectiles data-driven.
 - Use signals for loosely coupled events.
 - Avoid unnecessary global state.
 - Keep systems small enough to test.
 - Prefer deterministic simulation where practical.
 - Do not build a system until the gameplay needs it.
+- Simulation depth should serve gameplay rather than become the project.
 
 ---
 
@@ -907,23 +1180,42 @@ The biggest trap is:
 
 We do not.
 
-The first prototype should contain only:
+The first prototype should contain only the pieces required to prove the core loop:
 
-- One small space environment
+text
+One small space environment
+        ↓
+Reusable Ship
+        ↓
+ShipData
+        ↓
+Player Controller
+        ↓
+Enemy Controller
+        ↓
+Weapon
+        ↓
+Projectile
+        ↓
+Damage
+        ↓
+Dogfight
+text
+
+The first combat prototype should use:
+
 - One player ship
 - One enemy ship
-- One station
-- Basic flight
-- Basic combat
-- Docking
-- One mission
-- Credits
-- One upgrade
-- Save/load
+- One ship definition
+- One weapon definition
+- One projectile definition
+- Basic targeting
+- Basic AI
+- Shields
+- Hull
+- Destruction
 
-If flying between a station and an enemy encounter is fun, we have a foundation.
-
-If it is not fun, adding forty star systems only gives us forty places where the game is not fun.
+If the resulting dogfight is not fun, adding forty star systems only gives us forty places where the game is not fun.
 
 ---
 
@@ -944,9 +1236,11 @@ If it is not fun, adding forty star systems only gives us forty places where the
 
 ## Milestone 1 - First Flight
 
-**Status: COMPLETE**
+**Status: FOUNDATION COMPLETE / ARCHITECTURE REWORK IN PROGRESS**
 
-**Goal: Make flying a spaceship fun.**
+**Goal: Make flying a spaceship fun, then move the flight model into reusable ship architecture.**
+
+Flight prototype completed:
 
 - [x] Player ship scene
 - [x] Third-person space camera
@@ -964,32 +1258,65 @@ If it is not fun, adding forty star systems only gives us forty places where the
 - [x] Camera smoothing
 - [x] Boost camera FOV
 - [x] Rotation basis stabilization
+- [x] Pilot-relative yaw controls
 
-Targeting is intentionally part of Milestone 2 because it becomes meaningful once enemy ships exist.
+Before combat, the prototype flight code will be refactored into the reusable ship architecture.
 
-**Definition of done:** The player can spawn in space, fly freely, manoeuvre in every axis, accelerate, brake, boost and strafe, and comfortably fly for several minutes without needing another system.
+The final Milestone 1 flight model should use:
+
+- [ ] ShipData Resource
+- [ ] Reusable Ship
+- [ ] ShipController base
+- [ ] PlayerShipController
+- [ ] Formula-derived flight characteristics
+- [ ] Physical-feeling throttle and momentum
+- [ ] Mass affected by installed equipment
+
+**Definition of done:** A reusable ship can be controlled independently of the controller, and its flight characteristics are calculated from its dimensions, mass and propulsion specifications.
 
 ---
 
 ## Milestone 2 - Combat
 
-**Goal: Make one dogfight fun.**
+**Goal: Build the reusable combat foundation, then make one dogfight fun.**
 
-Targeting begins here, where there are actual ships and threats to target.
+### Ship Foundation
 
-- [ ] Enemy ship
+- [ ] ShipData Resource
+- [ ] Ship runtime scene
+- [ ] Ship runtime state
+- [ ] ShipController base
+- [ ] PlayerShipController
+- [ ] EnemyShipController
+- [ ] Ship spawning
+- [ ] Formula-derived flight physics
+- [ ] Equipment contributes to ship mass
+
+### Combat Foundation
+
+- [ ] WeaponData Resource
+- [ ] Weapon runtime
+- [ ] ProjectileData Resource
+- [ ] Projectile runtime
+- [ ] Damage system
+- [ ] Shields
+- [ ] Hull
+- [ ] Destruction
+- [ ] Targeting system
+- [ ] Combat HUD
+
+### Dogfight
+
 - [ ] Enemy AI
 - [ ] Target locking
 - [ ] Basic weapon
-- [ ] Projectile system
-- [ ] Shields
-- [ ] Hull
-- [ ] Damage
-- [ ] Destruction
-- [ ] Combat HUD
+- [ ] Projectile firing
+- [ ] Player damage
+- [ ] Enemy damage
+- [ ] Enemy destruction
 - [ ] Basic reward
 
-**Definition of done:** The player can fight one enemy, win or lose, and immediately understand what happened.
+**Definition of done:** The player and an enemy use the same reusable ship system with different controllers, can target each other, fight, take damage and be destroyed.
 
 ---
 
