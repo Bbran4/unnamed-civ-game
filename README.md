@@ -1294,7 +1294,7 @@ The final Milestone 1 flight model should use:
 
 ### Ship Foundation
 
-- [ ] ShipData Resource
+- [x] ShipData Resource
 - [ ] Ship runtime scene
 - [ ] Ship runtime state
 - [ ] ShipController base
