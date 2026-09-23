@@ -1301,8 +1301,8 @@ The final Milestone 1 flight model should use:
 - [x] PlayerShipController
 - [x] EnemyShipController
 - [x] Ship spawning
-- [ ] Formula-derived flight physics
-- [ ] Equipment contributes to ship mass
+- [x] Formula-derived flight physics
+- [x] Equipment contributes to ship mass
 
 ### Combat Foundation
 
