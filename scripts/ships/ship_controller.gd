@@ -26,6 +26,7 @@ func _ready() -> void:
 ## throttle    -1.0 to 1.0
 ## brake       true/false
 ## boost       true/false
+## fire        true/false
 ##
 ## The base controller provides neutral input. Specific controllers override
 ## this method to provide player input or AI decisions.
