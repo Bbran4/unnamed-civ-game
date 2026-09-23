@@ -45,6 +45,9 @@ text = "THROTTLE  000%"
 [node name="Status" type="Label" parent="PlayerPanel/MarginContainer/VBoxContainer"]
 text = "FLIGHT  CRUISE"
 
+[node name="Credits" type="Label" parent="PlayerPanel/MarginContainer/VBoxContainer"]
+text = "CREDITS  0"
+
 [node name="HullLabel" type="Label" parent="PlayerPanel/MarginContainer/VBoxContainer"]
 text = "HULL"
 
@@ -158,6 +161,14 @@ text = "+"
 horizontal_alignment = 1
 vertical_alignment = 1
 mouse_filter = 2
+
+[node name="Reward" type="Label" parent="."]
+offset_left = 24.0
+offset_top = 270.0
+offset_right = 360.0
+offset_bottom = 294.0
+text = ""
+horizontal_alignment = 0
 
 [node name="Help" type="Label" parent="."]
 anchor_top = 1.0
