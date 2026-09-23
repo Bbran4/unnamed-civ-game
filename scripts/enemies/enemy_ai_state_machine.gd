@@ -42,17 +42,17 @@ signal state_changed(previous_state: int, new_state: int)
 @export_category("Steering")
 @export var steering_deadzone: float = 0.05
 
-
 var ship: Ship
 var targeting_system: TargetingSystem
-var current_state: State = State.IDLE
+var current_state: int = State.IDLE
 var evade_timer: float = 0.0
+
 
 func setup(new_ship: Ship, new_targeting_system: TargetingSystem) -> void:
 	ship = new_ship
 	targeting_system = new_targeting_system
 
-if ship != null:
+	if ship != null:
 		ship.shields_hit.connect(_on_shields_hit)
 		ship.hull_hit.connect(_on_hull_hit)
 		ship.destroyed.connect(_on_ship_destroyed)
@@ -79,16 +79,12 @@ func get_flight_intent(delta: float) -> Dictionary:
 	match current_state:
 		State.IDLE:
 			return _build_idle_intent(intent)
-
 		State.PURSUIT:
 			return _build_pursuit_intent(intent)
-
 		State.ATTACK:
 			return _build_attack_intent(intent)
-
 		State.EVADE:
 			return _build_evade_intent(intent)
-
 		State.FLEE:
 			return _build_flee_intent(intent)
 
@@ -99,7 +95,7 @@ func transition_to(new_state: int) -> void:
 	if current_state == new_state:
 		return
 
-	var previous_state: State = current_state
+	var previous_state: int = current_state
 	current_state = new_state
 	state_changed.emit(previous_state, new_state)
 
@@ -110,11 +106,6 @@ func _update_state() -> void:
 	if current_state == State.FLEE:
 		if target == null:
 			transition_to(State.IDLE)
-			return
-
-		if targeting_system.get_target_distance() >= flee_disengage_distance:
-			transition_to(State.IDLE)
-
 		return
 
 	if ship.get_hull_fraction() <= flee_hull_fraction:
@@ -198,8 +189,6 @@ func _build_evade_intent(intent: Dictionary) -> Dictionary:
 		intent["strafe"] = clampf(orbit_direction, -1.0, 1.0)
 		return intent
 
-	# Break away from the incoming target direction while maintaining enough
-	# forward thrust to keep the ship moving through the engagement.
 	var local_escape_direction: Vector3 = (
 		ship.global_transform.basis.inverse() * -target_direction
 	)
@@ -274,8 +263,10 @@ func _on_shields_hit(
 	if ship == null or ship.is_destroyed():
 		return
 
-if ship.get_hull_fraction() > flee_hull_fraction:
-		evade_timer = evade_duration
+	# Once shields are running low, the enemy becomes more defensive.
+	if ship.get_hull_fraction() > flee_hull_fraction:
+		if ship.get_shield_fraction() <= evade_shield_fraction:
+			evade_timer = evade_duration
 
 
 func _on_hull_hit(
