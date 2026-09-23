@@ -1,7 +1,8 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/player/player_ship.tscn" id="1_ship"]
 [ext_resource type="PackedScene" path="res://scenes/ui/flight_hud.tscn" id="2_hud"]
+[ext_resource type="Script" path="res://scripts/main.gd" id="3_main"]
 
 [sub_resource type="Environment" id="Environment_main"]
 background_mode = 1
@@ -25,12 +26,15 @@ metallic = 0.25
 roughness = 0.7
 
 [node name="Main" type="Node3D"]
+script = ExtResource("3_main")
 
 [node name="Environment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_main")
 
 [node name="PlayerShip" parent="." instance=ExtResource("1_ship")]
 position = Vector3(0, 0, 0)
+
+[node name="ShipSpawner" type="Node3D" parent="."]
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 rotation_degrees = Vector3(-35, -25, 0)
