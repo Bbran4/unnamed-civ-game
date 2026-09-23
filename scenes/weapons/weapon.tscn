@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/weapons/weapon.gd" id="1_weapon"]
+[ext_resource type="Resource" path="res://data/weapons/starter_laser.tres" id="2_weapon_data"]
+
+[node name="Weapon" type="Node3D"]
+script = ExtResource("1_weapon")
+weapon_data = ExtResource("2_weapon_data")
+
+[node name="Muzzle" type="Marker3D" parent="."]
+position = Vector3(0, 0, -1.5)
