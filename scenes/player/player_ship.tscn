@@ -1,31 +1,16 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=5 format=3]
 
-[ext_resource type="Script" path="res://scripts/player/player_ship.gd" id="1_ship"]
-[ext_resource type="Script" path="res://scripts/player/flight_camera.gd" id="2_camera"]
+[ext_resource type="PackedScene" path="res://scenes/ships/ship.tscn" id="1_ship"]
+[ext_resource type="Script" path="res://scripts/ships/ship_controller.gd" id="2_controller"]
+[ext_resource type="Script" path="res://scripts/player/player_ship_controller.gd" id="3_player_controller"]
+[ext_resource type="Script" path="res://scripts/player/flight_camera.gd" id="4_camera"]
+[ext_resource type="Resource" path="res://data/ships/starter_fighter.tres" id="5_ship_data"]
 
-[sub_resource type="CapsuleMesh" id="Mesh_hull"]
-radius = 0.8
-height = 4.5
+[node name="PlayerShip" instance=ExtResource("1_ship")]
+ship_data = ExtResource("5_ship_data")
 
-[sub_resource type="CapsuleShape3D" id="Shape_hull"]
-radius = 0.8
-height = 4.5
-
-[sub_resource type="StandardMaterial3D" id="Material_hull"]
-albedo_color = Color(0.22, 0.28, 0.38, 1)
-metallic = 0.65
-roughness = 0.28
-
-[node name="PlayerShip" type="CharacterBody3D"]
-script = ExtResource("1_ship")
-
-[node name="Hull" type="MeshInstance3D" parent="."]
-rotation_degrees = Vector3(0, 0, 90)
-mesh = SubResource("Mesh_hull")
-material_override = SubResource("Material_hull")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-shape = SubResource("Shape_hull")
+[node name="PlayerShipController" type="Node" parent="."]
+script = ExtResource("3_player_controller")
 
 [node name="EngineGlow" type="OmniLight3D" parent="."]
 position = Vector3(0, 0, 2.2)
@@ -36,5 +21,5 @@ omni_range = 5.0
 [node name="Camera3D" type="Camera3D" parent="."]
 position = Vector3(0, 3, 10)
 current = true
-script = ExtResource("2_camera")
+script = ExtResource("4_camera")
 target_path = NodePath("..")
