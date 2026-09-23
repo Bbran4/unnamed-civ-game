@@ -1,0 +1,29 @@
+[gd_scene load_steps=3 format=3]
+
+[sub_resource type="Environment" id="Environment_main"]
+background_mode = 1
+background_color = Color(0.005, 0.008, 0.02, 1)
+ambient_light_source = 3
+ambient_light_color = Color(0.12, 0.15, 0.22, 1)
+ambient_light_energy = 0.35
+
+[sub_resource type="BoxMesh" id="BoxMesh_test"]
+size = Vector3(4, 0.2, 4)
+
+[node name="Main" type="Node3D"]
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_main")
+
+[node name="TestMarker" type="MeshInstance3D" parent="."]
+position = Vector3(0, -2, 0)
+mesh = SubResource("BoxMesh_test")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+position = Vector3(0, 2, 8)
+rotation_degrees = Vector3(-12, 0, 0)
+current = true
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-35, -25, 0)
+light_energy = 0.8
