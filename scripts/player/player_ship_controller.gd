@@ -3,28 +3,45 @@ extends ShipController
 
 ## Player input controller.
 ##
-## Converts mouse and keyboard input into flight intent.
-## The Ship remains responsible for interpreting that intent and applying
+## Converts mouse and keyboard input into flight and targeting intent.
+## The Ship remains responsible for interpreting flight intent and applying
 ## movement, acceleration, braking and rotation.
+##
+## Target selection is handled here at the input layer. TargetingSystem owns
+## candidate discovery and the current target state.
 
 @export_category("Mouse")
 @export var mouse_sensitivity: float = 0.04
 
-var mouse_input := Vector2.ZERO
+@export_category("Targeting")
+## Maximum distance in metres used when locking or cycling targets.
+@export var target_cycle_range: float = 1500.0
+
+var mouse_input: Vector2 = Vector2.ZERO
+var targeting_system: TargetingSystem
+
 
 func _ready() -> void:
 	super._ready()
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
+	if ship != null:
+		targeting_system = ship.get_node_or_null("TargetingSystem") as TargetingSystem
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		mouse_input += event.relative
 
-	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
-		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_ESCAPE:
+			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		elif event.keycode == KEY_T:
+			_cycle_target()
 
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+
 
 func get_flight_intent(_delta: float) -> Dictionary:
 	var intent := super.get_flight_intent(_delta)
@@ -43,6 +60,19 @@ func get_flight_intent(_delta: float) -> Dictionary:
 	intent["fire"] = Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT)
 
 	return intent
+
+
+func _cycle_target() -> void:
+	if targeting_system == null:
+		return
+
+	var target: Ship = targeting_system.cycle_target(target_cycle_range)
+
+	if target == null:
+		return
+
+	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+
 
 func _axis(negative_key: Key, positive_key: Key) -> float:
 	return float(Input.is_key_pressed(positive_key)) - float(Input.is_key_pressed(negative_key))
