@@ -90,6 +90,9 @@ theme_override_constants/separation = 4
 [node name="Title" type="Label" parent="TargetPanel/MarginContainer/VBoxContainer"]
 text = "TARGET"
 
+[node name="TargetLock" type="Label" parent="TargetPanel/MarginContainer/VBoxContainer"]
+text = "LOCK  NONE"
+
 [node name="TargetName" type="Label" parent="TargetPanel/MarginContainer/VBoxContainer"]
 text = "TARGET  NONE"
 
