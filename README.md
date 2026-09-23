@@ -1520,7 +1520,42 @@ The reusable ship, controller and flight model foundation is in place.
 ---
 
 
-## Milestone 3 - First Station
+## Milestone 3 - Combat HUD and Targeting Feedback
+
+**Goal: Make the dogfight readable at a glance and give the player clear visual feedback about targets, incoming fire and where to aim.**
+
+The combat HUD should communicate spatial information in 2D while remaining driven by the existing 3D gameplay state.
+
+### Target Feedback
+
+- [ ] Target lock bracket that follows the current target on screen
+- [ ] Off-screen target direction arrow
+- [ ] Target bracket / off-screen indicator transition and screen-edge clamping
+
+### Incoming Damage Feedback
+
+- [ ] Directional damage indicator around the player HUD
+- [ ] Convert the world-space damage source into a temporary 2D red arc
+- [ ] Support damage coming from any direction around the player
+
+### Aiming Feedback
+
+- [ ] Graphical player crosshair
+- [ ] Projectile lead / aim indicator circle
+- [ ] Lead calculation based on target movement, relative motion and actual projectile speed
+- [ ] Lead indicator updates when the target or equipped weapon changes
+
+### HUD Architecture
+
+- [ ] Keep target bracket, direction arrow, damage indicator and lead indicator as separate HUD components
+- [ ] Keep targeting decisions in TargetingSystem / controllers rather than the HUD
+- [ ] Reuse runtime Ship and Weapon/Projectile data as the source of truth
+
+**Definition of done:** During a dogfight, the player can immediately see which ship is locked, where that ship is when off-screen, which direction incoming damage came from and where to aim for a likely projectile interception.
+
+---
+
+## Milestone 4 - First Station
 
 **Goal: Give the player somewhere to go.**
 
@@ -1535,7 +1570,7 @@ The reusable ship, controller and flight model foundation is in place.
 
 ---
 
-## Milestone 4 - Missions
+## Milestone 5 - Missions
 
 **Goal: Give the player a reason to fly.**
 
@@ -1552,7 +1587,7 @@ The reusable ship, controller and flight model foundation is in place.
 
 ---
 
-## Milestone 5 - Economy
+## Milestone 6 - Economy
 
 - [ ] Commodities
 - [ ] Cargo hold
@@ -1566,7 +1601,7 @@ The reusable ship, controller and flight model foundation is in place.
 
 ---
 
-## Milestone 6 - Player Progression
+## Milestone 7 - Player Progression
 
 - [ ] Credits
 - [ ] Ship upgrades
@@ -1578,7 +1613,7 @@ The reusable ship, controller and flight model foundation is in place.
 
 ---
 
-## Milestone 7 - Factions and Reputation
+## Milestone 8 - Factions and Reputation
 
 - [ ] Faction data
 - [ ] Reputation
@@ -1591,7 +1626,7 @@ The reusable ship, controller and flight model foundation is in place.
 
 ---
 
-## Milestone 8 - Living Space
+## Milestone 9 - Living Space
 
 - [ ] Third-person character controller
 - [ ] Station interior
@@ -1606,7 +1641,7 @@ This remains focused. We are building playable locations, not an entire open-wor
 
 ---
 
-## Milestone 9 - Boarding
+## Milestone 10 - Boarding
 
 - [ ] Disable enemy ship
 - [ ] Boarding trigger
@@ -1622,7 +1657,7 @@ This remains focused. We are building playable locations, not an entire open-wor
 
 ---
 
-## Milestone 10 - Dynamic Universe
+## Milestone 11 - Dynamic Universe
 
 - [ ] NPC traffic
 - [ ] Traders
@@ -1637,7 +1672,7 @@ This remains focused. We are building playable locations, not an entire open-wor
 
 ---
 
-## Milestone 11 - Exploration
+## Milestone 12 - Exploration
 
 - [ ] Scanner
 - [ ] Unknown contacts
@@ -1803,9 +1838,9 @@ The initial flight prototype is complete, but its architecture is now being refa
 
 The immediate objective is:
 
-> **Build one excellent ship before building an excellent dogfight.**
+> **Build one excellent dogfight before building the rest of the universe.**
 
-The ship foundation must support player-controlled and AI-controlled ships using the same reusable flight model.
+The reusable ship, combat, targeting and enemy AI foundations are now in place. The next focus is combat HUD feedback: making targeting, incoming fire and aiming information immediately readable without adding unnecessary simulation complexity.
 
 ---
 
