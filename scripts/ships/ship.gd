@@ -28,6 +28,9 @@ const WEAPON_SCENE: PackedScene = preload("res://scenes/weapons/weapon.tscn")
 @export_category("Weapon Loadout")
 var weapons: Array[Weapon] = []
 
+@export_category("Destruction State")
+var destroyed_state: bool = false
+
 @export_category("Runtime State")
 var current_hull: float = 0.0
 var current_shields: float = 0.0
@@ -63,6 +66,7 @@ var roll_speed: float = 0.0
 var moment_of_inertia: Vector3 = Vector3.ZERO
 
 func _ready() -> void:
+	destroyed_state = false
 	_initialize_from_data()
 	_initialize_controller()
 	_initialize_weapon_slots()
@@ -379,6 +383,7 @@ func get_moment_of_inertia_kg_m2() -> Vector3:
 signal damage_received(amount: float, source: Node, remaining_hull: float)
 signal shields_hit(amount: float, source: Node, remaining_shields: float)
 signal hull_hit(amount: float, source: Node, remaining_hull: float)
+signal destroyed(source: Node)
 
 ## Entry point used by DamageSystem.
 ##
@@ -425,6 +430,9 @@ func receive_damage(amount: float, source: Node = null) -> void:
 
 	damage_received.emit(damage, source, current_hull)
 
+		if bool(hull_result["destroyed"]):
+			DestructionSystem.destroy(self, source)
+
 
 func get_hull_fraction() -> float:
 	if ship_data == null or ship_data.hull_capacity <= 0.0:
@@ -442,7 +450,7 @@ func get_energy_fraction() -> float:
 	return current_energy / ship_data.energy_capacity
 
 func is_destroyed() -> bool:
-	return current_hull <= 0.0
+	return destroyed_state
 
 func reset_runtime_state() -> void:
 	if ship_data == null:
@@ -451,6 +459,7 @@ func reset_runtime_state() -> void:
 	current_hull = ship_data.hull_capacity
 	current_shields = ship_data.shield_capacity
 	current_energy = ship_data.energy_capacity
+	destroyed_state = false
 	throttle = 0.0
 	boost_active = false
 	brake_active = false
