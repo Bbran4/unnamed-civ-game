@@ -5,10 +5,18 @@ extends CanvasLayer
 ## This HUD reads runtime state from the player's Ship and its TargetingSystem.
 ## It deliberately does not implement target locking or target selection.
 ## Higher-level gameplay systems can assign a target and the HUD will reflect it.
+##
+## The prototype reward display reads prototype_credits from the parent Main node.
+## The full player credit system belongs to a later progression milestone.
 
 @export var ship_path: NodePath
+@export var reward_source_path: NodePath = NodePath("..")
+
 var ship: Ship
 var targeting_system: TargetingSystem
+var reward_source: Node
+var displayed_credits: int = 0
+var reward_message_timer: float = 0.0
 
 @onready var speed_label: Label = $PlayerPanel/MarginContainer/VBoxContainer/Speed
 @onready var throttle_label: Label = $PlayerPanel/MarginContainer/VBoxContainer/Throttle
@@ -16,6 +24,7 @@ var targeting_system: TargetingSystem
 @onready var hull_bar: ProgressBar = $PlayerPanel/MarginContainer/VBoxContainer/HullBar
 @onready var shield_bar: ProgressBar = $PlayerPanel/MarginContainer/VBoxContainer/ShieldBar
 @onready var energy_bar: ProgressBar = $PlayerPanel/MarginContainer/VBoxContainer/EnergyBar
+@onready var credits_label: Label = $PlayerPanel/MarginContainer/VBoxContainer/Credits
 @onready var target_name_label: Label = $TargetPanel/MarginContainer/VBoxContainer/TargetName
 @onready var target_lock_label: Label = $TargetPanel/MarginContainer/VBoxContainer/TargetLock
 @onready var target_distance_label: Label = $TargetPanel/MarginContainer/VBoxContainer/TargetDistance
@@ -29,6 +38,7 @@ var targeting_system: TargetingSystem
 
 func _ready() -> void:
 	ship = get_node_or_null(ship_path) as Ship
+	reward_source = get_node_or_null(reward_source_path)
 
 	if ship != null:
 		targeting_system = ship.get_node_or_null("TargetingSystem") as TargetingSystem
@@ -36,15 +46,17 @@ func _ready() -> void:
 	help_label.text = "W/S Throttle  |  Mouse Pitch/Yaw  |  Q/E Roll  |  A/D Strafe  |  Shift Boost  |  Space Brake  |  LMB Fire  |  T Target/Cycle  |  Esc Release Mouse"
 	reticle_label.text = "+"
 	_reset_target_display()
+	_update_reward_display(0.0)
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	if ship == null:
 		return
 
 	_update_player_display()
 	_update_target_display()
 	_update_weapon_display()
+	_update_reward_display(delta)
 
 
 func _update_player_display() -> void:
@@ -55,6 +67,32 @@ func _update_player_display() -> void:
 	hull_bar.value = ship.get_hull_fraction() * 100.0
 	shield_bar.value = ship.get_shield_fraction() * 100.0
 	energy_bar.value = ship.get_energy_fraction() * 100.0
+
+
+func _update_reward_display(delta: float) -> void:
+	if reward_source == null:
+		return
+
+	var reward_value: Variant = reward_source.get("prototype_credits")
+
+	if reward_value == null:
+		return
+
+	var current_credits: int = int(reward_value)
+
+	if current_credits > displayed_credits:
+		var reward_amount: int = current_credits - displayed_credits
+		_reward_message_timer = 2.5
+		$Reward.text = "REWARD  +%d CREDITS" % reward_amount
+
+	displayed_credits = current_credits
+	credits_label.text = "CREDITS  %d" % displayed_credits
+
+	if reward_message_timer > 0.0:
+		reward_message_timer = maxf(reward_message_timer - delta, 0.0)
+
+		if reward_message_timer <= 0.0:
+			$Reward.text = ""
 
 
 func _update_target_display() -> void:
