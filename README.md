@@ -1240,6 +1240,25 @@ The projectile definition is data. The runtime projectile handles movement, coll
 
 Projectile hits are routed through a central DamageSystem rather than directly modifying ship state.
 
+### Targeting
+
+Each runtime Ship owns a TargetingSystem that stores and validates its current target.
+
+~~~
+Ship
+└── TargetingSystem
+    ├── Current Target
+    ├── Target Validation
+    ├── Nearest Target Acquisition
+    ├── Target Distance
+    └── Target Direction
+~~~
+
+The TargetingSystem is responsible for target state and safe target queries. It does not decide when the player locks, cycles or changes targets. Those higher-level behaviours belong to the later target-lock and AI systems.
+
+Both player-facing systems and AI controllers can therefore use the same targeting API.
+
+
 ~~~
 Projectile collision
 	↓
@@ -1365,35 +1384,7 @@ If the resulting dogfight is not fun, adding forty star systems only gives us fo
 
 ## Milestone 1 - First Flight
 
-**Status: FOUNDATION COMPLETE / ARCHITECTURE REWORK IN PROGRESS**
-
-**Goal: Make flying a spaceship fun, then move the flight model into reusable ship architecture.**
-
-Flight prototype completed:
-
-- [x] Player ship scene
-- [x] Third-person space camera
-- [x] Pitch
-- [x] Yaw
-- [x] Roll
-- [x] Throttle
-- [x] Boost
-- [x] Brake
-- [x] Strafe
-- [x] Acceleration
-- [x] Flight HUD
-- [x] Center flight reticle
-- [x] Flight test markers
-- [x] Camera smoothing
-- [x] Boost camera FOV
-- [x] Rotation basis stabilization
-- [x] Pilot-relative yaw controls
-
-Before combat, the prototype flight code will be refactored into the reusable ship architecture.
-
----
-
-## Milestone 2 - Combat
+**Status: FOUNDATION COMPLETE / ARCHITECTURE REWORK IN PROGRE## Milestone 2 - Combat
 
 **Goal: Build the reusable combat foundation, then make one dogfight fun.**
 
@@ -1408,6 +1399,36 @@ Before combat, the prototype flight code will be refactored into the reusable sh
 - [x] Ship spawning
 - [x] Formula-derived flight physics
 - [x] Equipment contributes to ship mass
+
+### Combat Foundation
+
+- [x] WeaponData Resource
+- [x] Weapon runtime
+- [x] ProjectileData Resource
+- [x] Projectile runtime
+- [x] Damage system
+- [x] Shields
+- [x] Hull
+- [x] Destruction
+- [x] Targeting system
+- [ ] Combat HUD
+
+### Dogfight
+
+- [ ] Enemy AI
+- [ ] Target locking
+- [ ] Basic weapon
+- [ ] Projectile firing
+- [ ] Player damage
+- [ ] Enemy damage
+- [ ] Enemy destruction
+- [ ] Basic reward
+
+**Definition of done:** The player and an enemy use the same reusable ship system with different controllers, can target each other, fight, take damage and be destroyed.
+
+---
+
+ss
 
 ### Combat Foundation
 
