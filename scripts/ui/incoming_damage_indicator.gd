@@ -71,39 +71,40 @@ func _on_ship_damage_received(
 	var camera: Camera3D = get_viewport().get_camera_3d()
 
 	if camera != null:
-		var camera_local_direction: Vector3 = (
+		damage_direction = _project_world_direction_to_hud(
 			camera.global_transform.basis.inverse() * incoming_direction
 		)
-		damage_direction = Vector2(
-			camera_local_direction.x,
-			camera_local_direction.z
-		)
-
-		# A hit directly above or below has no horizontal screen direction.
-		# In that case, use the vertical camera direction so the indicator still
-		# provides useful feedback.
-		if damage_direction.length_squared() <= 0.0001:
-			damage_direction = Vector2(
-				0.0,
-				-camera_local_direction.y
-			)
 	else:
 		var ship_local_direction: Vector3 = (
 			ship.global_transform.basis.inverse() * incoming_direction
 		)
-		damage_direction = Vector2(
-			ship_local_direction.x,
-			ship_local_direction.z
-		)
-
-	if damage_direction.length_squared() <= 0.0001:
-		damage_direction = Vector2.UP
-	else:
-		damage_direction = damage_direction.normalized()
+		damage_direction = _project_world_direction_to_hud(ship_local_direction)
 
 	damage_time_remaining = maxf(display_duration, 0.0)
 	visible = true
 	queue_redraw()
+
+
+## Convert a 3D incoming direction into a 2D HUD direction.
+##
+## Camera-local X/Y give the normal screen-space direction. A direction aimed
+## almost exactly through the camera cannot be projected onto the screen plane,
+## so forward/backward attacks use the top/bottom of the HUD as an intuitive
+## fallback. This covers the full 3D direction range without dropping hits
+## directly in front of or behind the player.
+func _project_world_direction_to_hud(local_direction: Vector3) -> Vector2:
+	var hud_direction: Vector2 = Vector2(
+		local_direction.x,
+		-local_direction.y
+	)
+
+	if hud_direction.length_squared() <= 0.0001:
+		if local_direction.z > 0.0:
+			return Vector2.DOWN
+
+		return Vector2.UP
+
+	return hud_direction.normalized()
 
 
 func _draw() -> void:
