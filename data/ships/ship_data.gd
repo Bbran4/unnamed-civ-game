@@ -7,8 +7,9 @@ extends Resource
 ## Runtime state such as current hull, shields, velocity and installed
 ## equipment belongs to the Ship instance, not this resource.
 ##
-## Flight characteristics such as acceleration, braking and rotation are
-## derived later by the runtime Ship from these values.
+## Flight characteristics are explicit gameplay values. Hull mass and
+## dimensions are kept for ship identity, cargo/equipment systems and HUD
+## presentation, but do not determine basic flight handling.
 
 @export_category("Identity")
 @export var id: StringName = &"ship"
@@ -21,21 +22,30 @@ extends Resource
 @export var dimensions: Vector3 = Vector3(10.0, 3.0, 6.0)
 
 ## Base hull mass before installed equipment and cargo.
+## Mass is not currently used to calculate flight handling.
 @export var hull_mass_kg: float = 10000.0
 
-@export_category("Propulsion")
-## Main forward engine thrust in newtons.
-@export var main_engine_thrust_n: float = 300000.0
+@export_category("Flight")
+## Gameplay speed and acceleration values. These are deliberately direct so
+## every ship can be tuned by feel without relying on physical derivations.
+@export var max_speed_mps: float = 100.0
+@export var acceleration_mps2: float = 50.0
+@export var reverse_speed_mps: float = 50.0
+@export var reverse_acceleration_mps2: float = 60.0
+@export var strafe_speed_mps: float = 50.0
+@export var strafe_acceleration_mps2: float = 80.0
+@export var boost_speed_mps: float = 180.0
+@export var boost_acceleration_mps2: float = 100.0
+@export var flight_assist_acceleration_mps2: float = 120.0
 
-## Reverse / braking thrust in newtons.
-@export var reverse_engine_thrust_n: float = 150000.0
-
-## Available maneuvering / RCS thrust for a control direction in newtons.
-## Used to derive strafe, flight-assist and rotational behaviour.
-@export var maneuvering_thrust_n: float = 75000.0
-
-## Additional engine thrust available while boosting.
-@export var boost_thrust_n: float = 450000.0
+## Turn rates are maximum angular velocities. Turn acceleration controls how
+## quickly the ship reaches the requested turn rate.
+@export var pitch_turn_rate_deg_s: float = 120.0
+@export var yaw_turn_rate_deg_s: float = 120.0
+@export var roll_turn_rate_deg_s: float = 150.0
+@export var pitch_turn_acceleration_deg_s2: float = 360.0
+@export var yaw_turn_acceleration_deg_s2: float = 360.0
+@export var roll_turn_acceleration_deg_s2: float = 450.0
 
 @export_category("Combat")
 @export var hull_capacity: float = 100.0
