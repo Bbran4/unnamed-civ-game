@@ -1,10 +1,11 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/flight_hud.gd" id="1_hud"]
 [ext_resource type="Script" path="res://scripts/ui/target_lock_bracket.gd" id="2_bracket"]
 [ext_resource type="Script" path="res://scripts/ui/target_direction_indicator.gd" id="3_direction"]
 [ext_resource type="Script" path="res://scripts/ui/incoming_damage_indicator.gd" id="4_damage"]
 [ext_resource type="Script" path="res://scripts/ui/player_crosshair.gd" id="5_crosshair"]
+[ext_resource type="Script" path="res://scripts/ui/projectile_lead_indicator.gd" id="6_lead"]
 
 [sub_resource type="StyleBoxFlat" id="Style_panel"]
 bg_color = Color(0.008, 0.016, 0.035, 0.82)
@@ -178,6 +179,17 @@ horizontal_alignment = 1
 [node name="WeaponState" type="Label" parent="WeaponPanel/MarginContainer/VBoxContainer"]
 text = "NO WEAPON EQUIPPED"
 horizontal_alignment = 1
+
+[node name="ProjectileLeadIndicator" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("6_lead")
+ship_path = NodePath("../../PlayerShip")
 
 [node name="Crosshair" type="Control" parent="."]
 layout_mode = 3
