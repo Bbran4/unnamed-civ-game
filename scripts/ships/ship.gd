@@ -430,8 +430,8 @@ func receive_damage(amount: float, source: Node = null) -> void:
 
 	damage_received.emit(damage, source, current_hull)
 
-		if bool(hull_result["destroyed"]):
-			DestructionSystem.destroy(self, source)
+	if overflow_damage > 0.0 and current_hull <= 0.0:
+		DestructionSystem.destroy(self, source)
 
 
 func get_hull_fraction() -> float:
