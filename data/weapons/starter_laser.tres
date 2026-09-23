@@ -5,6 +5,7 @@
 
 [resource]
 script = ExtResource("1_weapon_data")
+energy_cost = 1.0
 projectile_data = ExtResource("2_projectile")
 id = &"starter_laser"
 display_name = "Starter Laser"
