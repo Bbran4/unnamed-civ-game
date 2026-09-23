@@ -1236,6 +1236,23 @@ ProjectileData
 
 The projectile definition is data. The runtime projectile handles movement, collision and applying the defined damage.
 
+### Damage Delivery
+
+Projectile hits are routed through a central DamageSystem rather than directly modifying ship state.
+
+~~~
+Projectile collision
+    ↓
+DamageSystem
+    ↓
+Target.receive_damage()
+    ↓
+Current target hull
+~~~
+
+For the first combat prototype, incoming damage is applied directly to the target hull so the complete hit pipeline can be tested. Dedicated Shields and Hull systems will later own shield absorption, hull handling and related rules.
+
+
 ## Runtime State
 
 Static data should not contain changing gameplay state.
@@ -1370,21 +1387,7 @@ Flight prototype completed:
 
 Before combat, the prototype flight code will be refactored into the reusable ship architecture.
 
-The final Milestone 1 flight model should use:
-
-- [x] ShipData Resource
-- [x] Reusable Ship
-- [x] ShipController base
-- [x] PlayerShipController
-- [x] Formula-derived flight characteristics
-- [x] Physical-feeling throttle and momentum
-- [x] Mass affected by installed equipment
-
-**Definition of done:** A reusable ship can be controlled independently of the controller, and its flight characteristics are calculated from its dimensions, mass and propulsion specifications.
-
----
-
-## Milestone 2 - Combat
+The final Milest## Milestone 2 - Combat
 
 **Goal: Build the reusable combat foundation, then make one dogfight fun.**
 
@@ -1406,6 +1409,29 @@ The final Milestone 1 flight model should use:
 - [x] Weapon runtime
 - [x] ProjectileData Resource
 - [x] Projectile runtime
+- [x] Damage system
+- [ ] Shields
+- [ ] Hull
+- [ ] Destruction
+- [ ] Targeting system
+- [ ] Combat HUD
+
+### Dogfight
+
+- [ ] Enemy AI
+- [ ] Target locking
+- [ ] Basic weapon
+- [ ] Projectile firing
+- [ ] Player damage
+- [ ] Enemy damage
+- [ ] Enemy destruction
+- [ ] Basic reward
+
+**Definition of done:** The player and an enemy use the same reusable ship system with different controllers, can target each other, fight, take damage and be destroyed.
+
+---
+
+untime
 - [ ] Damage system
 - [ ] Shields
 - [ ] Hull
