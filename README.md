@@ -933,12 +933,12 @@ If it is not fun, adding forty star systems only gives us forty places where the
 
 **Status: RESET / NEW DIRECTION**
 
-- [ ] Establish 3D project structure
-- [ ] Establish core autoloads
-- [ ] Establish save/load architecture
-- [ ] Establish data-resource conventions
-- [ ] Establish main game scene
-- [ ] Remove old civilization prototype assumptions
+- [x] Establish 3D project structure
+- [x] Establish core autoloads
+- [x] Establish save/load architecture
+- [x] Establish data-resource conventions
+- [x] Establish main game scene
+- [x] Remove old civilization prototype assumptions
 
 ---
 
