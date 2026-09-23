@@ -286,9 +286,11 @@ func _apply_weapons(intent: Dictionary) -> void:
 	if not bool(intent.get("fire", false)):
 		return
 
+	var fire_direction: Vector3 = intent.get("fire_direction", Vector3.ZERO)
+
 	for weapon: Weapon in weapons:
 		if weapon != null:
-			weapon.try_fire()
+			weapon.try_fire(fire_direction)
 
 func equip_weapon(weapon_data: WeaponData, slot_index: int = -1) -> Weapon:
 	if weapon_data == null or ship_data == null:
