@@ -22,7 +22,7 @@ enum State {
 	FLEE
 }
 
-signal state_changed(previous_state: State, new_state: State)
+signal state_changed(previous_state: int, new_state: int)
 
 @export_category("Detection")
 @export var detection_range: float = 1500.0
@@ -47,21 +47,18 @@ var ship: Ship
 var targeting_system: TargetingSystem
 var current_state: State = State.IDLE
 var evade_timer: float = 0.0
-var last_shields: float = 0.0
-
 
 func setup(new_ship: Ship, new_targeting_system: TargetingSystem) -> void:
 	ship = new_ship
 	targeting_system = new_targeting_system
 
-	if ship != null:
-		last_shields = ship.get_shield_fraction()
+if ship != null:
 		ship.shields_hit.connect(_on_shields_hit)
 		ship.hull_hit.connect(_on_hull_hit)
 		ship.destroyed.connect(_on_ship_destroyed)
 
 
-func get_state() -> State:
+func get_state() -> int:
 	return current_state
 
 
@@ -98,7 +95,7 @@ func get_flight_intent(delta: float) -> Dictionary:
 	return intent
 
 
-func transition_to(new_state: State) -> void:
+func transition_to(new_state: int) -> void:
 	if current_state == new_state:
 		return
 
@@ -277,9 +274,7 @@ func _on_shields_hit(
 	if ship == null or ship.is_destroyed():
 		return
 
-	last_shields = ship.get_shield_fraction()
-
-	if ship.get_hull_fraction() > flee_hull_fraction:
+if ship.get_hull_fraction() > flee_hull_fraction:
 		evade_timer = evade_duration
 
 
