@@ -17,6 +17,7 @@ var targeting_system: TargetingSystem
 @onready var shield_bar: ProgressBar = $PlayerPanel/MarginContainer/VBoxContainer/ShieldBar
 @onready var energy_bar: ProgressBar = $PlayerPanel/MarginContainer/VBoxContainer/EnergyBar
 @onready var target_name_label: Label = $TargetPanel/MarginContainer/VBoxContainer/TargetName
+@onready var target_lock_label: Label = $TargetPanel/MarginContainer/VBoxContainer/TargetLock
 @onready var target_distance_label: Label = $TargetPanel/MarginContainer/VBoxContainer/TargetDistance
 @onready var target_hull_bar: ProgressBar = $TargetPanel/MarginContainer/VBoxContainer/TargetHullBar
 @onready var target_shield_bar: ProgressBar = $TargetPanel/MarginContainer/VBoxContainer/TargetShieldBar
@@ -32,7 +33,7 @@ func _ready() -> void:
 	if ship != null:
 		targeting_system = ship.get_node_or_null("TargetingSystem") as TargetingSystem
 
-	help_label.text = "W/S Throttle  |  Mouse Pitch/Yaw  |  Q/E Roll  |  A/D Strafe  |  Shift Boost  |  Space Brake  |  LMB Fire  |  Esc Release Mouse"
+	help_label.text = "W/S Throttle  |  Mouse Pitch/Yaw  |  Q/E Roll  |  A/D Strafe  |  Shift Boost  |  Space Brake  |  LMB Fire  |  T Target/Cycle  |  Esc Release Mouse"
 	reticle_label.text = "+"
 	_reset_target_display()
 
@@ -70,12 +71,14 @@ func _update_target_display() -> void:
 	var target_ship: Ship = target_node as Ship
 
 	if target_ship == null:
-		target_name_label.text = "TARGET  OBJECT"
+		target_lock_label.text = "LOCK  ACTIVE"
+	target_name_label.text = "TARGET  OBJECT"
 		target_distance_label.text = "DISTANCE  %03d m" % int(targeting_system.get_target_distance())
 		target_hull_bar.value = 0.0
 		target_shield_bar.value = 0.0
 		return
 
+	target_lock_label.text = "LOCK  ACTIVE"
 	target_name_label.text = "TARGET  %s" % target_ship.name
 	target_distance_label.text = "DISTANCE  %03d m" % int(targeting_system.get_target_distance())
 	target_hull_bar.value = target_ship.get_hull_fraction() * 100.0
@@ -101,6 +104,7 @@ func _update_weapon_display() -> void:
 
 
 func _reset_target_display() -> void:
+	target_lock_label.text = "LOCK  NONE"
 	target_name_label.text = "TARGET  NONE"
 	target_distance_label.text = "DISTANCE  ---"
 	target_hull_bar.value = 0.0
