@@ -944,28 +944,38 @@ If it is not fun, adding forty star systems only gives us forty places where the
 
 ## Milestone 1 - First Flight
 
+**Status: COMPLETE**
+
 **Goal: Make flying a spaceship fun.**
 
-- [ ] Player ship scene
-- [ ] Third-person space camera
-- [ ] Pitch
-- [ ] Yaw
-- [ ] Roll
-- [ ] Throttle
-- [ ] Boost
-- [ ] Brake
-- [ ] Strafe
-- [ ] Acceleration
-- [ ] Targeting
-- [ ] Basic HUD
+- [x] Player ship scene
+- [x] Third-person space camera
+- [x] Pitch
+- [x] Yaw
+- [x] Roll
+- [x] Throttle
+- [x] Boost
+- [x] Brake
+- [x] Strafe
+- [x] Acceleration
+- [x] Flight HUD
+- [x] Center flight reticle
+- [x] Flight test markers
+- [x] Camera smoothing
+- [x] Boost camera FOV
+- [x] Rotation basis stabilization
 
-**Definition of done:** The player can spawn in space and comfortably fly for several minutes without needing another system.
+Targeting is intentionally part of Milestone 2 because it becomes meaningful once enemy ships exist.
+
+**Definition of done:** The player can spawn in space, fly freely, manoeuvre in every axis, accelerate, brake, boost and strafe, and comfortably fly for several minutes without needing another system.
 
 ---
 
 ## Milestone 2 - Combat
 
 **Goal: Make one dogfight fun.**
+
+Targeting begins here, where there are actual ships and threats to target.
 
 - [ ] Enemy ship
 - [ ] Enemy AI
@@ -1262,9 +1272,9 @@ The repository previously contained an experimental civilization simulation.
 
 The project is now being redirected toward a **3D Freelancer-inspired space RPG built in Godot and GDScript**.
 
-The immediate objective is:
+Milestone 1 is now complete. The immediate objective is:
 
-> **Build one excellent spaceship before building a universe.**
+> **Build one excellent dogfight before building a universe.**
 
 ---
 
