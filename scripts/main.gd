@@ -6,6 +6,7 @@ extends Node3D
 ## This is temporary prototype setup, not the final encounter system.
 
 const STARTER_FIGHTER_DATA: ShipData = preload("res://data/ships/starter_fighter.tres")
+const STARTER_LASER_DATA: WeaponData = preload("res://data/weapons/starter_laser.tres")
 const ENEMY_CONTROLLER_SCRIPT: Script = preload("res://scripts/enemies/enemy_ship_controller.gd")
 
 @onready var player_ship: Ship = $PlayerShip
@@ -13,6 +14,11 @@ const ENEMY_CONTROLLER_SCRIPT: Script = preload("res://scripts/enemies/enemy_shi
 
 
 func _ready() -> void:
+	var player_weapon: Weapon = player_ship.equip_weapon(STARTER_LASER_DATA, 0)
+
+	if player_weapon == null:
+		push_error("Failed to equip starter laser to player ship.")
+
 	var enemy_transform: Transform3D = Transform3D(
 		Basis.IDENTITY,
 		Vector3(12.0, 0.0, -60.0)
