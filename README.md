@@ -1267,7 +1267,7 @@ The final Milestone 1 flight model should use:
 - [x] ShipData Resource
 - [x] Reusable Ship
 - [x] ShipController base
-- [ ] PlayerShipController
+- [x] PlayerShipController
 - [ ] Formula-derived flight characteristics
 - [ ] Physical-feeling throttle and momentum
 - [ ] Mass affected by installed equipment
