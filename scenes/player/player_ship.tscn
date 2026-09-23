@@ -1,24 +1,23 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene format=3 uid="uid://cdm34bioy4jl6"]
 
-[ext_resource type="PackedScene" path="res://scenes/ships/ship.tscn" id="1_ship"]
-[ext_resource type="Script" path="res://scripts/player/player_ship_controller.gd" id="2_player_controller"]
-[ext_resource type="Script" path="res://scripts/player/flight_camera.gd" id="3_camera"]
-[ext_resource type="Resource" path="res://data/ships/starter_fighter.tres" id="4_ship_data"]
+[ext_resource type="PackedScene" uid="uid://bscb0em8augch" path="res://scenes/ships/ship.tscn" id="1_ship"]
+[ext_resource type="Script" uid="uid://5cs83tcghk51" path="res://scripts/player/player_ship_controller.gd" id="2_player_controller"]
+[ext_resource type="Script" uid="uid://cvt4mivehe8f8" path="res://scripts/player/flight_camera.gd" id="3_camera"]
+[ext_resource type="Resource" uid="uid://b3p5utw4kbc3k" path="res://data/ships/starter_fighter.tres" id="4_ship_data"]
 
-[node name="PlayerShip" instance=ExtResource("1_ship")]
+[node name="PlayerShip" unique_id=2129184284 instance=ExtResource("1_ship")]
 ship_data = ExtResource("4_ship_data")
 
-[node name="PlayerShipController" type="Node" parent="."]
+[node name="PlayerShipController" type="Node" parent="." index="4" unique_id=1290830789]
 script = ExtResource("2_player_controller")
 
-[node name="EngineGlow" type="OmniLight3D" parent="."]
-position = Vector3(0, 0, 2.2)
+[node name="EngineGlow" type="OmniLight3D" parent="." index="5" unique_id=1923790250]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2.2)
 light_color = Color(0.25, 0.55, 1, 1)
 light_energy = 2.0
-omni_range = 5.0
 
-[node name="Camera3D" type="Camera3D" parent="."]
-position = Vector3(0, 3, 10)
+[node name="Camera3D" type="Camera3D" parent="." index="6" unique_id=119825986]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 10)
 current = true
 script = ExtResource("3_camera")
 target_path = NodePath("..")
