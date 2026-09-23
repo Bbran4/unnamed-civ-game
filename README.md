@@ -1250,7 +1250,7 @@ Target.receive_damage()
 Current target hull
 ~~~
 
-For the first combat prototype, incoming damage is applied directly to the target hull so the complete hit pipeline can be tested. Dedicated Shields and Hull systems will later own shield absorption, hull handling and related rules.
+For the first combat prototype, incoming damage is absorbed by shields first. Any damage remaining after the shield capacity is depleted continues to the hull. Shield regeneration, directional shielding and shield-generator behaviour are deliberately deferred until they are needed.
 
 
 ## Runtime State
@@ -1385,9 +1385,7 @@ Flight prototype completed:
 - [x] Rotation basis stabilization
 - [x] Pilot-relative yaw controls
 
-Before combat, the prototype flight code will be refactored into the reusable ship architecture.
-
-The final Milest## Milestone 2 - Combat
+Before combat, the prototype flight code will be refactored into## Milestone 2 - Combat
 
 **Goal: Build the reusable combat foundation, then make one dogfight fun.**
 
@@ -1410,7 +1408,7 @@ The final Milest## Milestone 2 - Combat
 - [x] ProjectileData Resource
 - [x] Projectile runtime
 - [x] Damage system
-- [ ] Shields
+- [x] Shields
 - [ ] Hull
 - [ ] Destruction
 - [ ] Targeting system
@@ -1451,6 +1449,10 @@ untime
 - [ ] Basic reward
 
 **Definition of done:** The player and an enemy use the same reusable ship system with different controllers, can target each other, fight, take damage and be destroyed.
+
+---
+
+other, fight, take damage and be destroyed.
 
 ---
 
