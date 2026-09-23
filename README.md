@@ -1307,7 +1307,7 @@ The final Milestone 1 flight model should use:
 ### Combat Foundation
 
 - [x] WeaponData Resource
-- [ ] Weapon runtime
+- [x] Weapon runtime
 - [ ] ProjectileData Resource
 - [ ] Projectile runtime
 - [ ] Damage system
