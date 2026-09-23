@@ -109,7 +109,7 @@ func _initialize_from_data() -> void:
 	remaining_lifetime = maxf(projectile_data.lifetime, 0.0)
 
 	var collision_shape: CollisionShape3D = $CollisionShape3D
-	var sphere_shape := SphereShape3D.new()
+	var sphere_shape: SphereShape3D = SphereShape3D.new()
 	sphere_shape.radius = maxf(projectile_data.radius, 0.01)
 	collision_shape.shape = sphere_shape
 
