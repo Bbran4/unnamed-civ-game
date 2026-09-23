@@ -71,3 +71,10 @@ func reset_runtime_state() -> void:
 	boost_active = false
 	brake_active = false
 	velocity = Vector3.ZERO
+
+
+func get_speed() -> float:
+	return velocity.length()
+
+func get_throttle_percent() -> float:
+	return throttle
