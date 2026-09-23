@@ -209,14 +209,15 @@ func _apply_translation(delta: float, intent: Dictionary) -> void:
 		velocity += right * lateral_delta
 	else:
 		# Flight assist uses available maneuvering thrust to bleed off lateral
-		# momentum. This keeps the ship responsive without directly rotating its
-		# velocity to match its facing direction.
-		var lateral_velocity: Vector3 = velocity - forward * forward_speed
+		# momentum. Re-read forward speed here because main engine thrust may have
+		# changed velocity earlier in this frame.
+		var current_forward_speed: float = velocity.dot(forward)
+		var lateral_velocity: Vector3 = velocity - forward * current_forward_speed
 		var corrected_lateral_velocity: Vector3 = lateral_velocity.move_toward(
 			Vector3.ZERO,
 			flight_assist_acceleration * delta
 		)
-		velocity = forward * forward_speed + corrected_lateral_velocity
+		velocity = forward * current_forward_speed + corrected_lateral_velocity
 
 func get_total_mass_kg() -> float:
 	var total_mass := 0.0
