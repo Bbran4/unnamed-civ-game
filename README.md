@@ -1540,7 +1540,7 @@ The combat HUD should communicate spatial information in 2D while remaining driv
 
 ### Aiming Feedback
 
-- [ ] Graphical player crosshair
+- [x] Graphical player crosshair
 - [ ] Projectile lead / aim indicator circle
 - [ ] Lead calculation based on target movement, relative motion and actual projectile speed
 - [ ] Lead indicator updates when the target or equipped weapon changes
