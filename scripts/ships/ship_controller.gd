@@ -37,5 +37,6 @@ func get_flight_intent(_delta: float) -> Dictionary:
 		"strafe": 0.0,
 		"throttle": 0.0,
 		"brake": false,
-		"boost": false
+		"boost": false,
+		"fire": false
 	}
