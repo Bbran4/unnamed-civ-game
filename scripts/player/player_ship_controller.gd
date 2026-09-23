@@ -90,10 +90,12 @@ func _get_fire_direction() -> Vector3:
 		var target: Node3D = targeting_system.get_target()
 
 		if target != null:
-			var target_distance: float = targeting_system.get_target_distance()
+			var target_camera_distance: float = camera.global_position.distance_to(
+				target.global_position
+			)
 
-			if target_distance > 1.0 and target_distance < 100000.0:
-				aim_distance = target_distance
+			if target_camera_distance > 1.0 and target_camera_distance < 100000.0:
+				aim_distance = target_camera_distance
 
 	# project_position() gives us a world-space point exactly on the camera's
 	# crosshair ray at the chosen depth. The projectile then travels from the
