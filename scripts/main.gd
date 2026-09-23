@@ -49,3 +49,9 @@ func _ready() -> void:
 		if child is EnemyShipController:
 			child.set_target(player_ship)
 			break
+
+	var player_targeting: TargetingSystem = player_ship.get_node_or_null("TargetingSystem") as TargetingSystem
+
+	if player_targeting != null:
+		# Temporary combat-test target assignment. This is not target-lock input.
+		player_targeting.set_target(enemy)
