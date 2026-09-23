@@ -4,15 +4,12 @@ config_version=5
 
 [application]
 
-config/name="Unnamed Civilization Game"
-run/main_scene="res://scenes/main/game.tscn"
+config/name="Unnamed Space Game"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
 
-WorldState="*res://scripts/world/world_state.gd"
-SaveManager="*res://scripts/managers/save_manager.gd"
 
 [display]
 
