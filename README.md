@@ -1685,7 +1685,7 @@ This remains focused. We are building playable locations, not an entire open-wor
 
 ---
 
-## Milestone 12 - Larger Universe
+## Milestone 13 - Larger Universe
 
 Only after the core game works:
 
