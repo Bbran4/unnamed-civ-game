@@ -15,7 +15,7 @@ const ENEMY_CONTROLLER_SCRIPT: Script = preload("res://scripts/enemies/enemy_shi
 func _ready() -> void:
 	var enemy_transform := Transform3D(
 		Basis.IDENTITY,
-		Vector3(0.0, 0.0, -120.0)
+		Vector3(12.0, 0.0, -60.0)
 	)
 
 	var enemy: Ship = ship_spawner.spawn_ship(
@@ -28,6 +28,16 @@ func _ready() -> void:
 	if enemy == null:
 		push_error("Failed to spawn prototype enemy.")
 		return
+
+	enemy.name = "PrototypeEnemy"
+
+	var enemy_light := OmniLight3D.new()
+	enemy_light.name = "EnemyGlow"
+	enemy_light.light_color = Color(1.0, 0.12, 0.08)
+	enemy_light.light_energy = 3.0
+	enemy_light.omni_range = 8.0
+	enemy_light.position = Vector3(0.0, 0.0, 2.2)
+	enemy.add_child(enemy_light)
 
 	for child: Node in enemy.get_children():
 		if child is EnemyShipController:
