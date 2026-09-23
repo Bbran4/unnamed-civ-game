@@ -126,8 +126,13 @@ func _apply_homing(delta: float) -> void:
 		return
 
 	var target_direction: Vector3 = to_target.normalized()
+	var angle_to_target: float = current_direction.angle_to(target_direction)
+
+	if angle_to_target <= 0.0001:
+		return
+
 	var turn_fraction: float = clampf(
-		maxf(projectile_data.turn_rate_rad_s, 0.0) * delta,
+		maxf(projectile_data.turn_rate_rad_s, 0.0) * delta / angle_to_target,
 		0.0,
 		1.0
 	)
