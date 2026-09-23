@@ -1,4 +1,6 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/game.gd" id="1_game"]
 
 [sub_resource type="Environment" id="Environment_main"]
 background_mode = 1
@@ -11,6 +13,7 @@ ambient_light_energy = 0.35
 size = Vector3(4, 0.2, 4)
 
 [node name="Main" type="Node3D"]
+script = ExtResource("1_game")
 
 [node name="Environment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_main")
