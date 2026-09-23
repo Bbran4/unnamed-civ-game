@@ -1254,6 +1254,8 @@ For the first combat prototype, incoming damage is absorbed by shields first. An
 
 The HullSystem now owns the basic hull damage calculation. The runtime Ship stores the current hull value and delegates overflow damage to HullSystem, keeping future armour, subsystem damage and destruction rules outside the projectile and damage dispatcher.
 
+When hull reaches zero, DestructionSystem transitions the runtime Ship into a destroyed state. The wreck remains in the scene, flight and weapon control stop, its collision is disabled and a `destroyed` signal is emitted for later systems such as rewards, salvage, boarding or visual effects.
+
 
 ## Runtime State
 
@@ -1387,7 +1389,11 @@ Flight prototype completed:
 - [x] Rotation basis stabilization
 - [x] Pilot-relative yaw controls
 
-Before combat, the prototype flight code will be refactored into## Milestone 2 - Combat
+Before combat, the prototype flight code will be refactored into the reusable ship architecture.
+
+---
+
+## Milestone 2 - Combat
 
 **Goal: Build the reusable combat foundation, then make one dogfight fun.**
 
@@ -1412,7 +1418,7 @@ Before combat, the prototype flight code will be refactored into## Milestone 2 -
 - [x] Damage system
 - [x] Shields
 - [x] Hull
-- [ ] Destruction
+- [x] Destruction
 - [ ] Targeting system
 - [ ] Combat HUD
 
@@ -1428,33 +1434,6 @@ Before combat, the prototype flight code will be refactored into## Milestone 2 -
 - [ ] Basic reward
 
 **Definition of done:** The player and an enemy use the same reusable ship system with different controllers, can target each other, fight, take damage and be destroyed.
-
----
-
-untime
-- [ ] Damage system
-- [ ] Shields
-- [ ] Hull
-- [ ] Destruction
-- [ ] Targeting system
-- [ ] Combat HUD
-
-### Dogfight
-
-- [ ] Enemy AI
-- [ ] Target locking
-- [ ] Basic weapon
-- [ ] Projectile firing
-- [ ] Player damage
-- [ ] Enemy damage
-- [ ] Enemy destruction
-- [ ] Basic reward
-
-**Definition of done:** The player and an enemy use the same reusable ship system with different controllers, can target each other, fight, take damage and be destroyed.
-
----
-
-other, fight, take damage and be destroyed.
 
 ---
 
