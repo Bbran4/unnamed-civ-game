@@ -5,11 +5,17 @@ extends CharacterBody3D
 ##
 ## ShipData defines the ship's static design.
 ## Ship stores the runtime state of one actual vessel.
-##
-## Controllers will provide flight and combat intent to this node later.
+## Controllers provide intent; Ship applies the flight model.
+
+const CRUISE_ACCELERATION_TIME := 2.0
+const ANGULAR_RESPONSE_TIME := 0.75
+const THROTTLE_RESPONSE_TIME := 1.0
 
 @export_category("Ship Definition")
 @export var ship_data: ShipData
+
+@export_category("Controller")
+@export var controller_path: NodePath
 
 @export_category("Runtime State")
 var current_hull: float = 0.0
@@ -20,8 +26,43 @@ var throttle: float = 0.0
 var boost_active: bool = false
 var brake_active: bool = false
 
+var angular_velocity := Vector3.ZERO
+var controller: ShipController
+
+var acceleration: float = 0.0
+var reverse_acceleration: float = 0.0
+var brake_acceleration: float = 0.0
+var strafe_acceleration: float = 0.0
+var boost_acceleration: float = 0.0
+
+var max_speed: float = 0.0
+var reverse_speed: float = 0.0
+var strafe_speed: float = 0.0
+var boost_speed: float = 0.0
+
+var pitch_acceleration: float = 0.0
+var yaw_acceleration: float = 0.0
+var roll_acceleration: float = 0.0
+
+var pitch_speed: float = 0.0
+var yaw_speed: float = 0.0
+var roll_speed: float = 0.0
+
+var moment_of_inertia := Vector3.ZERO
+
 func _ready() -> void:
 	_initialize_from_data()
+	_initialize_controller()
+
+func _physics_process(delta: float) -> void:
+	if controller == null:
+		return
+
+	var intent := controller.get_flight_intent(delta)
+	_apply_rotation(delta, intent)
+	_apply_throttle(delta, intent)
+	_apply_translation(delta, intent)
+	move_and_slide()
 
 func _initialize_from_data() -> void:
 	if ship_data == null:
@@ -31,6 +72,138 @@ func _initialize_from_data() -> void:
 	current_hull = ship_data.hull_capacity
 	current_shields = ship_data.shield_capacity
 	current_energy = ship_data.energy_capacity
+	_calculate_flight_characteristics()
+
+func _initialize_controller() -> void:
+	if controller_path != NodePath():
+		controller = get_node_or_null(controller_path) as ShipController
+
+	if controller == null:
+		for child in get_children():
+			if child is ShipController:
+				controller = child
+				break
+
+func _calculate_flight_characteristics() -> void:
+	var mass := get_total_mass_kg()
+
+	if mass <= 0.0:
+		return
+
+	acceleration = ship_data.main_engine_thrust_n / mass
+	reverse_acceleration = ship_data.reverse_engine_thrust_n / mass
+	brake_acceleration = reverse_acceleration
+	strafe_acceleration = ship_data.maneuvering_thrust_n / mass
+	boost_acceleration = (ship_data.main_engine_thrust_n + ship_data.boost_thrust_n) / mass
+
+	# Space itself does not impose a maximum speed. These are practical
+	# gameplay speed limits derived from how quickly the ship can accelerate.
+	max_speed = acceleration * CRUISE_ACCELERATION_TIME
+	reverse_speed = reverse_acceleration * CRUISE_ACCELERATION_TIME
+	strafe_speed = strafe_acceleration * CRUISE_ACCELERATION_TIME
+	boost_speed = boost_acceleration * CRUISE_ACCELERATION_TIME
+
+	moment_of_inertia = _calculate_box_inertia(mass, ship_data.dimensions)
+
+	var pitch_torque := ship_data.maneuvering_thrust_n * max(ship_data.dimensions.z * 0.5, 0.01)
+	var yaw_torque := ship_data.maneuvering_thrust_n * max(ship_data.dimensions.z * 0.5, 0.01)
+	var roll_torque := ship_data.maneuvering_thrust_n * max(ship_data.dimensions.x * 0.5, 0.01)
+
+	pitch_acceleration = pitch_torque / max(moment_of_inertia.x, 0.01)
+	yaw_acceleration = yaw_torque / max(moment_of_inertia.y, 0.01)
+	roll_acceleration = roll_torque / max(moment_of_inertia.z, 0.01)
+
+	pitch_speed = pitch_acceleration * ANGULAR_RESPONSE_TIME
+	yaw_speed = yaw_acceleration * ANGULAR_RESPONSE_TIME
+	roll_speed = roll_acceleration * ANGULAR_RESPONSE_TIME
+
+func _calculate_box_inertia(mass: float, dimensions: Vector3) -> Vector3:
+	var width := max(abs(dimensions.x), 0.01)
+	var height := max(abs(dimensions.y), 0.01)
+	var length := max(abs(dimensions.z), 0.01)
+
+	var inertia_x := (mass / 12.0) * (height * height + length * length)
+	var inertia_y := (mass / 12.0) * (width * width + length * length)
+	var inertia_z := (mass / 12.0) * (width * width + height * height)
+
+	return Vector3(inertia_x, inertia_y, inertia_z)
+
+func _apply_rotation(delta: float, intent: Dictionary) -> void:
+	var target_angular_velocity := Vector3(
+		float(intent.get("pitch", 0.0)) * pitch_speed,
+		float(intent.get("yaw", 0.0)) * yaw_speed,
+		float(intent.get("roll", 0.0)) * roll_speed
+	)
+
+	angular_velocity.x = move_toward(
+		angular_velocity.x,
+		target_angular_velocity.x,
+		pitch_acceleration * delta
+	)
+	angular_velocity.y = move_toward(
+		angular_velocity.y,
+		target_angular_velocity.y,
+		yaw_acceleration * delta
+	)
+	angular_velocity.z = move_toward(
+		angular_velocity.z,
+		target_angular_velocity.z,
+		roll_acceleration * delta
+	)
+
+	rotate_object_local(Vector3.RIGHT, angular_velocity.x * delta)
+	rotate_object_local(Vector3.UP, angular_velocity.y * delta)
+	rotate_object_local(Vector3.FORWARD, angular_velocity.z * delta)
+
+	global_basis = global_basis.orthonormalized()
+
+func _apply_throttle(delta: float, intent: Dictionary) -> void:
+	var throttle_input := clamp(float(intent.get("throttle", 0.0)), -1.0, 1.0)
+	throttle = clamp(
+		throttle + throttle_input * delta / THROTTLE_RESPONSE_TIME,
+		-1.0,
+		1.0
+	)
+
+	boost_active = bool(intent.get("boost", false)) and throttle > 0.0
+	brake_active = bool(intent.get("brake", false))
+
+func _apply_translation(delta: float, intent: Dictionary) -> void:
+	if brake_active:
+		velocity = velocity.move_toward(Vector3.ZERO, brake_acceleration * delta)
+		return
+
+	var forward := -global_transform.basis.z
+	var forward_speed := velocity.dot(forward)
+
+	var target_forward_speed := throttle * max_speed
+
+	if throttle < 0.0:
+		target_forward_speed = throttle * reverse_speed
+	elif boost_active:
+		target_forward_speed = boost_speed
+
+	var speed_difference := target_forward_speed - forward_speed
+
+	if abs(speed_difference) > 0.001:
+		var response := acceleration if speed_difference > 0.0 else reverse_acceleration
+		var forward_delta := clamp(speed_difference, -response * delta, response * delta)
+		velocity += forward * forward_delta
+
+	var strafe := clamp(float(intent.get("strafe", 0.0)), -1.0, 1.0)
+
+	if abs(strafe) > 0.001:
+		var right := global_transform.basis.x
+		var lateral_velocity := velocity.project_on_plane(forward)
+		var lateral_speed := lateral_velocity.dot(right)
+		var target_lateral_speed := strafe * strafe_speed
+		var lateral_difference := target_lateral_speed - lateral_speed
+		var lateral_delta := clamp(
+			lateral_difference,
+			-strafe_acceleration * delta,
+			strafe_acceleration * delta
+		)
+		velocity += right * lateral_delta
 
 func get_total_mass_kg() -> float:
 	var total_mass := 0.0
@@ -41,6 +214,9 @@ func get_total_mass_kg() -> float:
 	# Installed equipment mass will be added here when the equipment system
 	# is introduced. Cargo mass will also contribute here later.
 	return total_mass
+
+func get_moment_of_inertia_kg_m2() -> Vector3:
+	return moment_of_inertia
 
 func get_hull_fraction() -> float:
 	if ship_data == null or ship_data.hull_capacity <= 0.0:
@@ -71,7 +247,7 @@ func reset_runtime_state() -> void:
 	boost_active = false
 	brake_active = false
 	velocity = Vector3.ZERO
-
+	angular_velocity = Vector3.ZERO
 
 func get_speed() -> float:
 	return velocity.length()
