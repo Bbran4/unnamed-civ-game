@@ -30,8 +30,8 @@ extends Resource
 ## Reverse / braking thrust in newtons.
 @export var reverse_engine_thrust_n: float = 150000.0
 
-## Total available maneuvering / RCS thrust in newtons.
-## Used later to derive strafe and rotational behaviour.
+## Available maneuvering / RCS thrust for a control direction in newtons.
+## Used to derive strafe, flight-assist and rotational behaviour.
 @export var maneuvering_thrust_n: float = 75000.0
 
 ## Additional engine thrust available while boosting.
