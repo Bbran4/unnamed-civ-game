@@ -1536,7 +1536,7 @@ The combat HUD should communicate spatial information in 2D while remaining driv
 
 - [x] Directional damage indicator around the player HUD
 - [x] Convert the world-space damage source into a temporary 2D red arc
-- [ ] Support damage coming from any direction around the player
+- [x] Support damage coming from any direction around the player
 
 ### Aiming Feedback
 
