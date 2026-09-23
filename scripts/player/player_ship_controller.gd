@@ -13,12 +13,16 @@ extends ShipController
 @export_category("Mouse")
 @export var mouse_sensitivity: float = 0.04
 
+@export_category("Camera")
+@export var camera_path: NodePath = NodePath("../Camera3D")
+
 @export_category("Targeting")
 ## Maximum distance in metres used when locking or cycling targets.
 @export var target_cycle_range: float = 1500.0
 
 var mouse_input: Vector2 = Vector2.ZERO
 var targeting_system: TargetingSystem
+var camera: Camera3D
 
 
 func _ready() -> void:
@@ -27,6 +31,7 @@ func _ready() -> void:
 
 	if ship != null:
 		targeting_system = ship.get_node_or_null("TargetingSystem") as TargetingSystem
+		camera = ship.get_node_or_null(camera_path) as Camera3D
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -59,7 +64,20 @@ func get_flight_intent(_delta: float) -> Dictionary:
 	intent["boost"] = Input.is_key_pressed(KEY_SHIFT)
 	intent["fire"] = Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT)
 
+	var fire_direction: Vector3 = _get_fire_direction()
+	if fire_direction != Vector3.ZERO:
+		intent["fire_direction"] = fire_direction
+
 	return intent
+
+
+func _get_fire_direction() -> Vector3:
+	if camera == null:
+		return Vector3.ZERO
+
+	var viewport_size: Vector2 = get_viewport().get_visible_rect().size
+	var crosshair_position: Vector2 = viewport_size * 0.5
+	return camera.project_ray_normal(crosshair_position).normalized()
 
 
 func _cycle_target() -> void:
