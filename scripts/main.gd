@@ -9,6 +9,11 @@ const STARTER_FIGHTER_DATA: ShipData = preload("res://data/ships/starter_fighter
 const STARTER_LASER_DATA: WeaponData = preload("res://data/weapons/starter_laser.tres")
 const ENEMY_CONTROLLER_SCRIPT: Script = preload("res://scripts/enemies/enemy_ship_controller.gd")
 
+@export_category("Prototype Rewards")
+@export var enemy_destruction_reward: int = 100
+
+var prototype_credits: int = 0
+
 @onready var player_ship: Ship = $PlayerShip
 @onready var ship_spawner: ShipSpawner = $ShipSpawner
 
@@ -40,13 +45,14 @@ func _ready() -> void:
 
 	enemy.name = "PrototypeEnemy"
 
-
 	var enemy_weapon: Weapon = enemy.equip_weapon(STARTER_LASER_DATA, 0)
 
 	if enemy_weapon == null:
 		push_error("Failed to equip starter laser to prototype enemy.")
 
-	var enemy_light := OmniLight3D.new()
+	enemy.destroyed.connect(_on_enemy_destroyed)
+
+	var enemy_light: OmniLight3D = OmniLight3D.new()
 	enemy_light.name = "EnemyGlow"
 	enemy_light.light_color = Color(1.0, 0.12, 0.08)
 	enemy_light.light_energy = 3.0
@@ -58,3 +64,10 @@ func _ready() -> void:
 		if child is EnemyShipController:
 			child.set_target(player_ship)
 			break
+
+
+func _on_enemy_destroyed(source: Node) -> void:
+	if source != player_ship:
+		return
+
+	prototype_credits += maxi(enemy_destruction_reward, 0)
