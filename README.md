@@ -1134,11 +1134,11 @@ Static data should not contain changing gameplay state.
 
 ~~~
 ShipData
-    ↓
+	↓
 Static definition
 
 Ship
-    ↓
+	↓
 Current hull
 Current shields
 Current energy
@@ -1184,21 +1184,21 @@ The first prototype should contain only the pieces required to prove the core lo
 
 ~~~
 One small space environment
-        ↓
+		↓
 Reusable Ship
-        ↓
+		↓
 ShipData
-        ↓
+		↓
 Player Controller
-        ↓
+		↓
 Enemy Controller
-        ↓
+		↓
 Weapon
-        ↓
+		↓
 Projectile
-        ↓
+		↓
 Damage
-        ↓
+		↓
 Dogfight
 ~~~
 
@@ -1264,7 +1264,7 @@ Before combat, the prototype flight code will be refactored into the reusable sh
 
 The final Milestone 1 flight model should use:
 
-- [ ] ShipData Resource
+- [x] ShipData Resource
 - [x] Reusable Ship
 - [x] ShipController base
 - [ ] PlayerShipController
