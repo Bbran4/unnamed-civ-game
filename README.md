@@ -1063,7 +1063,7 @@ The prototype enemy is equipped with the Starter Laser so these states can be ex
 
 ## Combat Prototype Test
 
-The current prototype equips the player with a Starter Laser at launch.
+The current prototype equips the player with two Starter Lasers at launch.
 
 ~~~
 Left Mouse Button
@@ -1081,11 +1081,12 @@ The current test controls include:
 
 - **Left Mouse Button:** Fire equipped weapon.
 - **T:** Lock the nearest valid target or cycle to the next nearby target.
-- The weapon consumes ship energy and observes its configured fire rate.
-- A projectile is spawned at the weapon muzzle. Player-controlled fire converges from the physical muzzle toward a point on the camera's exact screen-center ray at target depth, so shots align with the HUD crosshair; AI fire continues to use the weapon muzzle's forward direction.
+- The equipped weapons consume ship energy and observe their configured fire rate.
+- Boost consumes ship energy continuously while active and stops when the tank is empty.
+- Each equipped weapon spawns a projectile at its physical muzzle. Player-controlled fire converges from each muzzle toward the current screen-space cursor ray at target depth, so both guns align with the HUD crosshair; AI fire continues to use the weapon muzzle's forward direction.
 - Projectile collision routes through the DamageSystem, which applies damage to the target ship's shields and hull.
 
-The test equips both the player and prototype enemy with the Starter Laser so the combat loop can be exercised from both sides.
+The test equips the player with two Starter Lasers and the prototype enemy with one Starter Laser so the combat loop can be exercised from both sides.
 ## Prototype Combat Reward
 
 Destroying the prototype enemy with the player ship awards **100 credits**. The current prototype stores this as a temporary combat-test value in `main.gd` and displays the running total plus a short reward notification in the HUD.
