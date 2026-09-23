@@ -254,7 +254,8 @@ func remove_equipment(equipment: EquipmentData) -> void:
 	if equipment == null:
 		return
 
-	if installed_equipment.erase(equipment) > 0:
+	if installed_equipment.has(equipment):
+		installed_equipment.erase(equipment)
 		recalculate_flight_characteristics()
 
 func get_equipment_mass_kg() -> float:
