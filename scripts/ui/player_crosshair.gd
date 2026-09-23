@@ -7,7 +7,7 @@ extends Control
 ## leaves an open centre so future targeting aids, such as the projectile lead
 ## indicator, can occupy the same space without obscuring the reticle.
 
-@export var size: float = 42.0
+@export var crosshair_size: float = 42.0
 @export var centre_gap: float = 8.0
 @export var segment_length: float = 10.0
 @export var line_width: float = 2.0
@@ -18,7 +18,7 @@ var crosshair_color: Color = Color(0.2, 0.85, 1.0, 0.95)
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	set_anchors_preset(Control.PRESET_CENTER)
-	size = Vector2(size, size)
+	size = Vector2(crosshair_size, crosshair_size)
 	pivot_offset = size * 0.5
 	queue_redraw()
 
@@ -26,7 +26,6 @@ func _ready() -> void:
 func _draw() -> void:
 	var centre: Vector2 = size * 0.5
 	var half_gap: float = centre_gap * 0.5
-	var half_size: float = size * 0.5
 
 	# Top
 	draw_line(
