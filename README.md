@@ -1014,6 +1014,19 @@ Enemy Ship
 
 Weapon mass remains part of the runtime ship's total mass because WeaponData inherits from EquipmentData.
 
+## Combat HUD
+
+The prototype HUD reads directly from runtime ship and targeting state. It currently displays:
+
+- Player speed and throttle.
+- Player hull, shields and energy.
+- Current target name and distance.
+- Target hull and shields.
+- Equipped weapon and firing readiness.
+- The existing flight reticle and controls.
+
+The HUD does not own targeting behaviour. Target selection and locking remain gameplay/controller responsibilities. The current main-scene test assigns the spawned enemy as the player's target so the combat UI can be exercised before target-lock input exists.
+
 ## Combat Prototype Test
 
 The current prototype equips the player with a Starter Laser at launch.
@@ -1411,7 +1424,7 @@ If the resulting dogfight is not fun, adding forty star systems only gives us fo
 - [x] Hull
 - [x] Destruction
 - [x] Targeting system
-- [ ] Combat HUD
+- [x] Combat HUD
 
 ### Dogfight
 
