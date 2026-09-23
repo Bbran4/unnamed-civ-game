@@ -406,8 +406,22 @@ func receive_damage(amount: float, source: Node = null) -> void:
 		shields_hit.emit(shield_damage, source, current_shields)
 
 	if overflow_damage > 0.0:
-		current_hull = maxf(current_hull - overflow_damage, 0.0)
-		hull_hit.emit(overflow_damage, source, current_hull)
+		var hull_capacity: float = 0.0
+
+		if ship_data != null:
+			hull_capacity = ship_data.hull_capacity
+
+		var hull_result: Dictionary = HullSystem.apply_damage(
+			current_hull,
+			overflow_damage,
+			hull_capacity
+		)
+
+		current_hull = float(hull_result["remaining_hull"])
+		var hull_damage: float = float(hull_result["hull_damage"])
+
+		if hull_damage > 0.0:
+			hull_hit.emit(hull_damage, source, current_hull)
 
 	damage_received.emit(damage, source, current_hull)
 
