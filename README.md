@@ -1215,7 +1215,11 @@ ShipData
 ├── Combat
 │   ├── hull_capacity
 │   ├── shield_capacity
-│   └── energy_capacity
+├── energy_capacity
+├── shield_recharge_delay
+├── shield_recharge_rate
+├── energy_recharge_delay
+└── energy_recharge_rate
 │
 ├── Slots
 │   ├── weapon_slots
@@ -1317,6 +1321,8 @@ Current target hull
 For the first combat prototype, incoming damage is absorbed by shields first. Any damage remaining after the shield capacity is depleted continues to the hull. Shield regeneration, directional shielding and shield-generator behaviour are deliberately deferred until they are needed.
 
 The HullSystem now owns the basic hull damage calculation. The runtime Ship stores the current hull value and delegates overflow damage to HullSystem, keeping future armour, subsystem damage and destruction rules outside the projectile and damage dispatcher.
+
+Shields now regenerate automatically after a configurable delay following combat damage. Energy regenerates after a shorter configurable delay following energy expenditure. Both delays and rates are defined by ShipData, while the runtime Ship owns the active timers and current resource values.
 
 When hull reaches zero, DestructionSystem transitions the runtime Ship into a destroyed state. The wreck remains in the scene, flight and weapon control stop, its collision is disabled and a `destroyed` signal is emitted for later systems such as rewards, salvage, boarding or visual effects.
 
@@ -1463,6 +1469,7 @@ The reusable ship, controller and flight model foundation is in place.
 - [x] Destruction
 - [x] Targeting system
 - [x] Combat HUD
+- [x] Shield and energy regeneration
 
 ### Dogfight
 
