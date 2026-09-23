@@ -5,9 +5,12 @@ extends Control
 ##
 ## This component only reads the player's TargetingSystem. It does not choose,
 ## lock or cycle targets. The bracket follows the projected bounds of the
-## current target while it remains visible to the camera.
+## current target and fades toward the screen edge as the direction indicator
+## takes over.
 
 @export var ship_path: NodePath
+@export var screen_margin: float = 32.0
+@export var transition_margin: float = 120.0
 @export var padding: float = 12.0
 @export var corner_length: float = 18.0
 @export var line_width: float = 2.0
@@ -23,8 +26,8 @@ func _ready() -> void:
 	if ship != null:
 		targeting_system = ship.get_node_or_null("TargetingSystem") as TargetingSystem
 
-	set_process(true)
 	visible = false
+	set_process(true)
 
 
 func _process(_delta: float) -> void:
@@ -33,6 +36,7 @@ func _process(_delta: float) -> void:
 
 func _update_bracket() -> void:
 	visible = false
+	modulate.a = 0.0
 
 	if targeting_system == null:
 		return
@@ -58,21 +62,57 @@ func _update_bracket() -> void:
 		return
 
 	var viewport_size: Vector2 = get_viewport_rect().size
-	var screen_rect: Rect2 = Rect2(Vector2.ZERO, viewport_size)
+	var screen_rect: Rect2 = Rect2(
+		Vector2(screen_margin, screen_margin),
+		viewport_size - Vector2(screen_margin * 2.0, screen_margin * 2.0)
+	)
 
-	if not screen_rect.intersects(projected_bounds):
+	var target_screen_position: Vector2 = camera.unproject_position(target_node.global_position)
+	var bracket_alpha: float = _get_bracket_alpha(target_screen_position, screen_rect)
+
+	if bracket_alpha <= 0.0:
 		return
 
 	var bracket_rect: Rect2 = projected_bounds.grow(padding)
-	bracket_rect.position.x = clampf(bracket_rect.position.x, 0.0, maxf(viewport_size.x - bracket_rect.size.x, 0.0))
-	bracket_rect.position.y = clampf(bracket_rect.position.y, 0.0, maxf(viewport_size.y - bracket_rect.size.y, 0.0))
-	bracket_rect.size.x = minf(bracket_rect.size.x, viewport_size.x)
-	bracket_rect.size.y = minf(bracket_rect.size.y, viewport_size.y)
+	bracket_rect.position.x = clampf(
+		bracket_rect.position.x,
+		screen_rect.position.x,
+		maxf(screen_rect.end.x - bracket_rect.size.x, screen_rect.position.x)
+	)
+	bracket_rect.position.y = clampf(
+		bracket_rect.position.y,
+		screen_rect.position.y,
+		maxf(screen_rect.end.y - bracket_rect.size.y, screen_rect.position.y)
+	)
+	bracket_rect.size.x = minf(bracket_rect.size.x, screen_rect.size.x)
+	bracket_rect.size.y = minf(bracket_rect.size.y, screen_rect.size.y)
 
 	position = bracket_rect.position
 	size = bracket_rect.size
+	modulate.a = bracket_alpha
 	visible = true
 	queue_redraw()
+
+
+func _get_bracket_alpha(target_position: Vector2, safe_rect: Rect2) -> float:
+	if not safe_rect.grow(transition_margin).has_point(target_position):
+		return 0.0
+
+	if safe_rect.has_point(target_position):
+		var distance_to_edge: float = minf(
+			minf(
+				target_position.x - safe_rect.position.x,
+				safe_rect.end.x - target_position.x
+			),
+			minf(
+				target_position.y - safe_rect.position.y,
+				safe_rect.end.y - target_position.y
+			)
+		)
+
+		return clampf(distance_to_edge / transition_margin, 0.0, 1.0)
+
+	return 0.0
 
 
 func _get_projected_bounds(camera: Camera3D, target_node: Node3D) -> Rect2:
