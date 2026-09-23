@@ -19,10 +19,11 @@ var prototype_credits: int = 0
 
 
 func _ready() -> void:
-	var player_weapon: Weapon = player_ship.equip_weapon(STARTER_LASER_DATA, 0)
+	var player_weapon_left: Weapon = player_ship.equip_weapon(STARTER_LASER_DATA, 0)
+	var player_weapon_right: Weapon = player_ship.equip_weapon(STARTER_LASER_DATA, 1)
 
-	if player_weapon == null:
-		push_error("Failed to equip starter laser to player ship.")
+	if player_weapon_left == null or player_weapon_right == null:
+		push_error("Failed to equip both starter lasers to player ship.")
 
 	# Give the prototype enemy the same starter weapon so the AI state machine
 	# can be tested in a live two-sided dogfight.
