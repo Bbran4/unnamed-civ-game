@@ -972,17 +972,17 @@ A weapon is installed by taking a WeaponData definition, finding a compatible fr
 
 ~~~
 WeaponData
-    ↓
+	↓
 Equip
-    ↓
+	↓
 Available Weapon Slot
-    ↓
+	↓
 Weapon runtime instance
-    ↓
+	↓
 Physical Weapon Mount
-    ↓
+	↓
 Muzzle
-    ↓
+	↓
 Projectile
 ~~~
 
@@ -991,9 +991,9 @@ The physical ship scene contains named weapon mount points, for example:
 ~~~
 Ship
 └── WeaponMounts
-    ├── WeaponMount_0
-    ├── WeaponMount_1
-    └── ...
+	├── WeaponMount_0
+	├── WeaponMount_1
+	└── ...
 ~~~
 
 `ShipData.weapon_slots` remains the gameplay capacity, while the scene's mount points determine where those weapons appear visually.
@@ -1157,7 +1157,7 @@ ShipData
 │   └── cargo_capacity
 │
 └── Economy
-    └── base_price
+	└── base_price
 ~~~
 
 A ship resource contains **design inputs**, not derived flight results.
