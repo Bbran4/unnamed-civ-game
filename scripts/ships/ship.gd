@@ -10,7 +10,7 @@ extends CharacterBody3D
 const CRUISE_ACCELERATION_TIME: float = 2.0
 const ANGULAR_RESPONSE_TIME: float = 0.75
 const THROTTLE_RESPONSE_TIME: float = 1.0
-const FLIGHT_ASSIST_MULTIPLIER: float = 2.0
+const FLIGHT_ASSIST_MULTIPLIER: float = 4.0
 
 @export_category("Ship Definition")
 @export var ship_data: ShipData
@@ -108,9 +108,9 @@ func _calculate_flight_characteristics() -> void:
 
 	moment_of_inertia = _calculate_box_inertia(mass, ship_data.dimensions)
 
-	var pitch_torque: float = ship_data.maneuvering_thrust_n * maxf(ship_data.dimensions.z * 0.5, 0.01)
-	var yaw_torque: float = ship_data.maneuvering_thrust_n * maxf(ship_data.dimensions.z * 0.5, 0.01)
-	var roll_torque: float = ship_data.maneuvering_thrust_n * maxf(ship_data.dimensions.x * 0.5, 0.01)
+	var pitch_torque: float = ship_data.maneuvering_thrust_n * maxf(ship_data.dimensions.z, 0.01)
+	var yaw_torque: float = ship_data.maneuvering_thrust_n * maxf(ship_data.dimensions.z, 0.01)
+	var roll_torque: float = ship_data.maneuvering_thrust_n * maxf(ship_data.dimensions.x, 0.01)
 
 	pitch_acceleration = pitch_torque / maxf(moment_of_inertia.x, 0.01)
 	yaw_acceleration = yaw_torque / maxf(moment_of_inertia.y, 0.01)
