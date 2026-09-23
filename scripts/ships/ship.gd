@@ -10,6 +10,7 @@ extends CharacterBody3D
 const CRUISE_ACCELERATION_TIME: float = 2.0
 const ANGULAR_RESPONSE_TIME: float = 0.75
 const THROTTLE_RESPONSE_TIME: float = 1.0
+const FLIGHT_ASSIST_MULTIPLIER: float = 2.0
 
 @export_category("Ship Definition")
 @export var ship_data: ShipData
@@ -33,6 +34,7 @@ var acceleration: float = 0.0
 var reverse_acceleration: float = 0.0
 var brake_acceleration: float = 0.0
 var strafe_acceleration: float = 0.0
+var flight_assist_acceleration: float = 0.0
 var boost_acceleration: float = 0.0
 
 var max_speed: float = 0.0
@@ -94,6 +96,7 @@ func _calculate_flight_characteristics() -> void:
 	reverse_acceleration = ship_data.reverse_engine_thrust_n / mass
 	brake_acceleration = reverse_acceleration
 	strafe_acceleration = ship_data.maneuvering_thrust_n / mass
+	flight_assist_acceleration = strafe_acceleration * FLIGHT_ASSIST_MULTIPLIER
 	boost_acceleration = (ship_data.main_engine_thrust_n + ship_data.boost_thrust_n) / mass
 
 	# Space itself does not impose a maximum speed. These are practical
@@ -204,6 +207,16 @@ func _apply_translation(delta: float, intent: Dictionary) -> void:
 			strafe_acceleration * delta
 		)
 		velocity += right * lateral_delta
+	else:
+		# Flight assist uses available maneuvering thrust to bleed off lateral
+		# momentum. This keeps the ship responsive without directly rotating its
+		# velocity to match its facing direction.
+		var lateral_velocity: Vector3 = velocity - forward * forward_speed
+		var corrected_lateral_velocity: Vector3 = lateral_velocity.move_toward(
+			Vector3.ZERO,
+			flight_assist_acceleration * delta
+		)
+		velocity = forward * forward_speed + corrected_lateral_velocity
 
 func get_total_mass_kg() -> float:
 	var total_mass := 0.0
