@@ -36,6 +36,8 @@ extends Resource
 @export var strafe_acceleration_mps2: float = 80.0
 @export var boost_speed_mps: float = 180.0
 @export var boost_acceleration_mps2: float = 100.0
+## Energy consumed per second while boost is active.
+@export var boost_energy_drain_per_second: float = 25.0
 @export var flight_assist_acceleration_mps2: float = 120.0
 
 ## Turn rates are maximum angular velocities. Turn acceleration controls how
@@ -65,7 +67,7 @@ extends Resource
 @export var energy_recharge_rate: float = 20.0
 
 @export_category("Slots")
-@export var weapon_slots: int = 1
+@export var weapon_slots: int = 2
 @export var missile_slots: int = 0
 @export var utility_slots: int = 1
 
