@@ -8,7 +8,7 @@ extends ShipController
 ## movement, acceleration, braking and rotation.
 
 @export_category("Mouse")
-@export var mouse_sensitivity: float = 0.0025
+@export var mouse_sensitivity: float = 0.02
 
 var mouse_input := Vector2.ZERO
 
@@ -29,8 +29,8 @@ func _unhandled_input(event: InputEvent) -> void:
 func get_flight_intent(_delta: float) -> Dictionary:
 	var intent := super.get_flight_intent(_delta)
 
-	var mouse_pitch := -mouse_input.y * mouse_sensitivity
-	var mouse_yaw := -mouse_input.x * mouse_sensitivity
+	var mouse_pitch: float = clampf(-mouse_input.y * mouse_sensitivity, -1.0, 1.0)
+	var mouse_yaw: float = clampf(-mouse_input.x * mouse_sensitivity, -1.0, 1.0)
 	mouse_input = Vector2.ZERO
 
 	intent["pitch"] = mouse_pitch + _axis(KEY_DOWN, KEY_UP)
