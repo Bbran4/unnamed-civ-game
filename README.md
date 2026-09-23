@@ -1247,11 +1247,11 @@ Each runtime Ship owns a TargetingSystem that stores and validates its current t
 ~~~
 Ship
 └── TargetingSystem
-    ├── Current Target
-    ├── Target Validation
-    ├── Nearest Target Acquisition
-    ├── Target Distance
-    └── Target Direction
+	├── Current Target
+	├── Target Validation
+	├── Nearest Target Acquisition
+	├── Target Distance
+	└── Target Direction
 ~~~
 
 The TargetingSystem is responsible for target state and safe target queries. It does not decide when the player locks, cycles or changes targets. Those higher-level behaviours belong to the later target-lock and AI systems.
