@@ -7,9 +7,9 @@ extends CharacterBody3D
 ## Ship stores the runtime state of one actual vessel.
 ## Controllers provide intent; Ship applies the flight model.
 
-const CRUISE_ACCELERATION_TIME := 2.0
-const ANGULAR_RESPONSE_TIME := 0.75
-const THROTTLE_RESPONSE_TIME := 1.0
+const CRUISE_ACCELERATION_TIME: float = 2.0
+const ANGULAR_RESPONSE_TIME: float = 0.75
+const THROTTLE_RESPONSE_TIME: float = 1.0
 
 @export_category("Ship Definition")
 @export var ship_data: ShipData
@@ -26,7 +26,7 @@ var throttle: float = 0.0
 var boost_active: bool = false
 var brake_active: bool = false
 
-var angular_velocity := Vector3.ZERO
+var angular_velocity: Vector3 = Vector3.ZERO
 var controller: ShipController
 
 var acceleration: float = 0.0
@@ -48,7 +48,7 @@ var pitch_speed: float = 0.0
 var yaw_speed: float = 0.0
 var roll_speed: float = 0.0
 
-var moment_of_inertia := Vector3.ZERO
+var moment_of_inertia: Vector3 = Vector3.ZERO
 
 func _ready() -> void:
 	_initialize_from_data()
@@ -85,7 +85,7 @@ func _initialize_controller() -> void:
 				break
 
 func _calculate_flight_characteristics() -> void:
-	var mass := get_total_mass_kg()
+	var mass: float = get_total_mass_kg()
 
 	if mass <= 0.0:
 		return
@@ -105,31 +105,31 @@ func _calculate_flight_characteristics() -> void:
 
 	moment_of_inertia = _calculate_box_inertia(mass, ship_data.dimensions)
 
-	var pitch_torque := ship_data.maneuvering_thrust_n * max(ship_data.dimensions.z * 0.5, 0.01)
-	var yaw_torque := ship_data.maneuvering_thrust_n * max(ship_data.dimensions.z * 0.5, 0.01)
-	var roll_torque := ship_data.maneuvering_thrust_n * max(ship_data.dimensions.x * 0.5, 0.01)
+	var pitch_torque: float = ship_data.maneuvering_thrust_n * maxf(ship_data.dimensions.z * 0.5, 0.01)
+	var yaw_torque: float = ship_data.maneuvering_thrust_n * maxf(ship_data.dimensions.z * 0.5, 0.01)
+	var roll_torque: float = ship_data.maneuvering_thrust_n * maxf(ship_data.dimensions.x * 0.5, 0.01)
 
-	pitch_acceleration = pitch_torque / max(moment_of_inertia.x, 0.01)
-	yaw_acceleration = yaw_torque / max(moment_of_inertia.y, 0.01)
-	roll_acceleration = roll_torque / max(moment_of_inertia.z, 0.01)
+	pitch_acceleration = pitch_torque / maxf(moment_of_inertia.x, 0.01)
+	yaw_acceleration = yaw_torque / maxf(moment_of_inertia.y, 0.01)
+	roll_acceleration = roll_torque / maxf(moment_of_inertia.z, 0.01)
 
 	pitch_speed = pitch_acceleration * ANGULAR_RESPONSE_TIME
 	yaw_speed = yaw_acceleration * ANGULAR_RESPONSE_TIME
 	roll_speed = roll_acceleration * ANGULAR_RESPONSE_TIME
 
 func _calculate_box_inertia(mass: float, dimensions: Vector3) -> Vector3:
-	var width := max(abs(dimensions.x), 0.01)
-	var height := max(abs(dimensions.y), 0.01)
-	var length := max(abs(dimensions.z), 0.01)
+	var width: float = maxf(absf(dimensions.x), 0.01)
+	var height: float = maxf(absf(dimensions.y), 0.01)
+	var length: float = maxf(absf(dimensions.z), 0.01)
 
-	var inertia_x := (mass / 12.0) * (height * height + length * length)
-	var inertia_y := (mass / 12.0) * (width * width + length * length)
-	var inertia_z := (mass / 12.0) * (width * width + height * height)
+	var inertia_x: float = (mass / 12.0) * (height * height + length * length)
+	var inertia_y: float = (mass / 12.0) * (width * width + length * length)
+	var inertia_z: float = (mass / 12.0) * (width * width + height * height)
 
 	return Vector3(inertia_x, inertia_y, inertia_z)
 
 func _apply_rotation(delta: float, intent: Dictionary) -> void:
-	var target_angular_velocity := Vector3(
+	var target_angular_velocity: Vector3 = Vector3(
 		float(intent.get("pitch", 0.0)) * pitch_speed,
 		float(intent.get("yaw", 0.0)) * yaw_speed,
 		float(intent.get("roll", 0.0)) * roll_speed
@@ -158,8 +158,8 @@ func _apply_rotation(delta: float, intent: Dictionary) -> void:
 	global_basis = global_basis.orthonormalized()
 
 func _apply_throttle(delta: float, intent: Dictionary) -> void:
-	var throttle_input := clamp(float(intent.get("throttle", 0.0)), -1.0, 1.0)
-	throttle = clamp(
+	var throttle_input: float = clampf(float(intent.get("throttle", 0.0)), -1.0, 1.0)
+	throttle = clampf(
 		throttle + throttle_input * delta / THROTTLE_RESPONSE_TIME,
 		-1.0,
 		1.0
@@ -173,32 +173,32 @@ func _apply_translation(delta: float, intent: Dictionary) -> void:
 		velocity = velocity.move_toward(Vector3.ZERO, brake_acceleration * delta)
 		return
 
-	var forward := -global_transform.basis.z
-	var forward_speed := velocity.dot(forward)
+	var forward: Vector3 = -global_transform.basis.z
+	var forward_speed: float = velocity.dot(forward)
 
-	var target_forward_speed := throttle * max_speed
+	var target_forward_speed: float = throttle * max_speed
 
 	if throttle < 0.0:
 		target_forward_speed = throttle * reverse_speed
 	elif boost_active:
 		target_forward_speed = boost_speed
 
-	var speed_difference := target_forward_speed - forward_speed
+	var speed_difference: float = target_forward_speed - forward_speed
 
 	if abs(speed_difference) > 0.001:
-		var response := acceleration if speed_difference > 0.0 else reverse_acceleration
-		var forward_delta := clamp(speed_difference, -response * delta, response * delta)
+		var response: float = acceleration if speed_difference > 0.0 else reverse_acceleration
+		var forward_delta: float = clampf(speed_difference, -response * delta, response * delta)
 		velocity += forward * forward_delta
 
-	var strafe := clamp(float(intent.get("strafe", 0.0)), -1.0, 1.0)
+	var strafe: float = clampf(float(intent.get("strafe", 0.0)), -1.0, 1.0)
 
 	if abs(strafe) > 0.001:
-		var right := global_transform.basis.x
-		var lateral_velocity := velocity.project_on_plane(forward)
-		var lateral_speed := lateral_velocity.dot(right)
-		var target_lateral_speed := strafe * strafe_speed
-		var lateral_difference := target_lateral_speed - lateral_speed
-		var lateral_delta := clamp(
+		var right: Vector3 = global_transform.basis.x
+		var lateral_velocity: Vector3 = velocity - forward * forward_speed
+		var lateral_speed: float = lateral_velocity.dot(right)
+		var target_lateral_speed: float = strafe * strafe_speed
+		var lateral_difference: float = target_lateral_speed - lateral_speed
+		var lateral_delta: float = clampf(
 			lateral_difference,
 			-strafe_acceleration * delta,
 			strafe_acceleration * delta
