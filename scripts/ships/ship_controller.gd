@@ -26,7 +26,8 @@ func _ready() -> void:
 ## throttle    -1.0 to 1.0
 ## brake       true/false
 ## boost       true/false
-## fire        true/false
+## fire             true/false
+## fire_direction   optional world-space firing direction
 ##
 ## The base controller provides neutral input. Specific controllers override
 ## this method to provide player input or AI decisions.
