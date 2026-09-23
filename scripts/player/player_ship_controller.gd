@@ -13,9 +13,6 @@ extends ShipController
 @export_category("Mouse Aim")
 ## Maximum angular offset, in degrees, represented by the cursor.
 @export var max_cursor_angle_degrees: float = 28.0
-## Scales the cursor's requested turn rate. Lower values produce a slower,
-## more deliberate ship response.
-@export var cursor_steering_strength: float = 0.08
 ## Small cursor deadzone around the screen centre.
 @export var cursor_deadzone_pixels: float = 3.0
 
@@ -102,10 +99,7 @@ func _get_cursor_steering_input() -> Vector2:
 	var pitch_input: float = clampf(pitch_angle / max_angle, -1.0, 1.0)
 	var yaw_input: float = -clampf(yaw_angle / max_angle, -1.0, 1.0)
 
-	return Vector2(
-		pitch_input * cursor_steering_strength,
-		yaw_input * cursor_steering_strength
-	)
+	return Vector2(pitch_input, yaw_input)
 
 
 func _get_fire_direction() -> Vector3:
