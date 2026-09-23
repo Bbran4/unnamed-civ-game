@@ -7,8 +7,9 @@ extends Control
 ## actual projectile speed and the target's current velocity. It shows the
 ## point where the target is expected to be when the projectile arrives.
 ##
-## The player fires through the camera centre, so bringing the crosshair onto
-## this circle aligns the actual projectile with the predicted intercept point.
+## The player fires from the physical weapon muzzle toward the current mouse
+## cursor ray, so bringing the crosshair onto this circle aligns the shot with
+## the predicted intercept point.
 
 @export var ship_path: NodePath
 @export var radius: float = 14.0
