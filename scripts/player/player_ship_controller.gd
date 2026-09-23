@@ -8,7 +8,7 @@ extends ShipController
 ## movement, acceleration, braking and rotation.
 
 @export_category("Mouse")
-@export var mouse_sensitivity: float = 0.02
+@export var mouse_sensitivity: float = 0.04
 
 var mouse_input := Vector2.ZERO
 
