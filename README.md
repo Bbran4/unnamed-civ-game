@@ -1027,6 +1027,38 @@ The prototype HUD reads directly from runtime ship and targeting state. It curre
 
 The HUD does not own targeting behaviour. Target selection and locking remain gameplay/controller responsibilities. The current main-scene test assigns the spawned enemy as the player's target so the combat UI can be exercised before target-lock input exists.
 
+## Enemy AI State Machine
+
+The first enemy combat AI uses a small state machine rather than embedding every behaviour directly into the flight controller.
+
+~~~text
+IDLE
+  ↓ target found
+PURSUIT
+  ↓ within attack range
+ATTACK
+  ↓ shield damage
+EVADE
+  ↓ timer expires
+ATTACK
+  ↓ critical hull
+FLEE
+  ↓ disengaged
+IDLE
+~~~
+
+### States
+
+- **Idle:** No current target. The AI searches the shared ship group for a nearby valid target.
+- **Pursuit:** Turns toward the target and closes the distance. Boost is used for long approaches.
+- **Attack:** Maintains a preferred combat distance, uses lateral movement to orbit the target and requests weapon fire.
+- **Evade:** Temporarily breaks from the attack pattern when the ship's shields or hull are hit.
+- **Flee:** Attempts to escape when hull integrity becomes critical.
+
+The state machine owns combat decisions. EnemyShipController only converts the resulting decision into the shared Ship flight-intent format.
+
+The prototype enemy is equipped with the Starter Laser so these states can be exercised in a two-sided dogfight.
+
 ## Combat Prototype Test
 
 The current prototype equips the player with a Starter Laser at launch.
@@ -1434,7 +1466,7 @@ The reusable ship, controller and flight model foundation is in place.
 
 ### Dogfight
 
-- [ ] Enemy AI
+- [x] Enemy AI
 - [ ] Target locking
 - [ ] Basic weapon
 - [ ] Projectile firing
