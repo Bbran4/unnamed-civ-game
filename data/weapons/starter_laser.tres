@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/weapons/weapon_data.gd" id="1_weapon_data"]
+
+[resource]
+script = ExtResource("1_weapon_data")
+id = &"starter_laser"
+display_name = "Starter Laser"
+mass_kg = 250.0
+weapon_type = 0
+damage = 10.0
+range_m = 1000.0
+fire_rate = 2.0
+energy_cost = 5.0
+projectile_speed_mps = 500.0
