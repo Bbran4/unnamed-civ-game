@@ -1037,13 +1037,13 @@ IDLE
 PURSUIT
   ↓ within attack range
 ATTACK
-  ↓ shield damage
+  ↓ shield damage / hull damage
 EVADE
   ↓ timer expires
 ATTACK
   ↓ critical hull
 FLEE
-  ↓ disengaged
+  ↓ target lost
 IDLE
 ~~~
 
@@ -1052,8 +1052,8 @@ IDLE
 - **Idle:** No current target. The AI searches the shared ship group for a nearby valid target.
 - **Pursuit:** Turns toward the target and closes the distance. Boost is used for long approaches.
 - **Attack:** Maintains a preferred combat distance, uses lateral movement to orbit the target and requests weapon fire.
-- **Evade:** Temporarily breaks from the attack pattern when the ship's shields or hull are hit.
-- **Flee:** Attempts to escape when hull integrity becomes critical.
+- **Evade:** Temporarily breaks from the attack pattern after taking damage, with low shields making the defensive response more deliberate.
+- **Flee:** Attempts to escape when hull integrity becomes critical and remains in the escape state until the target is lost.
 
 The state machine owns combat decisions. EnemyShipController only converts the resulting decision into the shared Ship flight-intent format.
 
@@ -1082,7 +1082,7 @@ The current test controls include:
 - A projectile is spawned at the weapon muzzle and travels in the weapon's forward direction.
 - Projectile collision routes through the DamageSystem, which applies damage to the target ship's shields and hull.
 
-The test currently equips only the player. Enemy weapon loadouts will be added when the combat AI and weapon behaviour are expanded.
+The test equips both the player and prototype enemy with the Starter Laser so the combat loop can be exercised from both sides.
 ## Composition Over Ship Inheritance
 
 Ships should not become a deep inheritance tree such as:
