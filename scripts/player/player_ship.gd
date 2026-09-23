@@ -49,15 +49,17 @@ func _apply_rotation(delta: float) -> void:
 	var mouse_yaw := -mouse_input.x * mouse_sensitivity
 	mouse_input = Vector2.ZERO
 
+	# All pilot controls rotate around the ship's local axes.
+	# This keeps mouse/keyboard yaw consistent even after rolling 180 degrees.
 	rotate_object_local(Vector3.RIGHT, mouse_pitch)
-	rotate_y(mouse_yaw)
+	rotate_object_local(Vector3.UP, mouse_yaw)
 
 	var pitch := _axis(KEY_DOWN, KEY_UP)
 	var yaw := _axis(KEY_LEFT, KEY_RIGHT)
 	var roll := _axis(KEY_Q, KEY_E)
 
 	rotate_object_local(Vector3.RIGHT, pitch * keyboard_pitch_speed * delta)
-	rotate_y(yaw * keyboard_yaw_speed * delta)
+	rotate_object_local(Vector3.UP, yaw * keyboard_yaw_speed * delta)
 	rotate_object_local(Vector3.FORWARD, roll * roll_speed * delta)
 
 	# Re-orthonormalize after repeated rotations to prevent floating-point drift
