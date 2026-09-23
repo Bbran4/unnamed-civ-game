@@ -1,0 +1,23 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/flight_hud.gd" id="1_hud"]
+
+[node name="FlightHUD" type="CanvasLayer"]
+script = ExtResource("1_hud")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+offset_left = 24.0
+offset_top = 24.0
+offset_right = 600.0
+offset_bottom = 150.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+
+[node name="Speed" type="Label" parent="MarginContainer/VBoxContainer"]
+text = "SPEED  000 m/s"
+
+[node name="Throttle" type="Label" parent="MarginContainer/VBoxContainer"]
+text = "THROTTLE  000%"
+
+[node name="Help" type="Label" parent="MarginContainer/VBoxContainer"]
+text = "Controls"
