@@ -33,3 +33,6 @@ enum WeaponType {
 ## Projectile travel speed in metres per second.
 ## Used by projectile and missile weapons; energy weapons may ignore it.
 @export var projectile_speed_mps: float = 500.0
+
+## Projectile definition used by projectile-based weapons.
+@export var projectile_data: ProjectileData
