@@ -6,11 +6,15 @@ extends CharacterBody3D
 ## ShipData defines the ship's static design.
 ## Ship stores the runtime state of one actual vessel.
 ## Controllers provide intent; Ship applies the flight model.
+##
+## The runtime Ship also owns the current weapon loadout. ShipData only defines
+## how many weapon slots the hull supports.
 
 const CRUISE_ACCELERATION_TIME: float = 2.0
 const ANGULAR_RESPONSE_TIME: float = 0.75
 const THROTTLE_RESPONSE_TIME: float = 1.0
 const FLIGHT_ASSIST_MULTIPLIER: float = 4.0
+const WEAPON_SCENE: PackedScene = preload("res://scenes/weapons/weapon.tscn")
 
 @export_category("Ship Definition")
 @export var ship_data: ShipData
@@ -20,6 +24,9 @@ const FLIGHT_ASSIST_MULTIPLIER: float = 4.0
 
 @export_category("Installed Equipment")
 @export var installed_equipment: Array[EquipmentData] = []
+
+@export_category("Weapon Loadout")
+var weapons: Array[Weapon] = []
 
 @export_category("Runtime State")
 var current_hull: float = 0.0
@@ -58,15 +65,17 @@ var moment_of_inertia: Vector3 = Vector3.ZERO
 func _ready() -> void:
 	_initialize_from_data()
 	_initialize_controller()
+	_initialize_weapon_slots()
 
 func _physics_process(delta: float) -> void:
 	if controller == null:
 		return
 
-	var intent := controller.get_flight_intent(delta)
+	var intent: Dictionary = controller.get_flight_intent(delta)
 	_apply_rotation(delta, intent)
 	_apply_throttle(delta, intent)
 	_apply_translation(delta, intent)
+	_apply_weapons(intent)
 	move_and_slide()
 
 func _initialize_from_data() -> void:
@@ -88,6 +97,12 @@ func _initialize_controller() -> void:
 			if child is ShipController:
 				controller = child
 				break
+
+func _initialize_weapon_slots() -> void:
+	if ship_data == null:
+		return
+
+	weapons.resize(maxi(ship_data.weapon_slots, 0))
 
 func recalculate_flight_characteristics() -> void:
 	_calculate_flight_characteristics()
@@ -230,8 +245,99 @@ func _apply_translation(delta: float, intent: Dictionary) -> void:
 		)
 		velocity = forward * current_forward_speed + corrected_lateral_velocity
 
+func _apply_weapons(intent: Dictionary) -> void:
+	if not bool(intent.get("fire", false)):
+		return
+
+	for weapon: Weapon in weapons:
+		if weapon != null:
+			weapon.try_fire()
+
+func equip_weapon(weapon_data: WeaponData, slot_index: int = -1) -> Weapon:
+	if weapon_data == null or ship_data == null:
+		return null
+
+	if ship_data.weapon_slots <= 0:
+		push_warning("%s has no weapon slots." % name)
+		return null
+
+	if slot_index < 0:
+		slot_index = _find_free_weapon_slot()
+
+	if slot_index < 0 or slot_index >= ship_data.weapon_slots:
+		push_warning("Invalid weapon slot %d on %s." % [slot_index, name])
+		return null
+
+	if weapons[slot_index] != null:
+		push_warning("Weapon slot %d on %s is already occupied." % [slot_index, name])
+		return null
+
+	var mount_path: NodePath = NodePath("WeaponMounts/WeaponMount_%d" % slot_index)
+	var mount: Node3D = get_node_or_null(mount_path) as Node3D
+
+	if mount == null:
+		push_warning("Missing weapon mount for slot %d on %s." % [slot_index, name])
+		return null
+
+	var weapon: Weapon = WEAPON_SCENE.instantiate() as Weapon
+
+	if weapon == null:
+		push_error("Weapon scene must instantiate Weapon.")
+		return null
+
+	weapon.weapon_data = weapon_data
+	weapon.set_ship(self)
+	mount.add_child(weapon)
+	weapons[slot_index] = weapon
+
+	installed_equipment.append(weapon_data)
+	recalculate_flight_characteristics()
+
+	return weapon
+
+func unequip_weapon(slot_index: int) -> Weapon:
+	if slot_index < 0 or slot_index >= weapons.size():
+		return null
+
+	var weapon: Weapon = weapons[slot_index]
+
+	if weapon == null:
+		return null
+
+	weapons[slot_index] = null
+
+	if weapon.weapon_data != null:
+		installed_equipment.erase(weapon.weapon_data)
+
+	recalculate_flight_characteristics()
+	weapon.queue_free()
+
+	return weapon
+
+func get_weapon(slot_index: int) -> Weapon:
+	if slot_index < 0 or slot_index >= weapons.size():
+		return null
+
+	return weapons[slot_index]
+
+func get_weapon_count() -> int:
+	var count: int = 0
+
+	for weapon: Weapon in weapons:
+		if weapon != null:
+			count += 1
+
+	return count
+
+func _find_free_weapon_slot() -> int:
+	for index: int in weapons.size():
+		if weapons[index] == null:
+			return index
+
+	return -1
+
 func get_total_mass_kg() -> float:
-	var total_mass := 0.0
+	var total_mass: float = 0.0
 
 	if ship_data != null:
 		total_mass += ship_data.hull_mass_kg
