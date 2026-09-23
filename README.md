@@ -1110,6 +1110,12 @@ The current test controls include:
 - Projectile collision routes through the DamageSystem, which applies damage to the target ship's shields and hull.
 
 The test equips both the player and prototype enemy with the Starter Laser so the combat loop can be exercised from both sides.
+## Prototype Combat Reward
+
+Destroying the prototype enemy with the player ship awards **100 credits**. The current prototype stores this as a temporary combat-test value in `main.gd` and displays the running total plus a short reward notification in the HUD.
+
+This is intentionally not the final credits or progression system. Persistent credits, mission rewards, ship purchases and the wider economy belong to later milestones.
+
 ## Composition Over Ship Inheritance
 
 Ships should not become a deep inheritance tree such as:
@@ -1502,12 +1508,12 @@ The reusable ship, controller and flight model foundation is in place.
 
 - [x] Enemy AI
 - [x] Target locking
-- [ ] Basic weapon
-- [ ] Projectile firing
-- [ ] Player damage
-- [ ] Enemy damage
-- [ ] Enemy destruction
-- [ ] Basic reward
+- [x] Basic weapon
+- [x] Projectile firing
+- [x] Player damage
+- [x] Enemy damage
+- [x] Enemy destruction
+- [x] Basic reward
 
 **Definition of done:** The player and an enemy use the same reusable ship system with different controllers, can target each other, fight, take damage and be destroyed.
 
