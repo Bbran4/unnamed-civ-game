@@ -180,7 +180,7 @@ func _apply_throttle(delta: float, intent: Dictionary) -> void:
 
 func _apply_translation(delta: float, intent: Dictionary) -> void:
 	if brake_active:
-		# Brake cancels current momentum using derived reverse thrust.
+		# Brake cancels current momentum using the ship's direct brake acceleration.
 		# It deliberately does not reset throttle, so releasing the brake
 		# allows the ship to accelerate back toward its requested speed.
 		velocity = velocity.move_toward(Vector3.ZERO, brake_acceleration * delta)
