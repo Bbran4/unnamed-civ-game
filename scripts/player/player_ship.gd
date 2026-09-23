@@ -91,15 +91,6 @@ func _apply_translation(delta: float) -> void:
 	velocity += (desired_forward_velocity - current_forward).limit_length(rate * delta)
 
 	var strafe := _axis(KEY_A, KEY_D)
-	var vertical := _axis(KEY_CTRL, KEY_SPACE)
-
-	var local_strafe := (
-		global_transform.basis.x * strafe +
-		global_transform.basis.y * vertical
-	) * strafe_speed
-
-	# Strafe is intentionally subtle in Milestone 1. Space is reserved for
-	# braking, so vertical movement will be expanded with a dedicated binding later.
 	velocity += global_transform.basis.x * strafe * strafe_speed * delta
 
 func _axis(negative_key: Key, positive_key: Key) -> float:
