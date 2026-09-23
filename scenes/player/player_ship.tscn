@@ -37,4 +37,4 @@ omni_range = 5.0
 position = Vector3(0, 3, 10)
 current = true
 script = ExtResource("2_camera")
-target_path = NodePath("../..")
+target_path = NodePath("..")
