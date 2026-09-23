@@ -376,6 +376,26 @@ func get_equipment_mass_kg() -> float:
 func get_moment_of_inertia_kg_m2() -> Vector3:
 	return moment_of_inertia
 
+signal damage_received(amount: float, source: Node, remaining_hull: float)
+
+## Entry point used by DamageSystem.
+##
+## Hull absorption is intentionally the simplest implementation for now.
+## The dedicated Shields and Hull systems will take ownership of these rules
+## later without changing how projectiles deliver damage.
+func receive_damage(amount: float, source: Node = null) -> void:
+	if is_destroyed():
+		return
+
+	var damage: float = maxf(amount, 0.0)
+
+	if damage <= 0.0:
+		return
+
+	current_hull = maxf(current_hull - damage, 0.0)
+	damage_received.emit(damage, source, current_hull)
+
+
 func get_hull_fraction() -> float:
 	if ship_data == null or ship_data.hull_capacity <= 0.0:
 		return 0.0
