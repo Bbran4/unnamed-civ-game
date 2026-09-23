@@ -19,6 +19,9 @@ func _ready() -> void:
 	if player_weapon == null:
 		push_error("Failed to equip starter laser to player ship.")
 
+	# Give the prototype enemy the same starter weapon so the AI state machine
+	# can be tested in a live two-sided dogfight.
+
 	var enemy_transform: Transform3D = Transform3D(
 		Basis.IDENTITY,
 		Vector3(12.0, 0.0, -60.0)
@@ -36,6 +39,12 @@ func _ready() -> void:
 		return
 
 	enemy.name = "PrototypeEnemy"
+
+
+	var enemy_weapon: Weapon = enemy.equip_weapon(STARTER_LASER_DATA, 0)
+
+	if enemy_weapon == null:
+		push_error("Failed to equip starter laser to prototype enemy.")
 
 	var enemy_light := OmniLight3D.new()
 	enemy_light.name = "EnemyGlow"
