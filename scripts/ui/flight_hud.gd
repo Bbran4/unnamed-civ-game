@@ -32,7 +32,6 @@ var reward_message_timer: float = 0.0
 @onready var target_shield_bar: ProgressBar = $TargetPanel/MarginContainer/VBoxContainer/TargetShieldBar
 @onready var weapon_name_label: Label = $WeaponPanel/MarginContainer/VBoxContainer/WeaponName
 @onready var weapon_state_label: Label = $WeaponPanel/MarginContainer/VBoxContainer/WeaponState
-@onready var reticle_label: Label = $Reticle
 @onready var help_label: Label = $Help
 
 
@@ -43,9 +42,7 @@ func _ready() -> void:
 	if ship != null:
 		targeting_system = ship.get_node_or_null("TargetingSystem") as TargetingSystem
 
-	help_label.text = "W/S Throttle  |  Mouse Pitch/Yaw  |  Q/E Roll  |  A/D Strafe  |  Shift Boost  |  Space Brake  |  LMB Fire  |  T Target/Cycle  |  Esc Release Mouse"
-	reticle_label.text = "+"
-	_reset_target_display()
+	help_label.text = "W/S Throttle  |  Mouse Pitch/Yaw  |  Q/E Roll  |  A/D Strafe  |  Shift Boost  |  Space Brake  |  LMB Fire  |  T Target/Cycle  |  Esc Release Mouse"	_reset_target_display()
 	_update_reward_display(0.0)
 
 
