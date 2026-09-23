@@ -1048,7 +1048,7 @@ The current test controls include:
 - **Left Mouse Button:** Fire equipped weapon.
 - The weapon consumes ship energy and observes its configured fire rate.
 - A projectile is spawned at the weapon muzzle and travels in the weapon's forward direction.
-- Projectile collision is detected, but damage is intentionally not applied until the Damage System is implemented.
+- Projectile collision routes through the DamageSystem, which applies damage to the target ship's shields and hull.
 
 The test currently equips only the player. Enemy weapon loadouts will be added when the combat AI and weapon behaviour are expanded.
 ## Composition Over Ship Inheritance
@@ -1397,7 +1397,13 @@ If the resulting dogfight is not fun, adding forty star systems only gives us fo
 
 ## Milestone 1 - First Flight
 
-**Status: FOUNDATION COMPLETE / ARCHITECTURE REWORK IN PROGRE## Milestone 2 - Combat
+**Status: FOUNDATION COMPLETE**
+
+The reusable ship, controller and flight model foundation is in place.
+
+---
+
+## Milestone 2 - Combat
 
 **Goal: Build the reusable combat foundation, then make one dogfight fun.**
 
@@ -1441,35 +1447,6 @@ If the resulting dogfight is not fun, adding forty star systems only gives us fo
 
 ---
 
-ss
-
-### Combat Foundation
-
-- [x] WeaponData Resource
-- [x] Weapon runtime
-- [x] ProjectileData Resource
-- [x] Projectile runtime
-- [x] Damage system
-- [x] Shields
-- [x] Hull
-- [x] Destruction
-- [ ] Targeting system
-- [ ] Combat HUD
-
-### Dogfight
-
-- [ ] Enemy AI
-- [ ] Target locking
-- [ ] Basic weapon
-- [ ] Projectile firing
-- [ ] Player damage
-- [ ] Enemy damage
-- [ ] Enemy destruction
-- [ ] Basic reward
-
-**Definition of done:** The player and an enemy use the same reusable ship system with different controllers, can target each other, fight, take damage and be destroyed.
-
----
 
 ## Milestone 3 - First Station
 
