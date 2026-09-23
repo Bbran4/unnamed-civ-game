@@ -1242,11 +1242,11 @@ Projectile hits are routed through a central DamageSystem rather than directly m
 
 ~~~
 Projectile collision
-    ↓
+	↓
 DamageSystem
-    ↓
+	↓
 Target.receive_damage()
-    ↓
+	↓
 Current target hull
 ~~~
 
