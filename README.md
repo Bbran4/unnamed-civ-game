@@ -143,56 +143,36 @@ The ship should have acceleration and momentum while remaining responsive enough
 
 ## Flight Model
 
-Flight characteristics are **derived from the physical properties of the ship and its propulsion**, rather than being manually assigned values for every ship.
+Flight characteristics are **direct gameplay values**, tuned per ship for responsiveness and feel. Hull mass and dimensions are still part of the ship definition, but they do not determine basic handling.
 
-The model is intentionally **physical-feeling**, not a full spacecraft simulator.
-
-Each ship defines a small set of approximate design specifications:
+Each ship defines:
 
 ~~~
-Hull dimensions
-Hull mass
-Main engine thrust
-Reverse thrust
-Maneuvering / RCS thrust
-Boost thrust
-Equipment
-Cargo
-~~~
-
-From these values the runtime ship derives:
-
-~~~
-Total mass
+Maximum speed
 Acceleration
-Reverse acceleration
-Brake acceleration
+Reverse speed
+Reverse / brake acceleration
+Strafe speed
 Strafe acceleration
+Flight-assist acceleration
+Boost speed
 Boost acceleration
-Pitch behaviour
-Yaw behaviour
-Roll behaviour
-Stopping time
-Stopping distance
+Pitch turn rate
+Yaw turn rate
+Roll turn rate
+Pitch / yaw / roll turn acceleration
 ~~~
 
-The basic relationships are:
+This keeps flight tuning simple. A ship resource directly answers questions such as:
 
-~~~
-Linear acceleration = thrust / mass
+> How fast is this ship?
+> How quickly does it accelerate?
+> How quickly can it turn?
+> How responsive should it feel?
 
-Braking acceleration = reverse thrust / mass
+Turn rates are stored in degrees per second, while turn acceleration controls how quickly the ship reaches its requested rate. The mouse cursor maps to a requested turn rate, so moving the cursor farther from the screen centre asks for a stronger turn rather than directly rotating the ship.
 
-Stopping time = current speed / braking acceleration
-
-Stopping distance = current speed² / (2 × braking acceleration)
-
-Angular acceleration = torque / moment of inertia
-~~~
-
-For rotational behaviour, ship dimensions and total mass are used to **approximate the ship's moment of inertia**. The game does not simulate the physical position of individual components such as reactors, cargo or weapons.
-
-This gives larger and heavier ships naturally different handling from small, agile ships without requiring individually hand-tuned flight statistics.
+Mass and dimensions can still matter to cargo, equipment, collision, visuals and other future systems. They are deliberately **not** part of the current flight equation.
 
 ### Throttle and Momentum
 
@@ -1268,7 +1248,7 @@ ShipData
 
 A ship resource contains **design inputs**, not derived flight results.
 
-The runtime ship calculates its actual handling from those inputs.
+The runtime ship copies the direct flight values into runtime handling state. Mass and dimensions are not used to calculate turn rates or acceleration.
 
 For the first implementation, dimensions and mass are deliberately approximate. We do not simulate the exact physical position of every component inside the hull.
 
@@ -1288,9 +1268,7 @@ WeaponData
 └── projectile_data
 ~~~
 
-Adding or removing installed equipment changes the ship's total mass.
-
-The runtime Ship sums the hull mass and installed equipment mass, then recalculates all derived flight characteristics whenever equipment is added or removed.
+Adding or removing installed equipment changes the ship's tracked equipment mass. It does not currently change flight handling. This leaves room to make mass matter later without coupling equipment to the control feel.
 
 ## EquipmentData
 
@@ -1390,8 +1368,8 @@ This lets one ShipData resource be reused by many ships while every ship maintai
 - Separate controllers from reusable gameplay objects.
 - Prefer composition over giant inheritance trees.
 - Ship flight physics should not depend on whether the controller is human or AI.
-- Calculate derived flight characteristics from physical inputs.
-- Approximate ship dimensions and mass rather than simulating exact component positions.
+- Keep flight handling based on direct gameplay-tuned values.
+- Keep ship dimensions and mass available for systems that actually need them, without using them to determine basic handling.
 - Equipment should contribute to runtime ship mass where appropriate.
 - Keep ships modular.
 - Keep weapons and projectiles data-driven.
@@ -1487,8 +1465,8 @@ The reusable ship, controller and flight model foundation is in place.
 - [x] PlayerShipController
 - [x] EnemyShipController
 - [x] Ship spawning
-- [x] Formula-derived flight physics
-- [x] Equipment contributes to ship mass
+- [x] Direct gameplay-tuned flight physics
+- [x] Equipment tracking remains separate from flight handling
 
 ### Combat Foundation
 
