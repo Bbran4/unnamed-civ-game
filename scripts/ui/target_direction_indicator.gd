@@ -4,11 +4,13 @@ extends Control
 ## Screen-edge arrow for the player's current target.
 ##
 ## The indicator only reads TargetingSystem state. It does not select or lock
-## targets. When the target is outside the camera view, the arrow is clamped
-## to a safe screen margin and rotated to point toward the target.
+## targets. When the target approaches the edge of the view, the arrow fades in
+## as the target bracket fades out. The arrow remains clamped to a safe screen
+## margin and points toward the target.
 
 @export var ship_path: NodePath
 @export var screen_margin: float = 42.0
+@export var transition_margin: float = 120.0
 @export var arrow_size: float = 16.0
 @export var line_width: float = 2.0
 
@@ -35,6 +37,7 @@ func _process(_delta: float) -> void:
 
 func _update_indicator() -> void:
 	visible = false
+	modulate.a = 0.0
 
 	if targeting_system == null:
 		return
@@ -75,21 +78,21 @@ func _update_indicator() -> void:
 	screen_direction = screen_direction.normalized()
 
 	var projected_target: Vector2 = camera.unproject_position(target.global_position)
-	var inside_screen: bool = (
-		projected_target.x >= 0.0
-		and projected_target.x <= viewport_size.x
-		and projected_target.y >= 0.0
-		and projected_target.y <= viewport_size.y
-		and target_camera_position.z < 0.0
-	)
-
-	if inside_screen:
-		return
-
 	var safe_rect: Rect2 = Rect2(
 		Vector2(screen_margin, screen_margin),
 		viewport_size - Vector2(screen_margin * 2.0, screen_margin * 2.0)
 	)
+
+	var bracket_alpha: float = _get_bracket_alpha(projected_target, safe_rect)
+	var arrow_alpha: float = 1.0 - bracket_alpha
+
+	var target_inside_safe_rect: bool = (
+		target_camera_position.z < 0.0
+		and safe_rect.has_point(projected_target)
+	)
+
+	if target_inside_safe_rect and arrow_alpha <= 0.0:
+		return
 
 	var edge_center: Vector2 = _intersect_center_ray_with_rect(
 		center,
@@ -100,8 +103,30 @@ func _update_indicator() -> void:
 	position = edge_center
 	size = Vector2.ZERO
 	arrow_rotation = screen_direction.angle()
-	visible = true
+	modulate.a = arrow_alpha
+	visible = arrow_alpha > 0.0
 	queue_redraw()
+
+
+func _get_bracket_alpha(target_position: Vector2, safe_rect: Rect2) -> float:
+	if not safe_rect.grow(transition_margin).has_point(target_position):
+		return 0.0
+
+	if safe_rect.has_point(target_position):
+		var distance_to_edge: float = minf(
+			minf(
+				target_position.x - safe_rect.position.x,
+				safe_rect.end.x - target_position.x
+			),
+			minf(
+				target_position.y - safe_rect.position.y,
+				safe_rect.end.y - target_position.y
+			)
+		)
+
+		return clampf(distance_to_edge / transition_margin, 0.0, 1.0)
+
+	return 0.0
 
 
 func _intersect_center_ray_with_rect(
