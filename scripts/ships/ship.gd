@@ -18,6 +18,9 @@ const FLIGHT_ASSIST_MULTIPLIER: float = 4.0
 @export_category("Controller")
 @export var controller_path: NodePath
 
+@export_category("Installed Equipment")
+@export var installed_equipment: Array[EquipmentData] = []
+
 @export_category("Runtime State")
 var current_hull: float = 0.0
 var current_shields: float = 0.0
@@ -85,6 +88,9 @@ func _initialize_controller() -> void:
 			if child is ShipController:
 				controller = child
 				break
+
+func recalculate_flight_characteristics() -> void:
+	_calculate_flight_characteristics()
 
 func _calculate_flight_characteristics() -> void:
 	var mass: float = get_total_mass_kg()
@@ -230,9 +236,35 @@ func get_total_mass_kg() -> float:
 	if ship_data != null:
 		total_mass += ship_data.hull_mass_kg
 
-	# Installed equipment mass will be added here when the equipment system
-	# is introduced. Cargo mass will also contribute here later.
+	for equipment: EquipmentData in installed_equipment:
+		if equipment != null:
+			total_mass += maxf(equipment.mass_kg, 0.0)
+
+	# Cargo mass will contribute here later.
 	return total_mass
+
+func add_equipment(equipment: EquipmentData) -> void:
+	if equipment == null:
+		return
+
+	installed_equipment.append(equipment)
+	recalculate_flight_characteristics()
+
+func remove_equipment(equipment: EquipmentData) -> void:
+	if equipment == null:
+		return
+
+	if installed_equipment.erase(equipment) > 0:
+		recalculate_flight_characteristics()
+
+func get_equipment_mass_kg() -> float:
+	var equipment_mass: float = 0.0
+
+	for equipment: EquipmentData in installed_equipment:
+		if equipment != null:
+			equipment_mass += maxf(equipment.mass_kg, 0.0)
+
+	return equipment_mass
 
 func get_moment_of_inertia_kg_m2() -> Vector3:
 	return moment_of_inertia
