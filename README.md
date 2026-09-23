@@ -1014,6 +1014,30 @@ Enemy Ship
 
 Weapon mass remains part of the runtime ship's total mass because WeaponData inherits from EquipmentData.
 
+## Combat Prototype Test
+
+The current prototype equips the player with a Starter Laser at launch.
+
+~~~
+Left Mouse Button
+    ↓
+Player fire intent
+    ↓
+Equipped Weapon
+    ↓
+Starter Laser Projectile
+    ↓
+Projectile collision
+~~~
+
+The current test controls include:
+
+- **Left Mouse Button:** Fire equipped weapon.
+- The weapon consumes ship energy and observes its configured fire rate.
+- A projectile is spawned at the weapon muzzle and travels in the weapon's forward direction.
+- Projectile collision is detected, but damage is intentionally not applied until the Damage System is implemented.
+
+The test currently equips only the player. Enemy weapon loadouts will be added when the combat AI and weapon behaviour are expanded.
 ## Composition Over Ship Inheritance
 
 Ships should not become a deep inheritance tree such as:
