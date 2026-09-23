@@ -40,6 +40,7 @@ func get_flight_intent(_delta: float) -> Dictionary:
 	intent["throttle"] = _axis(KEY_S, KEY_W)
 	intent["brake"] = Input.is_key_pressed(KEY_SPACE)
 	intent["boost"] = Input.is_key_pressed(KEY_SHIFT)
+	intent["fire"] = Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT)
 
 	return intent
 
