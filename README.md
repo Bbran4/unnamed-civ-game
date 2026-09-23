@@ -1020,13 +1020,13 @@ The current prototype equips the player with a Starter Laser at launch.
 
 ~~~
 Left Mouse Button
-    ↓
+	↓
 Player fire intent
-    ↓
+	↓
 Equipped Weapon
-    ↓
+	↓
 Starter Laser Projectile
-    ↓
+	↓
 Projectile collision
 ~~~
 
