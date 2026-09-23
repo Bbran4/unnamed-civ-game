@@ -122,12 +122,12 @@ This lets the project create detailed locations without requiring an enormous se
 
 Space flight is the foundation of the game.
 
-The player controls a 3D spacecraft using an accessible **twin-stick-inspired control scheme** rather than a full flight simulator.
+The player controls a 3D spacecraft using an accessible **twin-stick-inspired control scheme** rather than a full flight simulator. The mouse cursor is free to move around the screen, and the ship smoothly steers toward the cursor rather than snapping directly to it.
 
 ## Controls
 
-- Pitch
-- Yaw
+- Mouse aim cursor
+- Pitch / yaw steering toward cursor
 - Roll
 - Throttle
 - Boost
@@ -139,7 +139,7 @@ The player controls a 3D spacecraft using an accessible **twin-stick-inspired co
 - Scanner
 - Cruise / travel mode
 
-The ship should have acceleration and momentum while remaining responsive enough for close combat.
+The ship should have acceleration and momentum while remaining responsive enough for close combat. Cursor steering behaves like a turn-rate system: the farther the cursor moves from the centre, the stronger the requested turn, while the ship's own angular response determines how quickly it catches up.
 
 ## Flight Model
 
