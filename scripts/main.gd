@@ -13,7 +13,7 @@ const ENEMY_CONTROLLER_SCRIPT: Script = preload("res://scripts/enemies/enemy_shi
 
 
 func _ready() -> void:
-	var enemy_transform := Transform3D(
+	var enemy_transform: Transform3D = Transform3D(
 		Basis.IDENTITY,
 		Vector3(12.0, 0.0, -60.0)
 	)
