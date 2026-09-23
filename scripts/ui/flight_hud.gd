@@ -72,7 +72,7 @@ func _update_target_display() -> void:
 
 	if target_ship == null:
 		target_lock_label.text = "LOCK  ACTIVE"
-	target_name_label.text = "TARGET  OBJECT"
+		target_name_label.text = "TARGET  OBJECT"
 		target_distance_label.text = "DISTANCE  %03d m" % int(targeting_system.get_target_distance())
 		target_hull_bar.value = 0.0
 		target_shield_bar.value = 0.0
