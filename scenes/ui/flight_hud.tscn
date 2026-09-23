@@ -2,34 +2,168 @@
 
 [ext_resource type="Script" path="res://scripts/ui/flight_hud.gd" id="1_hud"]
 
+[sub_resource type="StyleBoxFlat" id="Style_panel"]
+bg_color = Color(0.008, 0.016, 0.035, 0.82)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.25, 0.55, 0.8, 0.5)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+content_margin_left = 12.0
+content_margin_top = 10.0
+content_margin_right = 12.0
+content_margin_bottom = 10.0
+
 [node name="FlightHUD" type="CanvasLayer"]
 script = ExtResource("1_hud")
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
+[node name="PlayerPanel" type="PanelContainer" parent="."]
 offset_left = 24.0
 offset_top = 24.0
-offset_right = 700.0
-offset_bottom = 180.0
+offset_right = 360.0
+offset_bottom = 252.0
+theme_override_styles/panel = SubResource("Style_panel")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="PlayerPanel"]
 
-[node name="Speed" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="PlayerPanel/MarginContainer"]
+theme_override_constants/separation = 4
+
+[node name="Title" type="Label" parent="PlayerPanel/MarginContainer/VBoxContainer"]
+text = "SHIP STATUS"
+
+[node name="Speed" type="Label" parent="PlayerPanel/MarginContainer/VBoxContainer"]
 text = "SPEED  000 m/s"
 
-[node name="Throttle" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="Throttle" type="Label" parent="PlayerPanel/MarginContainer/VBoxContainer"]
 text = "THROTTLE  000%"
 
-[node name="Status" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="Status" type="Label" parent="PlayerPanel/MarginContainer/VBoxContainer"]
 text = "FLIGHT  CRUISE"
 
-[node name="Help" type="Label" parent="MarginContainer/VBoxContainer"]
-text = "Controls"
+[node name="HullLabel" type="Label" parent="PlayerPanel/MarginContainer/VBoxContainer"]
+text = "HULL"
+
+[node name="HullBar" type="ProgressBar" parent="PlayerPanel/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 14)
+max_value = 100.0
+value = 100.0
+show_percentage = false
+
+[node name="ShieldLabel" type="Label" parent="PlayerPanel/MarginContainer/VBoxContainer"]
+text = "SHIELDS"
+
+[node name="ShieldBar" type="ProgressBar" parent="PlayerPanel/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 14)
+max_value = 100.0
+value = 100.0
+show_percentage = false
+
+[node name="EnergyLabel" type="Label" parent="PlayerPanel/MarginContainer/VBoxContainer"]
+text = "ENERGY"
+
+[node name="EnergyBar" type="ProgressBar" parent="PlayerPanel/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 14)
+max_value = 100.0
+value = 100.0
+show_percentage = false
+
+[node name="TargetPanel" type="PanelContainer" parent="."]
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -360.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = 252.0
+grow_horizontal = 0
+theme_override_styles/panel = SubResource("Style_panel")
+
+[node name="MarginContainer" type="MarginContainer" parent="TargetPanel"]
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TargetPanel/MarginContainer"]
+theme_override_constants/separation = 4
+
+[node name="Title" type="Label" parent="TargetPanel/MarginContainer/VBoxContainer"]
+text = "TARGET"
+
+[node name="TargetName" type="Label" parent="TargetPanel/MarginContainer/VBoxContainer"]
+text = "TARGET  NONE"
+
+[node name="TargetDistance" type="Label" parent="TargetPanel/MarginContainer/VBoxContainer"]
+text = "DISTANCE  ---"
+
+[node name="TargetHullLabel" type="Label" parent="TargetPanel/MarginContainer/VBoxContainer"]
+text = "HULL"
+
+[node name="TargetHullBar" type="ProgressBar" parent="TargetPanel/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 14)
+max_value = 100.0
+value = 0.0
+show_percentage = false
+
+[node name="TargetShieldLabel" type="Label" parent="TargetPanel/MarginContainer/VBoxContainer"]
+text = "SHIELDS"
+
+[node name="TargetShieldBar" type="ProgressBar" parent="TargetPanel/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 14)
+max_value = 100.0
+value = 0.0
+show_percentage = false
+
+[node name="WeaponPanel" type="PanelContainer" parent="."]
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = -190.0
+offset_top = -125.0
+offset_right = 190.0
+offset_bottom = -56.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/panel = SubResource("Style_panel")
+
+[node name="MarginContainer" type="MarginContainer" parent="WeaponPanel"]
+
+[node name="VBoxContainer" type="VBoxContainer" parent="WeaponPanel/MarginContainer"]
+theme_override_constants/separation = 2
+
+[node name="WeaponName" type="Label" parent="WeaponPanel/MarginContainer/VBoxContainer"]
+text = "WEAPON  NONE"
+horizontal_alignment = 1
+
+[node name="WeaponState" type="Label" parent="WeaponPanel/MarginContainer/VBoxContainer"]
+text = "NO WEAPON EQUIPPED"
+horizontal_alignment = 1
 
 [node name="Reticle" type="Label" parent="."]
-offset_left = 630.0
-offset_top = 342.0
-offset_right = 650.0
-offset_bottom = 378.0
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = -12.0
+offset_top = -18.0
+offset_right = 12.0
+offset_bottom = 18.0
+grow_horizontal = 2
+grow_vertical = 2
 text = "+"
 horizontal_alignment = 1
 vertical_alignment = 1
+mouse_filter = 2
+
+[node name="Help" type="Label" parent="."]
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = -42.0
+offset_right = -24.0
+offset_bottom = -18.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Controls"
+horizontal_alignment = 1
