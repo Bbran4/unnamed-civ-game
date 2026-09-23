@@ -1528,7 +1528,7 @@ The combat HUD should communicate spatial information in 2D while remaining driv
 
 ### Target Feedback
 
-- [ ] Target lock bracket that follows the current target on screen
+- [x] Target lock bracket that follows the current target on screen
 - [ ] Off-screen target direction arrow
 - [ ] Target bracket / off-screen indicator transition and screen-edge clamping
 
@@ -1840,7 +1840,7 @@ The immediate objective is:
 
 > **Build one excellent dogfight before building the rest of the universe.**
 
-The reusable ship, combat, targeting and enemy AI foundations are now in place. The next focus is combat HUD feedback: making targeting, incoming fire and aiming information immediately readable without adding unnecessary simulation complexity.
+The reusable ship, combat, targeting and enemy AI foundations are now in place. The current focus is combat HUD feedback: making targeting, incoming fire and aiming information immediately readable without adding unnecessary simulation complexity.
 
 ---
 
