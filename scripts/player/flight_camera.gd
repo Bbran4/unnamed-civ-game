@@ -15,8 +15,13 @@ func _process(delta: float) -> void:
 	if target == null:
 		return
 
-	var desired_position := target.global_position + target.global_transform.basis.z * follow_distance
-	desired_position += target.global_transform.basis.y * follow_height
+	var target_basis := target.global_transform.basis.orthonormalized()
+	var desired_position := target.global_position + target_basis.z * follow_distance
+	desired_position += target_basis.y * follow_height
 
 	global_position = global_position.lerp(desired_position, 1.0 - exp(-position_smoothing * delta))
-	global_basis = global_basis.slerp(target.global_transform.basis, 1.0 - exp(-rotation_smoothing * delta))
+
+	var current_rotation := global_basis.orthonormalized().get_rotation_quaternion()
+	var target_rotation := target_basis.get_rotation_quaternion()
+	var rotation_weight := 1.0 - exp(-rotation_smoothing * delta)
+	global_basis = current_rotation.slerp(target_rotation, rotation_weight).get_basis()
