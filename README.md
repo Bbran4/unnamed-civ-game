@@ -1269,7 +1269,7 @@ The final Milestone 1 flight model should use:
 - [x] ShipController base
 - [x] PlayerShipController
 - [x] Formula-derived flight characteristics
-- [ ] Physical-feeling throttle and momentum
+- [x] Physical-feeling throttle and momentum
 - [ ] Mass affected by installed equipment
 
 **Definition of done:** A reusable ship can be controlled independently of the controller, and its flight characteristics are calculated from its dimensions, mass and propulsion specifications.
