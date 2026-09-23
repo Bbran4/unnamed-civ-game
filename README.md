@@ -1110,7 +1110,19 @@ WeaponData
 └── projectile_data
 ~~~
 
-Adding or removing a weapon changes the ship's total mass.
+Adding or removing installed equipment changes the ship's total mass.
+
+The runtime Ship sums the hull mass and installed equipment mass, then recalculates all derived flight characteristics whenever equipment is added or removed.
+
+## EquipmentData
+
+EquipmentData
+├── id
+├── display_name
+└── mass_kg
+
+
+Equipment is deliberately represented by a base resource so specialised equipment types, such as weapons, can inherit from it later.
 
 ## ProjectileData
 
@@ -1270,7 +1282,7 @@ The final Milestone 1 flight model should use:
 - [x] PlayerShipController
 - [x] Formula-derived flight characteristics
 - [x] Physical-feeling throttle and momentum
-- [ ] Mass affected by installed equipment
+- [x] Mass affected by installed equipment
 
 **Definition of done:** A reusable ship can be controlled independently of the controller, and its flight characteristics are calculated from its dimensions, mass and propulsion specifications.
 
