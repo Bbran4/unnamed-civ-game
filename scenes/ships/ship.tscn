@@ -19,3 +19,8 @@ mesh = SubResource("Mesh_hull")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("Shape_hull")
+
+[node name="WeaponMounts" type="Node3D" parent="."]
+
+[node name="WeaponMount_0" type="Marker3D" parent="WeaponMounts"]
+position = Vector3(0, 0, -2.2)
