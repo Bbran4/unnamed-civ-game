@@ -151,7 +151,7 @@ func _cycle_target() -> void:
 	if target == null:
 		return
 
-	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	Input.mouse_mode = Input.MOUSE_MODE_CONFINED
 
 
 func _axis(negative_key: Key, positive_key: Key) -> float:
