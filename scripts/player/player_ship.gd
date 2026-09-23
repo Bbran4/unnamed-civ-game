@@ -60,6 +60,10 @@ func _apply_rotation(delta: float) -> void:
 	rotate_y(yaw * keyboard_yaw_speed * delta)
 	rotate_object_local(Vector3.FORWARD, roll * roll_speed * delta)
 
+	# Re-orthonormalize after repeated rotations to prevent floating-point drift
+	# from turning the transform basis into a non-rotation matrix.
+	global_basis = global_basis.orthonormalized()
+
 func _apply_throttle(delta: float) -> void:
 	var throttle_input := _axis(KEY_S, KEY_W)
 	throttle = clamp(throttle + throttle_input * delta, -1.0, 1.0)
