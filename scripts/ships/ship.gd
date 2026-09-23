@@ -330,7 +330,7 @@ func get_weapon_count() -> int:
 	return count
 
 func _find_free_weapon_slot() -> int:
-	for index: int in weapons.size():
+	for index: int in range(weapons.size()):
 		if weapons[index] == null:
 			return index
 
