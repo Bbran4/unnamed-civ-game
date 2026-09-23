@@ -84,9 +84,9 @@ func _on_ship_damage_received(
 		# provides useful feedback.
 		if damage_direction.length_squared() <= 0.0001:
 			damage_direction = Vector2(
-			0.0,
-			-camera_local_direction.y
-		)
+				0.0,
+				-camera_local_direction.y
+			)
 	else:
 		var ship_local_direction: Vector3 = (
 			ship.global_transform.basis.inverse() * incoming_direction
