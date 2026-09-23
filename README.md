@@ -1299,7 +1299,7 @@ The final Milestone 1 flight model should use:
 - [x] Ship runtime state
 - [x] ShipController base
 - [x] PlayerShipController
-- [ ] EnemyShipController
+- [x] EnemyShipController
 - [ ] Ship spawning
 - [ ] Formula-derived flight physics
 - [ ] Equipment contributes to ship mass
