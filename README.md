@@ -234,13 +234,13 @@ Boost increases available propulsion rather than directly setting the ship to an
 
 ~~~
 Normal engine thrust
-        ↓
+		↓
 Normal acceleration
 
 Boost engine thrust
-        ↓
+		↓
 Higher acceleration
-        ↓
+		↓
 Higher practical speed
 ~~~
 
@@ -922,21 +922,21 @@ Controllers provide intent to the ship.
 
 ~~~
 PlayerShipController
-    ↓
+	↓
 Mouse / Keyboard Input
-    ↓
+	↓
 Flight Intent
-    ↓
+	↓
 Ship
 ~~~
 
 ~~~
 EnemyShipController
-    ↓
+	↓
 AI Decisions
-    ↓
+	↓
 Flight Intent
-    ↓
+	↓
 Ship
 ~~~
 
@@ -1002,14 +1002,14 @@ The same ShipData can therefore be reused by many different loadouts:
 
 ~~~
 Starter Fighter
-    ↓
+	↓
 Player Ship
-    └── Starter Laser
+	└── Starter Laser
 
 Starter Fighter
-    ↓
+	↓
 Enemy Ship
-    └── Plasma Cannon
+	└── Plasma Cannon
 ~~~
 
 Weapon mass remains part of the runtime ship's total mass because WeaponData inherits from EquipmentData.
