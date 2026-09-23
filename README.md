@@ -1086,7 +1086,8 @@ The current test controls include:
 - Each equipped weapon spawns a projectile at its physical muzzle. Player-controlled fire converges from each muzzle toward the current screen-space cursor ray at target depth, so both guns align with the HUD crosshair; AI fire continues to use the weapon muzzle's forward direction.
 - Projectile collision routes through the DamageSystem, which applies damage to the target ship's shields and hull.
 
-The test equips the player with two Starter Lasers and the prototype enemy with one Starter Laser so the combat loop can be exercised from both sides.
+The test equips the player with two Starter Lasers and the prototype enemy with one Starter Laser so the combat loop can be exercised from both sides. Both player weapons use the same weapon and projectile definition for now.
+
 ## Prototype Combat Reward
 
 Destroying the prototype enemy with the player ship awards **100 credits**. The current prototype stores this as a temporary combat-test value in `main.gd` and displays the running total plus a short reward notification in the HUD.
@@ -1216,20 +1217,30 @@ ShipData
 │   ├── dimensions
 │   └── hull_mass
 │
-├── Propulsion
-│   ├── main_engine_thrust
-│   ├── reverse_engine_thrust
-│   ├── maneuvering_thrust
-│   └── boost_thrust
+├── Flight
+│   ├── max_speed
+│   ├── acceleration
+│   ├── reverse_speed
+│   ├── reverse_acceleration
+│   ├── strafe_speed
+│   ├── strafe_acceleration
+│   ├── boost_speed
+│   ├── boost_acceleration
+│   ├── boost_energy_drain
+│   ├── flight_assist_acceleration
+│   ├── pitch_turn_rate
+│   ├── yaw_turn_rate
+│   ├── roll_turn_rate
+│   └── turn acceleration
 │
 ├── Combat
 │   ├── hull_capacity
 │   ├── shield_capacity
-├── energy_capacity
-├── shield_recharge_delay
-├── shield_recharge_rate
-├── energy_recharge_delay
-└── energy_recharge_rate
+│   ├── energy_capacity
+│   ├── shield_recharge_delay
+│   ├── shield_recharge_rate
+│   ├── energy_recharge_delay
+│   └── energy_recharge_rate
 │
 ├── Slots
 │   ├── weapon_slots
