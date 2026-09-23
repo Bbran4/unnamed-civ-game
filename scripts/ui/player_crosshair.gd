@@ -28,7 +28,6 @@ func _process(_delta: float) -> void:
 func _draw() -> void:
 	var centre: Vector2 = get_local_mouse_position()
 	var half_gap: float = centre_gap * 0.5
-	var half_size: float = crosshair_size * 0.5
 	var half_segment: float = segment_length
 
 	# Top
