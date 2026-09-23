@@ -1521,9 +1521,9 @@ The combat HUD should communicate spatial information in 2D while remaining driv
 
 ### HUD Architecture
 
-- [ ] Keep target bracket, direction arrow, damage indicator and lead indicator as separate HUD components
-- [ ] Keep targeting decisions in TargetingSystem / controllers rather than the HUD
-- [ ] Reuse runtime Ship and Weapon/Projectile data as the source of truth
+- [x] Keep target bracket, direction arrow, damage indicator and lead indicator as separate HUD components
+- [x] Keep targeting decisions in TargetingSystem / controllers rather than the HUD
+- [x] Reuse runtime Ship and Weapon/Projectile data as the source of truth
 
 **Definition of done:** During a dogfight, the player can immediately see which ship is locked, where that ship is when off-screen, which direction incoming damage came from and where to aim for a likely projectile interception.
 
