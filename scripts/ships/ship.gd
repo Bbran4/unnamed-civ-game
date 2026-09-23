@@ -10,10 +10,7 @@ extends CharacterBody3D
 ## The runtime Ship also owns the current weapon loadout. ShipData only defines
 ## how many weapon slots the hull supports.
 
-const CRUISE_ACCELERATION_TIME: float = 2.0
-const ANGULAR_RESPONSE_TIME: float = 0.75
 const THROTTLE_RESPONSE_TIME: float = 1.0
-const FLIGHT_ASSIST_MULTIPLIER: float = 4.0
 const WEAPON_SCENE: PackedScene = preload("res://scenes/weapons/weapon.tscn")
 
 @export_category("Ship Definition")
@@ -64,8 +61,6 @@ var roll_acceleration: float = 0.0
 var pitch_speed: float = 0.0
 var yaw_speed: float = 0.0
 var roll_speed: float = 0.0
-
-var moment_of_inertia: Vector3 = Vector3.ZERO
 
 func _ready() -> void:
 	destroyed_state = false
@@ -118,55 +113,34 @@ func recalculate_flight_characteristics() -> void:
 	_calculate_flight_characteristics()
 
 func _calculate_flight_characteristics() -> void:
-	var mass: float = get_total_mass_kg()
-
-	if mass <= 0.0:
+	if ship_data == null:
 		return
 
-	acceleration = ship_data.main_engine_thrust_n / mass
-	reverse_acceleration = ship_data.reverse_engine_thrust_n / mass
+	acceleration = maxf(ship_data.acceleration_mps2, 0.0)
+	reverse_acceleration = maxf(ship_data.reverse_acceleration_mps2, 0.0)
 	brake_acceleration = reverse_acceleration
-	strafe_acceleration = ship_data.maneuvering_thrust_n / mass
-	flight_assist_acceleration = strafe_acceleration * FLIGHT_ASSIST_MULTIPLIER
-	boost_acceleration = (ship_data.main_engine_thrust_n + ship_data.boost_thrust_n) / mass
+	strafe_acceleration = maxf(ship_data.strafe_acceleration_mps2, 0.0)
+	flight_assist_acceleration = maxf(ship_data.flight_assist_acceleration_mps2, 0.0)
+	boost_acceleration = maxf(ship_data.boost_acceleration_mps2, 0.0)
 
-	# Space itself does not impose a maximum speed. These are practical
-	# gameplay speed limits derived from how quickly the ship can accelerate.
-	max_speed = acceleration * CRUISE_ACCELERATION_TIME
-	reverse_speed = reverse_acceleration * CRUISE_ACCELERATION_TIME
-	strafe_speed = strafe_acceleration * CRUISE_ACCELERATION_TIME
-	boost_speed = boost_acceleration * CRUISE_ACCELERATION_TIME
+	max_speed = maxf(ship_data.max_speed_mps, 0.0)
+	reverse_speed = maxf(ship_data.reverse_speed_mps, 0.0)
+	strafe_speed = maxf(ship_data.strafe_speed_mps, 0.0)
+	boost_speed = maxf(ship_data.boost_speed_mps, max_speed)
 
-	moment_of_inertia = _calculate_box_inertia(mass, ship_data.dimensions)
+	pitch_speed = deg_to_rad(maxf(ship_data.pitch_turn_rate_deg_s, 0.0))
+	yaw_speed = deg_to_rad(maxf(ship_data.yaw_turn_rate_deg_s, 0.0))
+	roll_speed = deg_to_rad(maxf(ship_data.roll_turn_rate_deg_s, 0.0))
 
-	var pitch_torque: float = ship_data.maneuvering_thrust_n * maxf(ship_data.dimensions.z, 0.01)
-	var yaw_torque: float = ship_data.maneuvering_thrust_n * maxf(ship_data.dimensions.z, 0.01)
-	var roll_torque: float = ship_data.maneuvering_thrust_n * maxf(ship_data.dimensions.x, 0.01)
-
-	pitch_acceleration = pitch_torque / maxf(moment_of_inertia.x, 0.01)
-	yaw_acceleration = yaw_torque / maxf(moment_of_inertia.y, 0.01)
-	roll_acceleration = roll_torque / maxf(moment_of_inertia.z, 0.01)
-
-	pitch_speed = pitch_acceleration * ANGULAR_RESPONSE_TIME
-	yaw_speed = yaw_acceleration * ANGULAR_RESPONSE_TIME
-	roll_speed = roll_acceleration * ANGULAR_RESPONSE_TIME
-
-func _calculate_box_inertia(mass: float, dimensions: Vector3) -> Vector3:
-	var width: float = maxf(absf(dimensions.x), 0.01)
-	var height: float = maxf(absf(dimensions.y), 0.01)
-	var length: float = maxf(absf(dimensions.z), 0.01)
-
-	var inertia_x: float = (mass / 12.0) * (height * height + length * length)
-	var inertia_y: float = (mass / 12.0) * (width * width + length * length)
-	var inertia_z: float = (mass / 12.0) * (width * width + height * height)
-
-	return Vector3(inertia_x, inertia_y, inertia_z)
+	pitch_acceleration = deg_to_rad(maxf(ship_data.pitch_turn_acceleration_deg_s2, 0.0))
+	yaw_acceleration = deg_to_rad(maxf(ship_data.yaw_turn_acceleration_deg_s2, 0.0))
+	roll_acceleration = deg_to_rad(maxf(ship_data.roll_turn_acceleration_deg_s2, 0.0))
 
 func _apply_rotation(delta: float, intent: Dictionary) -> void:
 	var target_angular_velocity: Vector3 = Vector3(
-		float(intent.get("pitch", 0.0)) * pitch_speed,
-		float(intent.get("yaw", 0.0)) * yaw_speed,
-		float(intent.get("roll", 0.0)) * roll_speed
+		clampf(float(intent.get("pitch", 0.0)), -1.0, 1.0) * pitch_speed,
+		clampf(float(intent.get("yaw", 0.0)), -1.0, 1.0) * yaw_speed,
+		clampf(float(intent.get("roll", 0.0)), -1.0, 1.0) * roll_speed
 	)
 
 	angular_velocity.x = move_toward(
@@ -411,9 +385,6 @@ func get_equipment_mass_kg() -> float:
 			equipment_mass += maxf(equipment.mass_kg, 0.0)
 
 	return equipment_mass
-
-func get_moment_of_inertia_kg_m2() -> Vector3:
-	return moment_of_inertia
 
 signal damage_received(amount: float, source: Node, remaining_hull: float)
 signal shields_hit(amount: float, source: Node, remaining_shields: float)
