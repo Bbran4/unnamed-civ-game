@@ -1,0 +1,40 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/player/player_ship.gd" id="1_ship"]
+[ext_resource type="Script" path="res://scripts/player/flight_camera.gd" id="2_camera"]
+
+[sub_resource type="CapsuleMesh" id="Mesh_hull"]
+radius = 0.8
+height = 4.5
+
+[sub_resource type="CapsuleShape3D" id="Shape_hull"]
+radius = 0.8
+height = 4.5
+
+[sub_resource type="StandardMaterial3D" id="Material_hull"]
+albedo_color = Color(0.22, 0.28, 0.38, 1)
+metallic = 0.65
+roughness = 0.28
+
+[node name="PlayerShip" type="CharacterBody3D"]
+script = ExtResource("1_ship")
+
+[node name="Hull" type="MeshInstance3D" parent="."]
+rotation_degrees = Vector3(0, 0, 90)
+mesh = SubResource("Mesh_hull")
+material_override = SubResource("Material_hull")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("Shape_hull")
+
+[node name="EngineGlow" type="OmniLight3D" parent="."]
+position = Vector3(0, 0, 2.2)
+light_color = Color(0.25, 0.55, 1, 1)
+light_energy = 2.0
+omni_range = 5.0
+
+[node name="Camera3D" type="Camera3D" parent="."]
+position = Vector3(0, 3, 10)
+current = true
+script = ExtResource("2_camera")
+target_path = NodePath("../..")
