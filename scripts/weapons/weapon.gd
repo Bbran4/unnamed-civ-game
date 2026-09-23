@@ -71,7 +71,10 @@ func try_fire() -> bool:
 		return false
 
 	var energy_cost: float = maxf(weapon_data.energy_cost, 0.0)
-	ship.current_energy -= energy_cost
+
+	if not ship.consume_energy(energy_cost):
+		projectile.queue_free()
+		return false
 
 	var fire_rate: float = maxf(weapon_data.fire_rate, 0.0)
 
