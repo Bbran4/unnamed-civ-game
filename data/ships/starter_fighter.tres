@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="ShipData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/ships/ship_data.gd" id="1_ship_data"]
+
+[resource]
+script = ExtResource("1_ship_data")
+id = &"starter_fighter"
+display_name = "Starter Fighter"
+description = "A small, affordable fighter with balanced propulsion and light equipment capacity."
+dimensions = Vector3(10, 3, 6)
+hull_mass_kg = 12000.0
+main_engine_thrust_n = 300000.0
+reverse_engine_thrust_n = 150000.0
+maneuvering_thrust_n = 75000.0
+boost_thrust_n = 450000.0
+hull_capacity = 100.0
+shield_capacity = 50.0
+energy_capacity = 100.0
+weapon_slots = 1
+missile_slots = 0
+utility_slots = 1
+cargo_capacity = 10.0
+base_price = 10000
