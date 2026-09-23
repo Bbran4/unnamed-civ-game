@@ -1106,7 +1106,7 @@ The current test controls include:
 - **Left Mouse Button:** Fire equipped weapon.
 - **T:** Lock the nearest valid target or cycle to the next nearby target.
 - The weapon consumes ship energy and observes its configured fire rate.
-- A projectile is spawned at the weapon muzzle. Player-controlled fire uses the camera's exact screen-center direction so shots pass through the HUD crosshair; AI fire continues to use the weapon muzzle's forward direction.
+- A projectile is spawned at the weapon muzzle. Player-controlled fire converges from the physical muzzle toward a point on the camera's exact screen-center ray at target depth, so shots align with the HUD crosshair; AI fire continues to use the weapon muzzle's forward direction.
 - Projectile collision routes through the DamageSystem, which applies damage to the target ship's shields and hull.
 
 The test equips both the player and prototype enemy with the Starter Laser so the combat loop can be exercised from both sides.
