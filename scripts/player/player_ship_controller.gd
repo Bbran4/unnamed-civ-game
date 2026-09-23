@@ -31,7 +31,7 @@ func _ready() -> void:
 
 	if ship != null:
 		targeting_system = ship.get_node_or_null("TargetingSystem") as TargetingSystem
-		camera = ship.get_node_or_null(camera_path) as Camera3D
+		camera = get_node_or_null(camera_path) as Camera3D
 
 
 func _unhandled_input(event: InputEvent) -> void:
