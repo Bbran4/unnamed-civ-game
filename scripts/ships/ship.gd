@@ -175,7 +175,14 @@ func _apply_throttle(delta: float, intent: Dictionary) -> void:
 		1.0
 	)
 
-	boost_active = bool(intent.get("boost", false)) and throttle > 0.0
+	var boost_requested: bool = bool(intent.get("boost", false)) and throttle > 0.0
+	boost_active = false
+
+	if boost_requested:
+		var boost_drain: float = maxf(ship_data.boost_energy_drain_per_second, 0.0) * delta
+		var drained_energy: float = drain_energy(boost_drain)
+		boost_active = drained_energy > 0.0
+
 	brake_active = bool(intent.get("brake", false))
 
 func _apply_translation(delta: float, intent: Dictionary) -> void:
@@ -489,6 +496,24 @@ func consume_energy(amount: float) -> bool:
 	current_energy -= cost
 	energy_recharge_delay_remaining = maxf(ship_data.energy_recharge_delay, 0.0)
 	return true
+
+
+## Drain up to the requested amount of ship energy.
+##
+## Unlike consume_energy(), this method allows a continuous system such as
+## boost to partially drain the remaining energy before reaching zero.
+func drain_energy(amount: float) -> float:
+	if ship_data == null:
+		return 0.0
+
+	var drain: float = minf(maxf(amount, 0.0), current_energy)
+
+	if drain <= 0.0:
+		return 0.0
+
+	current_energy -= drain
+	energy_recharge_delay_remaining = maxf(ship_data.energy_recharge_delay, 0.0)
+	return drain
 
 
 func get_shield_recharge_delay_remaining() -> float:
