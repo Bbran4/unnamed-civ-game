@@ -149,7 +149,7 @@ The model is intentionally **physical-feeling**, not a full spacecraft simulator
 
 Each ship defines a small set of approximate design specifications:
 
-text
+~~~
 Hull dimensions
 Hull mass
 Main engine thrust
@@ -158,11 +158,11 @@ Maneuvering / RCS thrust
 Boost thrust
 Equipment
 Cargo
-text
+~~~
 
 From these values the runtime ship derives:
 
-text
+~~~
 Total mass
 Acceleration
 Reverse acceleration
@@ -174,11 +174,11 @@ Yaw behaviour
 Roll behaviour
 Stopping time
 Stopping distance
-text
+~~~
 
 The basic relationships are:
 
-text
+~~~
 Linear acceleration = thrust / mass
 
 Braking acceleration = reverse thrust / mass
@@ -188,7 +188,7 @@ Stopping time = current speed / braking acceleration
 Stopping distance = current speed² / (2 × braking acceleration)
 
 Angular acceleration = torque / moment of inertia
-text
+~~~
 
 For rotational behaviour, ship dimensions and total mass are used to **approximate the ship's moment of inertia**. The game does not simulate the physical position of individual components such as reactors, cargo or weapons.
 
@@ -198,7 +198,7 @@ This gives larger and heavier ships naturally different handling from small, agi
 
 Throttle and velocity are separate concepts.
 
-text
+~~~
 W
 ↓
 Increase forward throttle
@@ -222,7 +222,7 @@ S
 Apply reverse thrust
 ↓
 Ship can slow down, stop and eventually move backwards
-text
+~~~
 
 The brake therefore **kills momentum rather than simply setting throttle to zero**.
 
@@ -232,7 +232,7 @@ Turning and rolling do not automatically redirect existing velocity. A ship can 
 
 Boost increases available propulsion rather than directly setting the ship to an arbitrary speed.
 
-text
+~~~
 Normal engine thrust
         ↓
 Normal acceleration
@@ -242,13 +242,13 @@ Boost engine thrust
 Higher acceleration
         ↓
 Higher practical speed
-text
+~~~
 
 The exact top speed remains a gameplay constraint because a ship in empty space would otherwise continue accelerating for as long as thrust is applied.
 
 ## Ship States
 
-text
+~~~
 DOCKED
   ↓
 LAUNCHING
@@ -262,7 +262,7 @@ CRUISE
 DOCKING
   ↓
 DOCKED
-text
+~~~
 
 Other states can include:
 
@@ -864,7 +864,7 @@ The central rule is:
 
 > **The ship knows how to operate. The controller decides what it wants to do.**
 
-text
+~~~
 Game
 │
 ├── Universe
@@ -898,7 +898,7 @@ Game
 │   └── UI
 │
 └── Save
-text
+~~~
 
 The project should avoid a giant GameManager.gd that eventually knows about every system.
 
@@ -906,7 +906,7 @@ The project should avoid a giant GameManager.gd that eventually knows about ever
 
 A ship is a reusable gameplay object.
 
-text
+~~~
 Ship
 ├── ShipData
 ├── Runtime State
@@ -916,11 +916,11 @@ Ship
 ├── Weapon System
 ├── Targeting
 └── Equipment
-text
+~~~
 
 Controllers provide intent to the ship.
 
-text
+~~~
 PlayerShipController
     ↓
 Mouse / Keyboard Input
@@ -928,9 +928,9 @@ Mouse / Keyboard Input
 Flight Intent
     ↓
 Ship
-text
+~~~
 
-text
+~~~
 EnemyShipController
     ↓
 AI Decisions
@@ -938,7 +938,7 @@ AI Decisions
 Flight Intent
     ↓
 Ship
-text
+~~~
 
 The same ship implementation can therefore be controlled by the player, an enemy AI, an escort AI or another future controller without duplicating flight physics.
 
@@ -946,18 +946,18 @@ The same ship implementation can therefore be controlled by the player, an enemy
 
 Ships should not become a deep inheritance tree such as:
 
-text
+~~~
 Ship
 ├── Fighter
 │   └── PlayerFighter
 ├── EnemyFighter
 ├── Freighter
 └── Gunship
-text
+~~~
 
 Instead, ship identity comes from data and composition:
 
-text
+~~~
 Ship
 ├── ShipData
 ├── Controller
@@ -965,13 +965,13 @@ Ship
 ├── Shields
 ├── Equipment
 └── Cargo
-text
+~~~
 
 A player and an enemy can use the same ship definition while having different controllers.
 
 # Proposed Project Structure
 
-text
+~~~
 res://
 ├── assets/
 │   ├── models/
@@ -1042,7 +1042,7 @@ res://
 │   └── save/
 │
 └── shaders/
-text
+~~~
 
 # Data-Driven Design
 
@@ -1054,7 +1054,7 @@ Runtime state should remain separate from the static definitions.
 
 A ship resource describes the physical and gameplay design of a ship.
 
-text
+~~~
 ShipData
 ├── Identity
 │   ├── id
@@ -1086,7 +1086,7 @@ ShipData
 │
 └── Economy
     └── base_price
-text
+~~~
 
 A ship resource contains **design inputs**, not derived flight results.
 
@@ -1096,7 +1096,7 @@ For the first implementation, dimensions and mass are deliberately approximate. 
 
 ## WeaponData
 
-text
+~~~
 WeaponData
 ├── id
 ├── display_name
@@ -1108,13 +1108,13 @@ WeaponData
 ├── energy_cost
 ├── projectile_speed
 └── projectile_data
-text
+~~~
 
 Adding or removing a weapon changes the ship's total mass.
 
 ## ProjectileData
 
-text
+~~~
 ProjectileData
 ├── id
 ├── damage
@@ -1124,7 +1124,7 @@ ProjectileData
 ├── homing
 ├── turn_rate
 └── visual_scene
-text
+~~~
 
 The projectile definition is data. The runtime projectile handles movement, collision and applying the defined damage.
 
@@ -1132,7 +1132,7 @@ The projectile definition is data. The runtime projectile handles movement, coll
 
 Static data should not contain changing gameplay state.
 
-text
+~~~
 ShipData
     ↓
 Static definition
@@ -1146,7 +1146,7 @@ Current velocity
 Current throttle
 Current equipment
 Current cargo
-text
+~~~
 
 This lets one ShipData resource be reused by many ships while every ship maintains its own runtime state.
 
@@ -1182,7 +1182,7 @@ We do not.
 
 The first prototype should contain only the pieces required to prove the core loop:
 
-text
+~~~
 One small space environment
         ↓
 Reusable Ship
@@ -1200,7 +1200,7 @@ Projectile
 Damage
         ↓
 Dogfight
-text
+~~~
 
 The first combat prototype should use:
 
@@ -1599,9 +1599,13 @@ The repository previously contained an experimental civilization simulation.
 
 The project is now being redirected toward a **3D Freelancer-inspired space RPG built in Godot and GDScript**.
 
-Milestone 1 is now complete. The immediate objective is:
+The initial flight prototype is complete, but its architecture is now being refactored before combat.
 
-> **Build one excellent dogfight before building a universe.**
+The immediate objective is:
+
+> **Build one excellent ship before building an excellent dogfight.**
+
+The ship foundation must support player-controlled and AI-controlled ships using the same reusable flight model.
 
 ---
 
