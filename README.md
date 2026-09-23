@@ -1265,7 +1265,7 @@ Before combat, the prototype flight code will be refactored into the reusable sh
 The final Milestone 1 flight model should use:
 
 - [ ] ShipData Resource
-- [ ] Reusable Ship
+- [x] Reusable Ship
 - [ ] ShipController base
 - [ ] PlayerShipController
 - [ ] Formula-derived flight characteristics
