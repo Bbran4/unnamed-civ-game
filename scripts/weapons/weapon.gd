@@ -61,11 +61,11 @@ func can_fire() -> bool:
 ##
 ## A successful fire consumes ship energy, starts the weapon cooldown and
 ## launches one Projectile using the weapon's projectile definition.
-func try_fire() -> bool:
+func try_fire(fire_direction: Vector3 = Vector3.ZERO) -> bool:
 	if not can_fire():
 		return false
 
-	var projectile: Projectile = _spawn_projectile()
+	var projectile: Projectile = _spawn_projectile(fire_direction)
 
 	if projectile == null:
 		return false
@@ -105,7 +105,7 @@ func get_cooldown_fraction() -> float:
 	return clampf(cooldown_remaining / cooldown_duration, 0.0, 1.0)
 
 
-func _spawn_projectile() -> Projectile:
+func _spawn_projectile(fire_direction: Vector3 = Vector3.ZERO) -> Projectile:
 	var projectile: Projectile = PROJECTILE_SCENE.instantiate() as Projectile
 
 	if projectile == null:
@@ -126,7 +126,11 @@ func _spawn_projectile() -> Projectile:
 
 	projectile_parent.add_child(projectile)
 
-	var direction: Vector3 = -muzzle.global_transform.basis.z
+	var direction: Vector3 = fire_direction.normalized()
+
+	if direction.length_squared() <= 0.0001:
+		direction = -muzzle.global_transform.basis.z
+
 	projectile.launch(
 		muzzle.global_position,
 		direction,
