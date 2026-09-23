@@ -82,7 +82,7 @@ func _update_reward_display(delta: float) -> void:
 
 	if current_credits > displayed_credits:
 		var reward_amount: int = current_credits - displayed_credits
-		_reward_message_timer = 2.5
+		reward_message_timer = 2.5
 		$Reward.text = "REWARD  +%d CREDITS" % reward_amount
 
 	displayed_credits = current_credits
