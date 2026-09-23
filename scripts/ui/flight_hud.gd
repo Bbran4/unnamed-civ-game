@@ -42,7 +42,7 @@ func _ready() -> void:
 	if ship != null:
 		targeting_system = ship.get_node_or_null("TargetingSystem") as TargetingSystem
 
-	help_label.text = "W/S Throttle  |  Mouse Pitch/Yaw  |  Q/E Roll  |  A/D Strafe  |  Shift Boost  |  Space Brake  |  LMB Fire  |  T Target/Cycle  |  Esc Release Mouse"
+	help_label.text = "W/S Throttle  |  Mouse Aim  |  Q/E Roll  |  A/D Strafe  |  Shift Boost  |  Space Brake  |  LMB Fire  |  T Target/Cycle  |  Esc Release Mouse"
 	_reset_target_display()
 	_update_reward_display(0.0)
 
