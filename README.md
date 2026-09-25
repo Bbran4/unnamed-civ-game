@@ -1702,9 +1702,9 @@ The combat HUD should communicate spatial information in 2D while remaining driv
 - [ ] Atmospheric flight tuning
 - [ ] Planetary gravity
 - [ ] Surface approach
-- [ ] Procedural terrain prototype
-- [ ] Streamed terrain tiles
-- [ ] Terrain collision
+- [x] Procedural terrain prototype
+- [x] Streamed terrain tiles
+- [x] Terrain collision
 - [ ] Landing detection
 - [ ] Takeoff back into atmosphere
 - [ ] Seamless return to space
