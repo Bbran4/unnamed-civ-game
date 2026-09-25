@@ -1,0 +1,38 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/planet.gd" id="1_planet"]
+[ext_resource type="Shader" path="res://shaders/planet_surface.gdshader" id="2_surface"]
+[ext_resource type="Shader" path="res://shaders/planet_atmosphere.gdshader" id="3_atmosphere"]
+[ext_resource type="Shader" path="res://shaders/planet_clouds.gdshader" id="4_clouds"]
+[ext_resource type="Resource" path="res://data/planets/starter_planet.tres" id="5_data"]
+
+[sub_resource type="SphereMesh" id="Sphere_planet"]
+radius = 1.0
+height = 2.0
+radial_segments = 96
+rings = 64
+
+[sub_resource type="ShaderMaterial" id="Material_surface"]
+shader = ExtResource("2_surface")
+
+[sub_resource type="ShaderMaterial" id="Material_atmosphere"]
+shader = ExtResource("3_atmosphere")
+
+[sub_resource type="ShaderMaterial" id="Material_clouds"]
+shader = ExtResource("4_clouds")
+
+[node name="Planet" type="Node3D"]
+script = ExtResource("1_planet")
+planet_data = ExtResource("5_data")
+
+[node name="PlanetBody" type="MeshInstance3D" parent="."]
+mesh = SubResource("Sphere_planet")
+material_override = SubResource("Material_surface")
+
+[node name="Atmosphere" type="MeshInstance3D" parent="."]
+mesh = SubResource("Sphere_planet")
+material_override = SubResource("Material_atmosphere")
+
+[node name="Clouds" type="MeshInstance3D" parent="."]
+mesh = SubResource("Sphere_planet")
+material_override = SubResource("Material_clouds")
