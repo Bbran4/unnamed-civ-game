@@ -1700,12 +1700,13 @@ The combat HUD should communicate spatial information in 2D while remaining driv
 - [x] Atmospheric drag foundation
 - [ ] Smooth atmospheric visual transition
 - [ ] Atmospheric flight tuning
-- [ ] Planetary gravity
-- [ ] Surface approach
+- [x] Planetary gravity
+- [x] Surface approach
 - [x] Procedural terrain prototype
 - [x] Streamed terrain tiles
 - [x] Terrain collision
 - [x] Basic terrain LOD
+- [x] Planetary gravity foundation
 - [ ] Landing detection
 - [ ] Takeoff back into atmosphere
 - [ ] Seamless return to space
@@ -2001,7 +2002,7 @@ The immediate objective is:
 
 > **Build one excellent dogfight before building the rest of the universe.**
 
-The longer-term technical prototype will then prove the seamless planetary loop: **space flight → atmosphere → planetary dogfight → endless procedural wilderness → landing → third-person surface interaction → takeoff**.
+The longer-term technical prototype will then prove the seamless planetary loop: **space flight → planetary gravity → atmosphere → planetary dogfight → endless procedural wilderness → landing → third-person surface interaction → takeoff → return to space**.
 
 The reusable ship, combat, targeting and enemy AI foundations are now in place. The current focus is combat HUD feedback: making targeting, incoming fire and aiming information immediately readable without adding unnecessary simulation complexity.
 
