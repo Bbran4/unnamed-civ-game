@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bubcgdo5o4lp3"
-path="res://.godot/imported/asteron_surface_baked.png-6c54351c1db82da63b6e84ecc60475d0.ctex"
+uid="uid://dddehenctvrb8"
+path="res://.godot/imported/starter_planet_surface.png-413dd015729e05d88c264e76775de878.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/textures/planets/generated/asteron_surface_baked.png"
-dest_files=["res://.godot/imported/asteron_surface_baked.png-6c54351c1db82da63b6e84ecc60475d0.ctex"]
+source_file="res://assets/textures/planets/generated/starter_planet_surface.png"
+dest_files=["res://.godot/imported/starter_planet_surface.png-413dd015729e05d88c264e76775de878.ctex"]
 
 [params]
 

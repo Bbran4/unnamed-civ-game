@@ -114,9 +114,29 @@ static func bake_and_save(planet_data: PlanetData, output_path: String) -> Textu
 	var filesystem: EditorFileSystem = EditorInterface.get_resource_filesystem()
 
 	if filesystem != null:
+		# A brand-new file is not yet known to the editor's import database.
+		# update_file() registers it, then reimport_files() blocks until the
+		# .import file and imported texture actually exist on disk.
 		filesystem.update_file(output_path)
+		filesystem.reimport_files(PackedStringArray([output_path]))
 
-	return load(output_path) as Texture2D
+	# ResourceLoader.exists() checks silently. Calling load() on a path that
+	# is not actually importable yet prints Godot's own ERROR to the console
+	# before we can catch the failure, so only load() once import is confirmed.
+	if ResourceLoader.exists(output_path, "Texture2D"):
+		var imported_texture: Texture2D = load(output_path) as Texture2D
+
+		if imported_texture != null:
+			return imported_texture
+
+	# Import can still lag in rare cases (e.g. the very first bake in a fresh
+	# project). Fall back to an in-memory texture so the result is usable
+	# immediately; the file on disk will import normally on the next scan or
+	# a manual right-click Reimport in the FileSystem dock.
+	push_warning(
+		"PlanetTextureBaker: %s saved but not yet imported. Using an in-memory texture for now." % output_path
+	)
+	return ImageTexture.create_from_image(image)
 
 
 static func _sample_surface(
