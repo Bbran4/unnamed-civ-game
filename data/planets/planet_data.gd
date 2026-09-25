@@ -21,6 +21,11 @@ enum PlanetType {
 @export var display_name: String = "Unnamed Planet"
 @export var planet_type: PlanetType = PlanetType.TERRAN
 
+@export_category("Offline Generation")
+## Seed used only by editor-side texture baking tools.
+## Runtime planet rendering does not read this value.
+@export var generation_seed: int = 1
+
 @export_category("Surface")
 ## Equirectangular albedo texture authored for this planet.
 @export var surface_texture: Texture2D
