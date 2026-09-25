@@ -29,13 +29,9 @@ script = ExtResource("4_spawner")
 position = Vector3(0, 0, -600)
 
 [node name="StarLight" type="DirectionalLight3D" parent="."]
-rotation_degrees = Vector3(-70, -25, 0)
+rotation_degrees = Vector3(-35, -25, 0)
 light_energy = 1.2
-light_angular_distance = 0.5
 shadow_enabled = true
-directional_shadow_max_distance = 800.0
-directional_shadow_fade_start = 1.0
-directional_shadow_pancake_size = 10.0
 
 [node name="FlightHUD" parent="." instance=ExtResource("2_hud")]
 ship_path = NodePath("../PlayerShip")
