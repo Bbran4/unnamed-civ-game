@@ -120,10 +120,11 @@ void fragment() {
 
 	if (planet_type == 6) {
 		final_color = get_gas_giant_surface(sphere_position);
-	elif planet_type == 1 or planet_type == 2 or planet_type == 5 {
+	} else if (planet_type == 1 || planet_type == 2 || planet_type == 5) {
 		final_color = get_desert_surface(sphere_position);
-	else:
+	} else {
 		final_color = get_terran_surface(sphere_position);
+	}
 
 	ALBEDO = final_color;
 	ROUGHNESS = 0.82;
