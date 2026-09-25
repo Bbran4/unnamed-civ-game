@@ -2,7 +2,7 @@
 
 A **3D single-player space RPG inspired by Freelancer**, built in **Godot 4.x with GDScript**.
 
-The goal is to take the accessible space-flight, trading, combat and mission structure of classic space RPGs and combine it with newer ideas: **hybrid world structure, explorable station interiors, varied boarding, dynamic missions, reactive factions and a living local economy**.
+The goal is to take the accessible space-flight, trading, combat and mission structure of classic space RPGs and combine it with newer ideas: **third-person planetary gameplay, seamless space-to-atmosphere flight, explorable station and planetary locations, varied boarding, dynamic missions, reactive factions and a living local economy**.
 
 > **Fly anywhere. Take any job. Make your own reputation.**
 
@@ -36,10 +36,11 @@ The universe should feel like a place that already exists rather than a sequence
 2. **Freedom without aimlessness.** The player should always have several worthwhile things they can do.
 3. **Progression changes gameplay.** Ships and equipment should unlock different approaches, not only bigger numbers.
 4. **The universe reacts.** Factions, economies and encounters should respond to player actions.
-5. **The player can leave the cockpit.** Stations and selected planetary locations are playable spaces.
-6. **Boarding matters.** Disabled ships can become opportunities rather than automatic explosions.
-7. **Build vertically first.** One excellent playable system is more valuable than twenty unfinished systems.
-8. **Keep it finishable.** Simulation depth should serve gameplay, not become the project.
+5. **The player can leave the cockpit.** Stations and selected planetary locations are playable third-person spaces.
+6. **Planets are gameplay spaces.** The player can fly into atmospheres, fight enemy fighters in the air, land and explore focused surface locations.
+7. **Boarding matters.** Disabled ships can become opportunities rather than automatic explosions.
+8. **Build vertically first.** One excellent playable system is more valuable than twenty unfinished systems.
+9. **Keep it finishable.** Simulation depth should serve gameplay, not become the project.
 
 ---
 
@@ -118,6 +119,122 @@ This lets the project create detailed locations without requiring an enormous se
 
 ---
 
+# Planetary Gameplay
+
+Planets are not separate walking-only levels. They are **continuous gameplay spaces connected to space flight**.
+
+The player should be able to fly toward a planet, enter its atmosphere, fight enemy fighters and other aerial threats, descend to the surface, land, leave the ship and interact with people or objects without a traditional loading-screen transition.
+
+The game is **not** intended to reproduce every planetary activity found in No Man's Sky. Ground gameplay is focused and mission-driven. The player mainly visits the surface to find someone, investigate a location, recover an object, meet an NPC or pursue a mission objective. Mining is primarily a **space activity involving asteroid fields**, rather than underground planetary mining.
+
+## Planetary Flight Loop
+
+```text
+Open space
+    ↓
+Approach planet
+    ↓
+Enter atmosphere
+    ↓
+Atmospheric flight
+    ↓
+Planetary dogfight / mission
+    ↓
+Descend
+    ↓
+Land
+    ↓
+Leave ship
+    ↓
+Third-person surface gameplay
+    ↓
+Talk / investigate / recover / find
+    ↓
+Return to ship
+    ↓
+Take off
+    ↓
+Return to space
+```
+
+### Atmospheric Combat
+
+Planetary atmospheres support the same action-focused dogfighting philosophy as space combat, while adding terrain and gravity as part of the combat environment.
+
+Examples include:
+- Chasing enemy fighters into a planet's atmosphere.
+- Defending a city, settlement or military installation.
+- Attacking enemy aircraft during a surface war.
+- Escorting friendly ships through hostile airspace.
+- Pursuing a target from space down to the surface.
+- Fighting over mountains, valleys, settlements and other landmarks.
+
+A planetary battle should feel like part of the same mission rather than a separate game mode.
+
+### Ground Gameplay
+
+Ground environments are **focused third-person locations**, not an attempt to simulate every square kilometre of a planet.
+
+Possible locations include:
+- Spaceports
+- Settlements
+- Military bases
+- Research facilities
+- Industrial colonies
+- Frontier outposts
+- Crash sites
+- Battlefield locations
+
+Ground activities are primarily:
+- Talk to NPCs.
+- Find a person.
+- Find or recover an object.
+- Investigate a location.
+- Receive or complete a mission objective.
+- Reach restricted areas.
+- Return to the ship.
+
+### Planetary Scale and Streaming
+
+Planets should appear as large continuous worlds from the player's perspective, while the game streams only the terrain and gameplay content required around the player's current location.
+
+The intended technical model is:
+
+```text
+Planetary coordinates
+        ↓
+Floating-origin / local-coordinate system
+        ↓
+Terrain streaming
+        ↓
+Local Godot world
+        ↓
+Ship / character / NPC gameplay
+```
+
+The orbital planet representation can use authored/baked textures for efficient long-distance rendering. Near the player, streamed terrain provides the actual surface used for atmospheric flight and landing.
+
+The goal is **seamless presentation**, not an unnecessarily huge simulation. Planetary detail should increase as the player approaches the surface, while distant planetary visuals remain inexpensive.
+
+### Asteroid Mining
+
+Mining is primarily performed in space. Asteroid fields can contain mineable resources without requiring voxel caves, tunnels or underground planetary simulation.
+
+```text
+Asteroid field
+    ↓
+Locate resource-bearing asteroid
+    ↓
+Mine with ship equipment
+    ↓
+Collect resources
+    ↓
+Return to station / sell / use
+```
+
+This keeps mining aligned with the game's space-first focus.
+
+---
 # Space Flight
 
 Space flight is the foundation of the game.
@@ -386,7 +503,7 @@ At a station the player can:
 
 # Leaving the Ship
 
-One of the major additions beyond classic Freelancer-style gameplay is the ability to **leave the cockpit**.
+One of the major additions beyond classic Freelancer-style gameplay is the ability to **leave the cockpit** in third person.
 
 This is deliberately scoped.
 
@@ -406,7 +523,7 @@ Instead, selected locations are focused third-person environments.
 - Reach restricted areas.
 - Begin boarding sequences.
 
-Planetary locations follow the same principle.
+Planetary locations follow the same principle, while remaining connected to the seamless planetary flight layer described above.
 
 A planet may contain a detailed:
 
@@ -1738,7 +1855,9 @@ The newer direction adds:
 
 The goal is not to make a larger Freelancer.
 
-The goal is to make a **modern space RPG that starts from the same appealing foundation**.
+The game's overall presentation is **Freelancer-inspired space gameplay combined with a more third-person, GTA 3-style character experience when the player leaves the ship**.
+
+The goal is to make a **modern space RPG that connects space combat, atmospheric combat and focused planetary exploration into one continuous experience**.
 
 ---
 
@@ -1825,6 +1944,8 @@ The initial flight prototype is complete, but its architecture is now being refa
 The immediate objective is:
 
 > **Build one excellent dogfight before building the rest of the universe.**
+
+The longer-term technical prototype will then prove the seamless planetary loop: **space flight → atmosphere → planetary dogfight → landing → third-person surface interaction → takeoff**.
 
 The reusable ship, combat, targeting and enemy AI foundations are now in place. The current focus is combat HUD feedback: making targeting, incoming fire and aiming information immediately readable without adding unnecessary simulation complexity.
 
