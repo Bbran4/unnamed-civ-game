@@ -29,6 +29,10 @@ signal planetary_exclusion_zone_exited(ship: Ship)
 
 
 func _ready() -> void:
+	if exclusion_zone != null:
+		exclusion_zone.body_entered.connect(_on_exclusion_zone_body_entered)
+		exclusion_zone.body_exited.connect(_on_exclusion_zone_body_exited)
+
 	_apply_planet_data()
 
 
