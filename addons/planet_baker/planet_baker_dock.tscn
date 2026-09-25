@@ -8,7 +8,7 @@ theme_override_constants/separation = 8
 script = ExtResource("1_dock")
 
 [node name="Title" type="Label" parent="."]
-text = "Planet Surface Baker"
+text = "Planet Texture Baker"
 
 [node name="PlanetPicker" type="EditorResourcePicker" parent="."]
 base_type = "PlanetData"
@@ -19,7 +19,7 @@ text = "Select a PlanetData resource to bake."
 
 [node name="BakeButton" type="Button" parent="."]
 disabled = true
-text = "Bake Surface Texture"
+text = "Bake Surface + Clouds"
 
 [node name="StatusLabel" type="Label" parent="."]
 autowrap_mode = 3
