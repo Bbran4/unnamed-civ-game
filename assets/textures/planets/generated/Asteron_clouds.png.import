@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b32u0eo57y55u"
-path="res://.godot/imported/asteron_surface.svg-902ef504479d0e990a020914ea387cd6.ctex"
+uid="uid://d4enrucnbb4dy"
+path="res://.godot/imported/Asteron_clouds.png-ec644477e4c5cb7536ac2d65f8cffc2a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/textures/planets/asteron_surface.svg"
-dest_files=["res://.godot/imported/asteron_surface.svg-902ef504479d0e990a020914ea387cd6.ctex"]
+source_file="res://assets/textures/planets/generated/Asteron_clouds.png"
+dest_files=["res://.godot/imported/Asteron_clouds.png-ec644477e4c5cb7536ac2d65f8cffc2a.ctex"]
 
 [params]
 
@@ -38,6 +38,3 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
-svg/scale=1.0
-editor/scale_with_editor_scale=false
-editor/convert_colors_with_editor_theme=false

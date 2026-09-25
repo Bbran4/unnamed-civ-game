@@ -2,9 +2,9 @@
 
 [ext_resource type="Script" uid="uid://dhnd5vwta5h01" path="res://scripts/world/planet.gd" id="1_planet"]
 [ext_resource type="Shader" uid="uid://doryqbibtdbdw" path="res://shaders/planet_atmosphere.gdshader" id="2_atmosphere"]
-[ext_resource type="Texture2D" uid="uid://dddehenctvrb8" path="res://assets/textures/planets/generated/starter_planet_surface.png" id="3_4pkb0"]
+[ext_resource type="Texture2D" uid="uid://daxgmjhtj6t8a" path="res://assets/textures/planets/generated/Asteron_surface.png" id="3_4pkb0"]
 [ext_resource type="Shader" uid="uid://bljhjdk0jae3g" path="res://shaders/planet_clouds.gdshader" id="3_clouds"]
-[ext_resource type="Resource" uid="uid://caad3sxhnffhj" path="res://data/planets/starter_planet.tres" id="4_data"]
+[ext_resource type="Resource" uid="uid://caad3sxhnffhj" path="res://data/planets/asteron.tres" id="4_data"]
 
 [sub_resource type="Shader" id="Shader_4q6jh"]
 code = "shader_type spatial;
@@ -158,14 +158,14 @@ shader_parameter/ocean_color = Color(0.025, 0.11, 0.3, 1)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4q6jh"]
 albedo_texture = ExtResource("3_4pkb0")
 
-[sub_resource type="SphereShape3D" id="SphereShape_planet"]
-radius = 1.0
-
 [sub_resource type="SphereMesh" id="Sphere_planet"]
 radius = 1.0
 height = 2.0
 radial_segments = 96
 rings = 64
+
+[sub_resource type="SphereShape3D" id="SphereShape_planet"]
+radius = 1.0
 
 [sub_resource type="ShaderMaterial" id="Material_atmosphere"]
 render_priority = 0
@@ -188,9 +188,9 @@ material_override = SubResource("Material_surface")
 material_overlay = SubResource("StandardMaterial3D_4q6jh")
 mesh = SubResource("Sphere_planet")
 
-[node name="PlanetCollision" type="StaticBody3D" parent="." unique_id=2758194261]
+[node name="PlanetCollision" type="StaticBody3D" parent="." unique_id=-1536773035]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="PlanetCollision" unique_id=2758194262]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PlanetCollision" unique_id=-1536773034]
 shape = SubResource("SphereShape_planet")
 
 [node name="Atmosphere" type="MeshInstance3D" parent="." unique_id=471950228]
