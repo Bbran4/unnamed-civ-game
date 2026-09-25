@@ -2,7 +2,7 @@
 
 A **3D single-player space RPG inspired by Freelancer**, built in **Godot 4.x with GDScript**.
 
-The goal is to take the accessible space-flight, trading, combat and mission structure of classic space RPGs and combine it with newer ideas: **third-person planetary gameplay, seamless space-to-atmosphere flight, explorable station and planetary locations, varied boarding, dynamic missions, reactive factions and a living local economy**.
+The goal is to take the accessible space-flight, trading, combat and mission structure of classic space RPGs and combine it with newer ideas: **third-person planetary gameplay, seamless space-to-atmosphere flight, continuous procedural planetary wilderness, explorable station and planetary locations, varied boarding, dynamic missions, reactive factions and a living local economy**.
 
 > **Fly anywhere. Take any job. Make your own reputation.**
 
@@ -36,8 +36,8 @@ The universe should feel like a place that already exists rather than a sequence
 2. **Freedom without aimlessness.** The player should always have several worthwhile things they can do.
 3. **Progression changes gameplay.** Ships and equipment should unlock different approaches, not only bigger numbers.
 4. **The universe reacts.** Factions, economies and encounters should respond to player actions.
-5. **The player can leave the cockpit.** Stations and selected planetary locations are playable third-person spaces.
-6. **Planets are gameplay spaces.** The player can fly into atmospheres, fight enemy fighters in the air, land and explore focused surface locations.
+5. **The player can leave the cockpit.** Stations and planetary locations are playable third-person spaces.
+6. **Planets are continuous gameplay spaces.** The player can fly into atmospheres, fight in the air, travel across endless procedural wilderness, land, and explore focused surface locations.
 7. **Boarding matters.** Disabled ships can become opportunities rather than automatic explosions.
 8. **Build vertically first.** One excellent playable system is more valuable than twenty unfinished systems.
 9. **Keep it finishable.** Simulation depth should serve gameplay, not become the project.
@@ -100,13 +100,13 @@ The entire galaxy does not need to exist for this loop to be fun.
 
 The game uses a **hybrid world structure**.
 
-It is not intended to be one completely seamless galaxy. Instead, the universe combines large navigable space regions with detailed stations, planetary locations and interior spaces.
+It is not intended to be one completely seamless galaxy. Instead, the universe combines large navigable space regions with detailed stations, continuous planetary surfaces and interior spaces.
 
 ```text
 Galaxy
  ├── Sector
  │    ├── Star System
- │    │    ├── Planet
+ │    │    ├── Planet (continuous procedural surface)
  │    │    ├── Orbital Station
  │    │    ├── Asteroid Field
  │    │    ├── Trade Route
@@ -115,7 +115,7 @@ Galaxy
  └── ...
 ```
 
-This lets the project create detailed locations without requiring an enormous seamless world.
+This lets the project create detailed locations and continuous planetary wilderness without requiring an enormous seamless galaxy simulation.
 
 ---
 
@@ -123,9 +123,15 @@ This lets the project create detailed locations without requiring an enormous se
 
 Planets are not separate walking-only levels. They are **continuous gameplay spaces connected to space flight**.
 
-The player should be able to fly toward a planet, enter its atmosphere, fight enemy fighters and other aerial threats, descend to the surface, land, leave the ship and interact with people or objects without a traditional loading-screen transition.
+The player should be able to fly toward a planet, enter its atmosphere, fight enemy fighters and other aerial threats, travel across the surface, land, leave the ship and interact with people or objects without a traditional loading-screen transition.
 
-The game is **not** intended to reproduce every planetary activity found in No Man's Sky. Ground gameplay is focused and mission-driven, but the wilderness itself should be effectively **endless**. The player should be able to keep flying across a planet and encounter continuous procedural terrain rather than reaching an artificial world boundary. The player mainly visits specific areas to find someone, investigate a location, recover an object, meet an NPC or pursue a mission objective, while the surrounding wilderness remains available for exploration and atmospheric travel. Mining is primarily a **space activity involving asteroid fields**, rather than underground planetary mining.
+## Design Intent
+
+The game is **not** intended to reproduce every planetary activity found in No Man's Sky. Ground gameplay remains focused and mission-driven. The player mainly visits specific areas to find someone, investigate a location, recover an object, meet an NPC or pursue a mission objective.
+
+At the same time, the planetary wilderness itself should be effectively **endless**. The player should be able to keep flying across a planet and encounter continuous procedural terrain rather than reaching an artificial world boundary. Detailed settlements and mission locations sit on top of this procedural wilderness rather than replacing it.
+
+Mining is primarily a **space activity involving asteroid fields**, rather than underground planetary mining.
 
 ## Planetary Flight Loop
 
@@ -140,7 +146,7 @@ Atmospheric flight
     ↓
 Planetary dogfight / mission
     ↓
-Descend
+Descend / travel across wilderness
     ↓
 Land
     ↓
@@ -173,9 +179,12 @@ A planetary battle should feel like part of the same mission rather than a separ
 
 ### Ground Gameplay
 
-Ground environments are **focused third-person locations**, not an attempt to simulate every square kilometre of a planet.
+Ground environments combine two layers:
 
-Possible locations include:
+1. **Endless procedural wilderness** — continuous terrain the player can fly over and land on anywhere.
+2. **Focused third-person locations** — denser, authored or carefully placed areas where most mission and social gameplay happens.
+
+Possible focused locations include:
 - Spaceports
 - Settlements
 - Military bases
@@ -192,6 +201,7 @@ Ground activities are primarily:
 - Investigate a location.
 - Receive or complete a mission objective.
 - Reach restricted areas.
+- Explore the surrounding wilderness.
 - Return to the ship.
 
 ### Planetary Scale and Streaming
@@ -267,6 +277,7 @@ Return to station / sell / use
 This keeps mining aligned with the game's space-first focus.
 
 ---
+
 # Space Flight
 
 Space flight is the foundation of the game.
@@ -296,7 +307,7 @@ Flight characteristics are **direct gameplay values**, tuned per ship for respon
 
 Each ship defines:
 
-~~~
+```text
 Maximum speed
 Acceleration
 Reverse speed
@@ -310,7 +321,7 @@ Pitch turn rate
 Yaw turn rate
 Roll turn rate
 Pitch / yaw / roll turn acceleration
-~~~
+```
 
 This keeps flight tuning simple. A ship resource directly answers questions such as:
 
@@ -327,7 +338,7 @@ Mass and dimensions can still matter to cargo, equipment, collision, visuals and
 
 Throttle and velocity are separate concepts.
 
-~~~
+```text
 W
 ↓
 Increase forward throttle
@@ -351,7 +362,7 @@ S
 Apply reverse thrust
 ↓
 Ship can slow down, stop and eventually move backwards
-~~~
+```
 
 The brake therefore **kills momentum rather than simply setting throttle to zero**.
 
@@ -361,19 +372,19 @@ Turning and rolling do not automatically redirect existing velocity. A ship can 
 
 Boost uses its own direct gameplay values.
 
-~~~
+```text
 Boost active
 		↓
 Higher acceleration
 		↓
 Higher speed limit
-~~~
+```
 
 Each ship can therefore be tuned independently for normal speed, boost speed and how quickly it reaches those speeds.
 
 ## Ship States
 
-~~~
+```text
 DOCKED
   ↓
 LAUNCHING
@@ -387,7 +398,7 @@ CRUISE
 DOCKING
   ↓
 DOCKED
-~~~
+```
 
 Other states can include:
 
@@ -396,6 +407,8 @@ Other states can include:
 - Jumping
 - Salvaging
 - Destroyed
+
+---
 
 # Combat
 
@@ -537,11 +550,7 @@ At a station the player can:
 
 One of the major additions beyond classic Freelancer-style gameplay is the ability to **leave the cockpit** in third person.
 
-This is deliberately scoped.
-
-We are **not** trying to build a second giant open-world game.
-
-Instead, selected locations are focused third-person environments.
+On stations and at focused planetary locations the player can exit the ship and move on foot.
 
 ## On-foot activities
 
@@ -554,19 +563,20 @@ Instead, selected locations are focused third-person environments.
 - Explore station interiors.
 - Reach restricted areas.
 - Begin boarding sequences.
+- Explore the immediate wilderness around a landed ship.
 
-Planetary locations follow the same principle, while remaining connected to the seamless planetary flight layer described above.
+Planetary locations sit on top of the continuous procedural surface. The player can land almost anywhere, but denser gameplay (NPCs, shops, mission objectives) is concentrated in focused locations.
 
-A planet may contain a detailed:
+A planet may contain detailed:
 
-- Spaceport
-- Mining town
-- Research facility
-- Military base
-- Industrial colony
-- Frontier settlement
+- Spaceports
+- Mining towns
+- Research facilities
+- Military bases
+- Industrial colonies
+- Frontier settlements
 
-rather than an entire explorable planet.
+These exist within the larger continuous wilderness rather than being the only places the player can land.
 
 ---
 
@@ -886,7 +896,6 @@ The player can then spend hours doing something completely different.
 Progression comes from several connected systems.
 
 ## Wealth
-
 Earn money through:
 
 - Missions
@@ -898,7 +907,6 @@ Earn money through:
 - Exploration
 
 ## Ship
-
 Improve through:
 
 - New ships
@@ -910,11 +918,9 @@ Improve through:
 - Utility equipment
 
 ## Reputation
-
 Faction relationships unlock opportunities.
 
 ## Knowledge
-
 The player gradually learns about:
 
 - Systems
@@ -964,15 +970,12 @@ Save data should remain independent from scene nodes wherever practical.
 # Technical Direction
 
 ## Engine
-
 **Godot 4.x**
 
 ## Language
-
 **GDScript**
 
 ## Rendering
-
 **3D**
 
 The project should favour readable, stylised visuals over photorealism.
@@ -989,7 +992,7 @@ The central rule is:
 
 > **The ship knows how to operate. The controller decides what it wants to do.**
 
-~~~
+```text
 Game
 │
 ├── Universe
@@ -1023,7 +1026,7 @@ Game
 │   └── UI
 │
 └── Save
-~~~
+```
 
 The project should avoid a giant GameManager.gd that eventually knows about every system.
 
@@ -1031,7 +1034,7 @@ The project should avoid a giant GameManager.gd that eventually knows about ever
 
 A ship is a reusable gameplay object.
 
-~~~
+```text
 Ship
 ├── ShipData
 ├── Runtime State
@@ -1041,11 +1044,11 @@ Ship
 ├── Weapon System
 ├── Targeting
 └── Equipment
-~~~
+```
 
 Controllers provide intent to the ship.
 
-~~~
+```text
 PlayerShipController
 	↓
 Mouse / Keyboard Input
@@ -1053,9 +1056,9 @@ Mouse / Keyboard Input
 Flight Intent
 	↓
 Ship
-~~~
+```
 
-~~~
+```text
 EnemyShipController
 	↓
 AI Decisions
@@ -1063,202 +1066,15 @@ AI Decisions
 Flight Intent
 	↓
 Ship
-~~~
+```
 
 The same ship implementation can therefore be controlled by the player, an enemy AI, an escort AI or another future controller without duplicating flight physics.
 
-## Ship Loadouts and Weapon Mounts
-
-Ship equipment is divided between **static capacity** and **runtime loadout**.
-
-~~~
-ShipData
-├── weapon_slots
-├── missile_slots
-└── utility_slots
-~~~
-
-These values describe how many equipment slots the ship can support. They do not contain the weapons currently installed.
-
-The runtime Ship owns the actual loadout:
-
-~~~
-Ship
-├── ShipData
-├── Runtime State
-├── Weapon Loadout
-│   ├── Weapon Slot 0
-│   ├── Weapon Slot 1
-│   └── ...
-└── Equipment
-~~~
-
-A weapon is installed by taking a WeaponData definition, finding a compatible free slot, creating a runtime Weapon instance, attaching it to the ship's physical mount and assigning the owning Ship.
-
-~~~
-WeaponData
-	↓
-Equip
-	↓
-Available Weapon Slot
-	↓
-Weapon runtime instance
-	↓
-Physical Weapon Mount
-	↓
-Muzzle
-	↓
-Projectile
-~~~
-
-The physical ship scene contains named weapon mount points, for example:
-
-~~~
-Ship
-└── WeaponMounts
-	├── WeaponMount_0
-	├── WeaponMount_1
-	└── ...
-~~~
-
-`ShipData.weapon_slots` remains the gameplay capacity, while the scene's mount points determine where those weapons appear visually.
-
-The same ShipData can therefore be reused by many different loadouts:
-
-~~~
-Starter Fighter
-	↓
-Player Ship
-	└── Starter Laser
-
-Starter Fighter
-	↓
-Enemy Ship
-	└── Plasma Cannon
-~~~
-
-Weapon mass remains part of the runtime ship's total mass because WeaponData inherits from EquipmentData.
-
-## Combat HUD
-
-The prototype HUD reads directly from runtime ship and targeting state. It currently displays:
-
-- Player speed and throttle.
-- Player hull, shields and energy.
-- Current target name and distance.
-- Target hull and shields.
-- Equipped weapon and firing readiness.
-- The existing flight reticle and controls.
-
-The HUD does not own targeting behaviour. Target selection and locking remain gameplay/controller responsibilities. The player can now acquire and cycle targets directly during the combat test.
-
-## Target Locking
-
-Target locking is now player-driven.
-
-**T:** Lock the nearest valid ship. Press **T** again to cycle through nearby valid ships by distance.
-
-The player controller decides when the input occurs, while TargetingSystem provides the valid target list, current target state and cycling logic. Destroyed or out-of-range ships are ignored.
-
-~~~text
-T
-↓
-TargetingSystem
-↓
-Valid ships within 1500 m
-↓
-Nearest target
-↓
-T again
-↓
-Next target
-↓
-Wrap around
-~~~
-
-The current target remains selected until the player cycles to another target or the target becomes invalid. The HUD reflects the active target lock immediately.
-
-## Enemy AI State Machine
-
-The first enemy combat AI uses a small state machine rather than embedding every behaviour directly into the flight controller.
-
-~~~text
-IDLE
-  ↓ target found
-PURSUIT
-  ↓ within attack range
-ATTACK
-  ↓ shield damage / hull damage
-EVADE
-  ↓ timer expires
-ATTACK
-  ↓ critical hull
-FLEE
-  ↓ target lost
-IDLE
-~~~
-
-### States
-
-- **Idle:** No current target. The AI searches the shared ship group for a nearby valid target.
-- **Pursuit:** Turns toward the target and closes the distance. Boost is used for long approaches.
-- **Attack:** Maintains a preferred combat distance, uses lateral movement to orbit the target and requests weapon fire.
-- **Evade:** Temporarily breaks from the attack pattern after taking damage, with low shields making the defensive response more deliberate.
-- **Flee:** Attempts to escape when hull integrity becomes critical and remains in the escape state until the target is lost.
-
-The state machine owns combat decisions. EnemyShipController only converts the resulting decision into the shared Ship flight-intent format.
-
-The prototype enemy is equipped with the Starter Laser so these states can be exercised in a two-sided dogfight.
-
-## Combat Prototype Test
-
-The current prototype equips the player with two Starter Lasers at launch.
-
-~~~
-Left Mouse Button
-	↓
-Player fire intent
-	↓
-Equipped Weapon
-	↓
-Starter Laser Projectile
-	↓
-Projectile collision
-~~~
-
-The current test controls include:
-
-- **Left Mouse Button:** Fire equipped weapon.
-- **T:** Lock the nearest valid target or cycle to the next nearby target.
-- The equipped weapons consume ship energy and observe their configured fire rate.
-- Boost consumes ship energy continuously while active and stops when the tank is empty.
-- Each equipped weapon spawns a projectile at its physical muzzle. Player-controlled fire converges from each muzzle toward the current screen-space cursor ray at target depth, so both guns align with the HUD crosshair; AI fire continues to use the weapon muzzle's forward direction.
-- Projectile collision routes through the DamageSystem, which applies damage to the target ship's shields and hull.
-
-The test equips the player with two Starter Lasers and the prototype enemy with one Starter Laser so the combat loop can be exercised from both sides. Both player weapons use the same weapon and projectile definition for now.
-
-## Prototype Combat Reward
-
-Destroying the prototype enemy with the player ship awards **100 credits**. The current prototype stores this as a temporary combat-test value in `main.gd` and displays the running total plus a short reward notification in the HUD.
-
-This is intentionally not the final credits or progression system. Persistent credits, mission rewards, ship purchases and the wider economy belong to later milestones.
-
 ## Composition Over Ship Inheritance
 
-Ships should not become a deep inheritance tree such as:
+Ships should not become a deep inheritance tree. Instead, ship identity comes from data and composition:
 
-~~~
-Ship
-├── Fighter
-│   └── PlayerFighter
-├── EnemyFighter
-├── Freighter
-└── Gunship
-~~~
-
-Instead, ship identity comes from data and composition:
-
-~~~
+```text
 Ship
 ├── ShipData
 ├── Controller
@@ -1266,276 +1082,9 @@ Ship
 ├── Shields
 ├── Equipment
 └── Cargo
-~~~
+```
 
 A player and an enemy can use the same ship definition while having different controllers.
-
-# Proposed Project Structure
-
-~~~
-res://
-├── assets/
-│   ├── models/
-│   ├── textures/
-│   ├── materials/
-│   ├── audio/
-│   └── ui/
-│
-├── data/
-│   ├── ships/
-│   │   ├── ship_data.gd
-│   │   └── *.tres
-│   │
-│   ├── weapons/
-│   │   ├── weapon_data.gd
-│   │   └── *.tres
-│   │
-│   ├── projectiles/
-│   │   ├── projectile_data.gd
-│   │   └── *.tres
-│   │
-│   ├── equipment/
-│   ├── factions/
-│   ├── missions/
-│   ├── commodities/
-│   ├── systems/
-│   └── characters/
-│
-├── scenes/
-│   ├── ships/
-│   │   ├── ship.tscn
-│   │   ├── player_ship.tscn
-│   │   └── enemy_ship.tscn
-│   │
-│   ├── projectiles/
-│   │   └── projectile.tscn
-│   │
-│   ├── weapons/
-│   ├── player/
-│   ├── space/
-│   ├── stations/
-│   ├── planets/
-│   ├── characters/
-│   ├── missions/
-│   └── ui/
-│
-├── scripts/
-│   ├── core/
-│   ├── ships/
-│   │   ├── ship.gd
-│   │   ├── ship_controller.gd
-│   │   ├── player_ship_controller.gd
-│   │   └── enemy_ship_controller.gd
-│   │
-│   ├── combat/
-│   │   ├── weapon.gd
-│   │   ├── projectile.gd
-│   │   ├── damage_system.gd
-│   │   ├── shield_system.gd
-│   │   └── targeting_system.gd
-│   │
-│   ├── missions/
-│   ├── factions/
-│   ├── economy/
-│   ├── ai/
-│   ├── world/
-│   ├── boarding/
-│   └── save/
-│
-└── shaders/
-~~~
-
-# Data-Driven Design
-
-Static game content should use Godot **Resources**.
-
-Runtime state should remain separate from the static definitions.
-
-## ShipData
-
-A ship resource describes the physical and gameplay design of a ship.
-
-~~~
-ShipData
-├── Identity
-│   ├── id
-│   ├── display_name
-│   └── description
-│
-├── Physical
-│   ├── dimensions
-│   └── hull_mass
-│
-├── Flight
-│   ├── max_speed
-│   ├── acceleration
-│   ├── reverse_speed
-│   ├── reverse_acceleration
-│   ├── strafe_speed
-│   ├── strafe_acceleration
-│   ├── boost_speed
-│   ├── boost_acceleration
-│   ├── boost_energy_drain
-│   ├── flight_assist_acceleration
-│   ├── pitch_turn_rate
-│   ├── yaw_turn_rate
-│   ├── roll_turn_rate
-│   └── turn acceleration
-│
-├── Combat
-│   ├── hull_capacity
-│   ├── shield_capacity
-│   ├── energy_capacity
-│   ├── shield_recharge_delay
-│   ├── shield_recharge_rate
-│   ├── energy_recharge_delay
-│   └── energy_recharge_rate
-│
-├── Slots
-│   ├── weapon_slots
-│   ├── missile_slots
-│   └── utility_slots
-│
-├── Cargo
-│   └── cargo_capacity
-│
-└── Economy
-	└── base_price
-~~~
-
-A ship resource contains **design inputs**, not derived flight results.
-
-The runtime ship copies the direct flight values into runtime handling state. Mass and dimensions are not used to calculate turn rates or acceleration.
-
-For the first implementation, dimensions and mass are deliberately approximate. We do not simulate the exact physical position of every component inside the hull.
-
-## WeaponData
-
-~~~
-WeaponData
-├── id
-├── display_name
-├── weapon_type
-├── mass
-├── damage
-├── range
-├── fire_rate
-├── energy_cost
-├── projectile_speed
-└── projectile_data
-~~~
-
-Adding or removing installed equipment changes the ship's tracked equipment mass. It does not currently change flight handling. This leaves room to make mass matter later without coupling equipment to the control feel.
-
-## EquipmentData
-
-EquipmentData
-├── id
-├── display_name
-└── mass_kg
-
-
-Equipment is deliberately represented by a base resource so specialised equipment types, such as weapons, can inherit from it later.
-
-## ProjectileData
-
-~~~
-ProjectileData
-├── id
-├── damage
-├── speed
-├── lifetime
-├── radius
-├── homing
-├── turn_rate
-└── visual_scene
-~~~
-
-The projectile definition is data. The runtime projectile handles movement, collision and applying the defined damage.
-
-### Damage Delivery
-
-Projectile hits are routed through a central DamageSystem rather than directly modifying ship state.
-
-### Targeting
-
-Each runtime Ship owns a TargetingSystem that stores and validates its current target.
-
-~~~
-Ship
-└── TargetingSystem
-	├── Current Target
-	├── Target Validation
-	├── Nearest Target Acquisition
-	├── Target Distance
-	└── Target Direction
-~~~
-
-The TargetingSystem is responsible for target state and safe target queries. It does not decide when the player locks, cycles or changes targets. Those higher-level behaviours belong to the later target-lock and AI systems.
-
-Both player-facing systems and AI controllers can therefore use the same targeting API.
-
-
-~~~
-Projectile collision
-	↓
-DamageSystem
-	↓
-Target.receive_damage()
-	↓
-Current target hull
-~~~
-
-For the first combat prototype, incoming damage is absorbed by shields first. Any damage remaining after the shield capacity is depleted continues to the hull. Shield regeneration, directional shielding and shield-generator behaviour are deliberately deferred until they are needed.
-
-The HullSystem now owns the basic hull damage calculation. The runtime Ship stores the current hull value and delegates overflow damage to HullSystem, keeping future armour, subsystem damage and destruction rules outside the projectile and damage dispatcher.
-
-Shields now regenerate automatically after a configurable delay following combat damage. Energy regenerates after a shorter configurable delay following energy expenditure. Both delays and rates are defined by ShipData, while the runtime Ship owns the active timers and current resource values.
-
-When hull reaches zero, DestructionSystem transitions the runtime Ship into a destroyed state. The wreck remains in the scene, flight and weapon control stop, its collision is disabled and a `destroyed` signal is emitted for later systems such as rewards, salvage, boarding or visual effects.
-
-
-## Runtime State
-
-Static data should not contain changing gameplay state.
-
-~~~
-ShipData
-	↓
-Static definition
-
-Ship
-	↓
-Current hull
-Current shields
-Current energy
-Current velocity
-Current throttle
-Current equipment
-Current cargo
-~~~
-
-This lets one ShipData resource be reused by many ships while every ship maintains its own runtime state.
-
-# Architecture Rules
-
-- Keep gameplay data separate from presentation.
-- Use Resources for static definitions.
-- Keep runtime state separate from static data.
-- Separate controllers from reusable gameplay objects.
-- Prefer composition over giant inheritance trees.
-- Ship flight physics should not depend on whether the controller is human or AI.
-- Keep flight handling based on direct gameplay-tuned values.
-- Keep ship dimensions and mass available for systems that actually need them, without using them to determine basic handling.
-- Equipment should contribute to runtime ship mass where appropriate.
-- Keep ships modular.
-- Keep weapons and projectiles data-driven.
-- Use signals for loosely coupled events.
-- Avoid unnecessary global state.
-- Keep systems small enough to test.
-- Prefer deterministic simulation where practical.
-- Do not build a system until the gameplay needs it.
-- Simulation depth should serve gameplay rather than become the project.
 
 ---
 
@@ -1547,49 +1096,13 @@ The biggest trap is:
 
 We do not.
 
-The first prototype should contain only the pieces required to prove the core loop:
-
-~~~
-One small space environment
-		↓
-Reusable Ship
-		↓
-ShipData
-		↓
-Player Controller
-		↓
-Enemy Controller
-		↓
-Weapon
-		↓
-Projectile
-		↓
-Damage
-		↓
-Dogfight
-~~~
-
-The first combat prototype should use:
-
-- One player ship
-- One enemy ship
-- One ship definition
-- One weapon definition
-- One projectile definition
-- Basic targeting
-- Basic AI
-- Shields
-- Hull
-- Destruction
-
-If the resulting dogfight is not fun, adding forty star systems only gives us forty places where the game is not fun.
+The first prototype should contain only the pieces required to prove the core loop. If the resulting dogfight is not fun, adding forty star systems only gives us forty places where the game is not fun.
 
 ---
 
 # Development Roadmap
 
 ## Milestone 0 - Project Foundation
-
 **Status: RESET / NEW DIRECTION**
 
 - [x] Establish 3D project structure
@@ -1602,7 +1115,6 @@ If the resulting dogfight is not fun, adding forty star systems only gives us fo
 ---
 
 ## Milestone 1 - First Flight
-
 **Status: FOUNDATION COMPLETE**
 
 The reusable ship, controller and flight model foundation is in place.
@@ -1610,89 +1122,21 @@ The reusable ship, controller and flight model foundation is in place.
 ---
 
 ## Milestone 2 - Combat
-
 **Goal: Build the reusable combat foundation, then make one dogfight fun.**
 
-### Ship Foundation
-
-- [x] ShipData Resource
-- [x] Ship runtime scene
-- [x] Ship runtime state
-- [x] ShipController base
-- [x] PlayerShipController
-- [x] EnemyShipController
-- [x] Ship spawning
-- [x] Direct gameplay-tuned flight physics
-- [x] Equipment tracking remains separate from flight handling
-
-### Combat Foundation
-
-- [x] WeaponData Resource
-- [x] Weapon runtime
-- [x] ProjectileData Resource
-- [x] Projectile runtime
-- [x] Damage system
-- [x] Shields
-- [x] Hull
-- [x] Destruction
-- [x] Targeting system
-- [x] Combat HUD
-- [x] Shield and energy regeneration
-
-### Dogfight
-
-- [x] Enemy AI
-- [x] Target locking
-- [x] Basic weapon
-- [x] Projectile firing
-- [x] Player damage
-- [x] Enemy damage
-- [x] Enemy destruction
-- [x] Basic reward
-
-**Definition of done:** The player and an enemy use the same reusable ship system with different controllers, can target each other, fight, take damage and be destroyed.
+**Status: largely complete.**
 
 ---
 
-
 ## Milestone 3 - Combat HUD and Targeting Feedback
+**Goal: Make the dogfight readable at a glance.**
 
-**Goal: Make the dogfight readable at a glance and give the player clear visual feedback about targets, incoming fire and where to aim.**
-
-The combat HUD should communicate spatial information in 2D while remaining driven by the existing 3D gameplay state.
-
-### Target Feedback
-
-- [x] Target lock bracket that follows the current target on screen
-- [x] Off-screen target direction arrow
-- [x] Target bracket / off-screen indicator transition and screen-edge clamping
-
-### Incoming Damage Feedback
-
-- [x] Directional damage indicator around the player HUD
-- [x] Convert the world-space damage source into a temporary 2D red arc
-- [x] Support damage coming from any direction around the player
-
-### Aiming Feedback
-
-- [x] Graphical player crosshair
-- [x] Projectile lead / aim indicator circle
-- [x] Lead calculation based on target movement, relative motion and actual projectile speed
-- [x] Lead indicator updates when the target or equipped weapon changes
-
-### HUD Architecture
-
-- [x] Keep target bracket, direction arrow, damage indicator and lead indicator as separate HUD components
-- [x] Keep targeting decisions in TargetingSystem / controllers rather than the HUD
-- [x] Reuse runtime Ship and Weapon/Projectile data as the source of truth
-
-**Definition of done:** During a dogfight, the player can immediately see which ship is locked, where that ship is when off-screen, which direction incoming damage came from and where to aim for a likely projectile interception.
+**Status: largely complete.**
 
 ---
 
 ## Milestone 4 - Seamless Planetary Flight
-
-**Goal: Prove the continuous space → atmosphere → surface flight layer before building full terrain.**
+**Goal: Prove continuous space → atmosphere → surface flight, including endless procedural wilderness.**
 
 - [x] Planetary altitude calculation
 - [x] Space / atmosphere / surface flight environment state
@@ -1700,23 +1144,22 @@ The combat HUD should communicate spatial information in 2D while remaining driv
 - [x] Atmospheric drag foundation
 - [ ] Smooth atmospheric visual transition
 - [ ] Atmospheric flight tuning
-- [x] Planetary gravity
-- [x] Surface approach
-- [x] Procedural terrain prototype
-- [x] Streamed terrain tiles
-- [x] Terrain collision
-- [x] Basic terrain LOD
-- [x] Planetary gravity foundation
+- [ ] Planetary gravity
+- [ ] Surface approach
+- [ ] Procedural terrain prototype
+- [ ] Streamed terrain tiles
+- [ ] Terrain collision
 - [ ] Landing detection
 - [ ] Takeoff back into atmosphere
 - [ ] Seamless return to space
+- [ ] Deterministic planetary coordinates
+- [ ] Tile streaming with load/unload around the player
 
-**Definition of done:** The player can fly from open space into a planet's atmosphere, continue flying over a continuous procedural surface, land, take off and return to space without a scene-loading transition.
+**Definition of done:** The player can fly from open space into a planet's atmosphere, continue flying over continuous procedural terrain with no world edge, land, take off and return to space without a scene-loading transition.
 
 ---
 
 ## Milestone 5 - First Station
-
 **Goal: Give the player somewhere to go.**
 
 - [ ] Space station
@@ -1731,7 +1174,6 @@ The combat HUD should communicate spatial information in 2D while remaining driv
 ---
 
 ## Milestone 6 - Missions
-
 **Goal: Give the player a reason to fly.**
 
 - [ ] Mission Resources
@@ -1751,13 +1193,11 @@ The combat HUD should communicate spatial information in 2D while remaining driv
 
 - [ ] Commodities
 - [ ] Cargo hold
-- [ ] Buy cargo
-- [ ] Sell cargo
+- [ ] Buy / sell cargo
 - [ ] Station inventories
 - [ ] Basic price differences
 - [ ] Trading mission
 - [ ] Cargo UI
-- [ ] Cargo upgrades
 
 ---
 
@@ -1766,10 +1206,8 @@ The combat HUD should communicate spatial information in 2D while remaining driv
 - [ ] Credits
 - [ ] Ship upgrades
 - [ ] Equipment slots
-- [ ] Multiple weapons
-- [ ] Multiple ships
-- [ ] Ship purchasing
-- [ ] Ship switching
+- [ ] Multiple weapons / ships
+- [ ] Ship purchasing and switching
 
 ---
 
@@ -1779,10 +1217,8 @@ The combat HUD should communicate spatial information in 2D while remaining driv
 - [ ] Reputation
 - [ ] Friendly / neutral / hostile states
 - [ ] Faction mission pools
-- [ ] Reputation rewards
-- [ ] Reputation penalties
+- [ ] Reputation rewards / penalties
 - [ ] Restricted stations
-- [ ] Faction equipment
 
 ---
 
@@ -1795,52 +1231,36 @@ The combat HUD should communicate spatial information in 2D while remaining driv
 - [ ] Mission contacts
 - [ ] Shops
 - [ ] Terminals
-- [ ] First planetary location
+- [ ] First focused planetary location on top of procedural wilderness
 
-This remains focused. We are building playable locations, not an entire open-world planet.
+Focused locations provide dense gameplay. The surrounding wilderness remains continuous and landable.
 
 ---
 
 ## Milestone 11 - Boarding
 
 - [ ] Disable enemy ship
-- [ ] Boarding trigger
-- [ ] Boarding transition
+- [ ] Boarding trigger and transition
 - [ ] Ship interior
 - [ ] Enemy crew
-- [ ] Boarding objectives
-- [ ] Cargo theft
-- [ ] Sabotage
-- [ ] Ship capture
-- [ ] Boarding rewards
-- [ ] Boarding failure
+- [ ] Boarding objectives, theft, sabotage, capture
+- [ ] Rewards and failure states
 
 ---
 
 ## Milestone 12 - Dynamic Universe
 
-- [ ] NPC traffic
-- [ ] Traders
-- [ ] Police
-- [ ] Pirates
-- [ ] Mining ships
-- [ ] Convoys
-- [ ] Distress calls
-- [ ] Dynamic encounters
-- [ ] Local faction activity
-- [ ] World events
+- [ ] NPC traffic (traders, police, pirates, mining ships, convoys)
+- [ ] Distress calls and dynamic encounters
+- [ ] Local faction activity and world events
 
 ---
 
 ## Milestone 13 - Exploration
 
 - [ ] Scanner
-- [ ] Unknown contacts
-- [ ] Derelicts
-- [ ] Hidden locations
-- [ ] Resource fields
-- [ ] Anomalies
-- [ ] Secret stations
+- [ ] Unknown contacts, derelicts, hidden locations
+- [ ] Resource fields, anomalies, secret stations
 - [ ] Discovery rewards
 
 ---
@@ -1854,10 +1274,7 @@ Only after the core game works:
 - [ ] Fast travel
 - [ ] System maps
 - [ ] Inter-system economy
-- [ ] More factions
-- [ ] More stations
-- [ ] More ships
-- [ ] More mission types
+- [ ] More factions, stations, ships and mission types
 
 ---
 
@@ -1865,22 +1282,12 @@ Only after the core game works:
 
 These are deliberately **not** early-development requirements.
 
-Potential future systems:
-
-- Ship capture
-- Persistent ship interiors
+- Ship capture and persistent ship interiors
 - Crew with skills and personalities
-- Faction wars
-- Dynamic economy
-- Procedural contracts
-- Persistent important NPCs
-- Smuggling
-- Salvage fields
-- Detailed subsystem damage
-- Destructible cargo
-- Player-owned stations
-- Larger faction territories
-- More sophisticated AI
+- Faction wars and dynamic economy
+- Procedural contracts and persistent important NPCs
+- Smuggling, salvage fields, detailed subsystem damage
+- Player-owned stations and larger faction territories
 
 ---
 
@@ -1900,21 +1307,23 @@ The classic foundation remains:
 The newer direction adds:
 
 - **Hybrid world structure**
+- **Seamless space-to-atmosphere-to-surface flight**
+- **Continuous procedural planetary wilderness**
+- **Focused mission locations on top of that wilderness**
 - **Playable station and planetary interiors**
 - **Varied boarding**
 - **Dynamic mission generation**
 - **Reactive factions**
 - **Living local economies**
 - **NPCs with actual purposes**
-- **Player actions that can alter local situations**
 - **Modular ships and equipment**
 - **Scanner-driven exploration**
 
 The goal is not to make a larger Freelancer.
 
-The game's overall presentation is **Freelancer-inspired space gameplay combined with a more third-person, GTA 3-style character experience when the player leaves the ship**.
+The game's overall presentation is **Freelancer-inspired space gameplay combined with continuous planetary flight and a more third-person character experience when the player leaves the ship**.
 
-The goal is to make a **modern space RPG that connects space combat, atmospheric combat and focused planetary exploration into one continuous experience**.
+The goal is to make a **modern space RPG that connects space combat, atmospheric combat and continuous planetary exploration into one continuous experience**.
 
 ---
 
@@ -1963,23 +1372,15 @@ That loop is the heart of the project.
 # Development Rules
 
 ## Build vertically before horizontally
-
 One complete playable loop is more valuable than ten unfinished systems.
 
 ## Prototype with ugly assets
-
-Primitive meshes are fine.
-
-A grey spaceship that is fun to fly is more useful than a beautiful spaceship that cannot fly.
+Primitive meshes are fine. A grey spaceship that is fun to fly is more useful than a beautiful spaceship that cannot fly.
 
 ## Avoid premature complexity
-
-Start with the simplest implementation that proves the gameplay.
-
-Complexity should be earned.
+Start with the simplest implementation that proves the gameplay. Complexity should be earned.
 
 ## Every major system needs a reason
-
 Every feature should answer:
 
 > **What does this allow the player to do?**
@@ -1992,19 +1393,11 @@ If the only answer is "make the simulation more realistic", it probably does not
 
 **Early prototype / major redesign.**
 
-The repository previously contained an experimental civilization simulation.
+The reusable ship, combat, targeting and enemy AI foundations are now in place.
 
-The project is now being redirected toward a **3D Freelancer-inspired space RPG built in Godot and GDScript**.
+The longer-term technical prototype will prove the seamless planetary loop:
 
-The initial flight prototype is complete, but its architecture is now being refactored before combat.
-
-The immediate objective is:
-
-> **Build one excellent dogfight before building the rest of the universe.**
-
-The longer-term technical prototype will then prove the seamless planetary loop: **space flight → planetary gravity → atmosphere → planetary dogfight → endless procedural wilderness → landing → third-person surface interaction → takeoff → return to space**.
-
-The reusable ship, combat, targeting and enemy AI foundations are now in place. The current focus is combat HUD feedback: making targeting, incoming fire and aiming information immediately readable without adding unnecessary simulation complexity.
+**space flight → atmosphere → planetary dogfight → continuous procedural wilderness → landing → third-person surface interaction → takeoff**.
 
 ---
 
@@ -2017,7 +1410,7 @@ The long-term game should let the player:
 - Upgrade and customise ships.
 - Build relationships with factions.
 - Leave the cockpit.
-- Explore stations and planetary locations.
+- Explore stations and continuous planetary surfaces.
 - Board enemy vessels.
 - Discover hidden locations.
 - Follow the main story or ignore it.
