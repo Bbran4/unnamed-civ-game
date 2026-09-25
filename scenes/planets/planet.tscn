@@ -1,9 +1,24 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene format=3 uid="uid://c8dmucrlm5jnl"]
 
-[ext_resource type="Script" path="res://scripts/world/planet.gd" id="1_planet"]
-[ext_resource type="Shader" path="res://shaders/planet_atmosphere.gdshader" id="2_atmosphere"]
-[ext_resource type="Shader" path="res://shaders/planet_clouds.gdshader" id="3_clouds"]
-[ext_resource type="Resource" path="res://data/planets/starter_planet.tres" id="4_data"]
+[ext_resource type="Script" uid="uid://dhnd5vwta5h01" path="res://scripts/world/planet.gd" id="1_planet"]
+[ext_resource type="Shader" uid="uid://doryqbibtdbdw" path="res://shaders/planet_atmosphere.gdshader" id="2_atmosphere"]
+[ext_resource type="Shader" uid="uid://c0ft81ka11fuc" path="res://shaders/planet_surface.gdshader" id="2_surface"]
+[ext_resource type="Shader" uid="uid://bljhjdk0jae3g" path="res://shaders/planet_clouds.gdshader" id="3_clouds"]
+[ext_resource type="Resource" uid="uid://caad3sxhnffhj" path="res://data/planets/starter_planet.tres" id="4_data"]
+
+[sub_resource type="ShaderMaterial" id="Material_surface"]
+render_priority = 0
+shader = ExtResource("2_surface")
+shader_parameter/generation_seed = 1.0
+shader_parameter/planet_type = 0
+shader_parameter/continent_noise_scale = 1.35
+shader_parameter/continent_threshold = 0.55
+shader_parameter/noise_scale = 2.0
+shader_parameter/noise_strength = 0.75
+shader_parameter/surface_contrast = 1.25
+shader_parameter/surface_color_a = Color(0.08, 0.24, 0.12, 1)
+shader_parameter/surface_color_b = Color(0.55, 0.38, 0.18, 1)
+shader_parameter/ocean_color = Color(0.025, 0.11, 0.3, 1)
 
 [sub_resource type="SphereMesh" id="Sphere_planet"]
 radius = 1.0
@@ -11,27 +26,29 @@ height = 2.0
 radial_segments = 96
 rings = 64
 
-[sub_resource type="StandardMaterial3D" id="Material_surface"]
-roughness = 0.82
-
 [sub_resource type="ShaderMaterial" id="Material_atmosphere"]
+render_priority = 0
 shader = ExtResource("2_atmosphere")
+shader_parameter/atmosphere_color = Color(0.18, 0.5, 1, 1)
+shader_parameter/atmosphere_density = 0.75
 
 [sub_resource type="ShaderMaterial" id="Material_clouds"]
+render_priority = 0
 shader = ExtResource("3_clouds")
+shader_parameter/cloud_speed = 0.003
 
-[node name="Planet" type="Node3D"]
+[node name="Planet" type="Node3D" unique_id=2006933496]
 script = ExtResource("1_planet")
 planet_data = ExtResource("4_data")
 
-[node name="PlanetBody" type="MeshInstance3D" parent="."]
-mesh = SubResource("Sphere_planet")
+[node name="PlanetBody" type="MeshInstance3D" parent="." unique_id=1075659350]
 material_override = SubResource("Material_surface")
-
-[node name="Atmosphere" type="MeshInstance3D" parent="."]
 mesh = SubResource("Sphere_planet")
+
+[node name="Atmosphere" type="MeshInstance3D" parent="." unique_id=471950228]
 material_override = SubResource("Material_atmosphere")
-
-[node name="Clouds" type="MeshInstance3D" parent="."]
 mesh = SubResource("Sphere_planet")
+
+[node name="Clouds" type="MeshInstance3D" parent="." unique_id=1212568230]
 material_override = SubResource("Material_clouds")
+mesh = SubResource("Sphere_planet")
