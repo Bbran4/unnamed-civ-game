@@ -8,7 +8,7 @@
 script = ExtResource("1_planet_data")
 id = &"starter_planet"
 display_name = "Asteron"
-planet_type = 6
+planet_type = 1
 surface_texture = ExtResource("3_0jy4t")
 cloud_texture = ExtResource("3_clouds")
 radius_m = 150.0
