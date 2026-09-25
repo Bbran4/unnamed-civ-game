@@ -15,4 +15,3 @@ radius_m = 150.0
 atmosphere_color = Color(0.55, 0.78, 1, 1)
 atmosphere_density = 0.35
 atmosphere_height_m = 3.0
-atmospheric_drag_strength = 0.15
