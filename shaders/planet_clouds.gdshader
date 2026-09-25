@@ -4,6 +4,7 @@ render_mode cull_back, blend_mix;
 
 uniform sampler2D cloud_texture : source_color, filter_linear, repeat_enable;
 uniform float cloud_speed = 0.003;
+uniform float cloud_opacity = 1.0;
 
 void fragment() {
 	float longitude_offset = TIME * cloud_speed;
@@ -16,5 +17,6 @@ void fragment() {
 
 	ALBEDO = cloud_sample.rgb;
 	ROUGHNESS = 1.0;
-	ALPHA = cloud_sample.a;
+	SPECULAR = 0.0;
+	ALPHA = cloud_sample.a * cloud_opacity;
 }
