@@ -148,6 +148,14 @@ func _on_exclusion_zone_body_exited(body: Node3D) -> void:
 	planetary_exclusion_zone_exited.emit(ship)
 
 
+func get_planet_radius_m() -> float:
+	return _planet_radius_m
+
+
+func get_exclusion_radius_m() -> float:
+	return _exclusion_radius_m
+
+
 func _apply_exclusion_damage(delta: float) -> void:
 	if ships_in_exclusion_zone.is_empty():
 		return
