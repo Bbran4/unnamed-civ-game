@@ -12,6 +12,9 @@ extends Node3D
 @export_category("Planetary Boundary")
 ## Distance outside the visual planet where the warning/exclusion zone begins.
 @export var exclusion_zone_height_m: float = 8.0
+## Acceleration used to steer ships away from the planet while inside the
+## exclusion zone. The hard planet collision remains the final barrier.
+@export var exclusion_safety_acceleration_mps2: float = 80.0
 
 @onready var planet_body: MeshInstance3D = $PlanetBody
 @onready var planet_collision: StaticBody3D = $PlanetCollision
@@ -22,6 +25,7 @@ extends Node3D
 var surface_material: StandardMaterial3D
 var atmosphere_material: ShaderMaterial
 var cloud_material: ShaderMaterial
+var ships_in_exclusion_zone: Dictionary = {}
 
 signal planetary_exclusion_zone_entered(ship: Ship)
 signal planetary_exclusion_zone_exited(ship: Ship)
@@ -33,6 +37,10 @@ func _ready() -> void:
 		exclusion_zone.body_exited.connect(_on_exclusion_zone_body_exited)
 
 	_apply_planet_data()
+
+
+func _physics_process(delta: float) -> void:
+	_apply_exclusion_safety(delta)
 
 
 func _apply_planet_data() -> void:
@@ -102,6 +110,7 @@ func _on_exclusion_zone_body_entered(body: Node3D) -> void:
 	if ship == null:
 		return
 
+	ships_in_exclusion_zone[ship] = true
 	planetary_exclusion_zone_entered.emit(ship)
 
 
@@ -110,6 +119,49 @@ func _on_exclusion_zone_body_exited(body: Node3D) -> void:
 	if ship == null:
 		return
 
+	ships_in_exclusion_zone.erase(ship)
 	planetary_exclusion_zone_exited.emit(ship)
+
+
+func _apply_exclusion_safety(delta: float) -> void:
+	if ships_in_exclusion_zone.is_empty():
+		return
+
+	var safety_acceleration: float = maxf(
+		exclusion_safety_acceleration_mps2,
+		0.0
+	)
+
+	if safety_acceleration <= 0.0:
+		return
+
+	var active_ships: Array[Ship] = []
+
+	for body: Variant in ships_in_exclusion_zone.keys():
+		var ship: Ship = body as Ship
+
+		if ship == null or not is_instance_valid(ship):
+			continue
+
+		active_ships.append(ship)
+
+	for ship: Ship in active_ships:
+		var offset: Vector3 = ship.global_position - global_position
+		var offset_length_squared: float = offset.length_squared()
+
+		if offset_length_squared <= 0.0001:
+			continue
+
+		var outward_direction: Vector3 = offset.normalized()
+		var current_speed: float = ship.get_speed()
+
+		if current_speed <= 0.001:
+			continue
+
+		var desired_velocity: Vector3 = outward_direction * current_speed
+		ship.velocity = ship.velocity.move_toward(
+			desired_velocity,
+			safety_acceleration * delta
+		)
 
 
