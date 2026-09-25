@@ -32,16 +32,8 @@ func _apply_planet_data() -> void:
 	var cloud_radius: float = radius * 1.004
 
 	planet_body.scale = Vector3(radius, radius, radius)
-	atmosphere.scale = Vector3(
-		atmosphere_radius,
-		atmosphere_radius,
-		atmosphere_radius
-	)
-	clouds.scale = Vector3(
-		cloud_radius,
-		cloud_radius,
-		cloud_radius
-	)
+	atmosphere.scale = Vector3(atmosphere_radius, atmosphere_radius, atmosphere_radius)
+	clouds.scale = Vector3(cloud_radius, cloud_radius, cloud_radius)
 
 	surface_material = planet_body.material_override as StandardMaterial3D
 	atmosphere_material = atmosphere.material_override as ShaderMaterial
@@ -53,24 +45,12 @@ func _apply_planet_data() -> void:
 		surface_material.metallic = 0.0
 
 	if atmosphere_material != null:
-		atmosphere_material.set_shader_parameter(
-			"atmosphere_color",
-			planet_data.atmosphere_color
-		)
-		atmosphere_material.set_shader_parameter(
-			"atmosphere_density",
-			planet_data.atmosphere_density
-		)
+		atmosphere_material.set_shader_parameter("atmosphere_color", planet_data.atmosphere_color)
+		atmosphere_material.set_shader_parameter("atmosphere_density", planet_data.atmosphere_density)
 
 	atmosphere.visible = planet_data.has_atmosphere
 	clouds.visible = planet_data.has_clouds and planet_data.cloud_texture != null
 
 	if cloud_material != null:
-		cloud_material.set_shader_parameter(
-			"cloud_texture",
-			planet_data.cloud_texture
-		)
-		cloud_material.set_shader_parameter(
-			"cloud_speed",
-			planet_data.cloud_speed
-		)
+		cloud_material.set_shader_parameter("cloud_texture", planet_data.cloud_texture)
+		cloud_material.set_shader_parameter("cloud_speed", planet_data.cloud_speed)
