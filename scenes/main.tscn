@@ -11,7 +11,7 @@ background_mode = 1
 background_color = Color(0.002, 0.004, 0.015, 1)
 ambient_light_source = 3
 ambient_light_color = Color(0.08, 0.11, 0.2, 1)
-ambient_light_energy = 0.25
+ambient_light_energy = 0.08
 
 [sub_resource type="SphereMesh" id="Mesh_marker"]
 radius = 1.5
@@ -42,9 +42,10 @@ script = ExtResource("4_spawner")
 [node name="Asteron" parent="." instance=ExtResource("5_planet")]
 position = Vector3(0, 0, -600)
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+[node name="StarLight" type="DirectionalLight3D" parent="."]
 rotation_degrees = Vector3(-35, -25, 0)
-light_energy = 0.8
+light_energy = 1.2
+shadow_enabled = true
 
 [node name="FlightTestMarkers" type="Node3D" parent="."]
 
