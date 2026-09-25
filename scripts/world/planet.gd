@@ -163,5 +163,3 @@ func _apply_exclusion_safety(delta: float) -> void:
 			desired_velocity,
 			safety_acceleration * delta
 		)
-
-

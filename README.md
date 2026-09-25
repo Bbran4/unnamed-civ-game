@@ -348,7 +348,7 @@ Planet (Node3D)
 ├── StaticBody3D
 │   └── CollisionShape3D (SphereShape3D)
 └── Area3D (exclusion / warning zone)
-    └── CollisionShape3D (slightly larger sphere)
+	└── CollisionShape3D (slightly larger sphere)
 ```
 
 ---
