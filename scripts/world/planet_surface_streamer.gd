@@ -38,6 +38,16 @@ func _ready() -> void:
 		push_error("PlanetSurfaceStreamer must be a child of Planet.")
 		return
 
+	if planet.planet_data == null:
+		push_error("PlanetSurfaceStreamer requires PlanetData.")
+		return
+
+	stream_distance_m = maxf(planet.planet_data.terrain_stream_distance_m, 0.0)
+	view_distance_tiles = maxi(planet.planet_data.terrain_view_distance_tiles, 0)
+	resolution = maxi(planet.planet_data.terrain_tile_resolution, 2)
+	tile_angular_size_degrees = maxf(planet.planet_data.terrain_tile_angular_size_degrees, 0.1)
+	terrain_height_m = maxf(planet.planet_data.terrain_height_m, 0.0)
+
 	_initialize_noise()
 
 
