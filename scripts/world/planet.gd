@@ -5,16 +5,32 @@ extends Node3D
 ##
 ## PlanetData supplies authored textures and physical properties. The Planet
 ## scene owns the meshes and applies those properties to runtime materials.
+##
+## Planetary boundary behaviour (Freelancer-style):
+## - Hard StaticBody3D collision is the final barrier (ships cannot pass through).
+## - A thicker exclusion / atmosphere zone warns and pushes ships outward.
+## - Deep inside the zone, continuous damage is applied (like Freelancer atmospheres).
 
 @export_category("Planet Definition")
 @export var planet_data: PlanetData
 
 @export_category("Planetary Boundary")
-## Distance outside the visual planet where the warning/exclusion zone begins.
-@export var exclusion_zone_height_m: float = 8.0
-## Acceleration used to steer ships away from the planet while inside the
-## exclusion zone. The hard planet collision remains the final barrier.
-@export var exclusion_safety_acceleration_mps2: float = 80.0
+## Minimum height of the exclusion zone outside the visual surface (metres).
+## Actual height is the larger of this value and radius * exclusion_zone_radius_fraction.
+@export var exclusion_zone_height_m: float = 50.0
+## Fraction of planet radius added on top of the surface for the exclusion zone.
+@export_range(0.0, 1.0, 0.01) var exclusion_zone_radius_fraction: float = 0.35
+## Base acceleration used to steer ships away from the planet while inside the
+## exclusion zone. Scaled up the deeper the ship is.
+@export var exclusion_safety_acceleration_mps2: float = 250.0
+## Extra acceleration applied when the ship still has significant inward velocity.
+@export var exclusion_inward_kill_acceleration_mps2: float = 400.0
+## Hull damage per second applied when a ship is deep inside the exclusion zone
+## (Freelancer-style atmosphere damage). Set to 0 to disable.
+@export var atmosphere_damage_per_second: float = 35.0
+## Fraction of the exclusion shell (0 = outer edge, 1 = planet surface) at which
+## atmosphere damage begins.
+@export_range(0.0, 1.0, 0.05) var atmosphere_damage_depth_start: float = 0.45
 
 @onready var planet_body: MeshInstance3D = $PlanetBody
 @onready var planet_collision: StaticBody3D = $PlanetCollision
@@ -26,6 +42,8 @@ var surface_material: StandardMaterial3D
 var atmosphere_material: ShaderMaterial
 var cloud_material: ShaderMaterial
 var ships_in_exclusion_zone: Dictionary = {}
+var _planet_radius_m: float = 1.0
+var _exclusion_radius_m: float = 1.0
 
 signal planetary_exclusion_zone_entered(ship: Ship)
 signal planetary_exclusion_zone_exited(ship: Ship)
@@ -49,6 +67,7 @@ func _apply_planet_data() -> void:
 		return
 
 	var radius: float = maxf(planet_data.radius_m, 1.0)
+	_planet_radius_m = radius
 	var atmosphere_radius: float = radius + maxf(planet_data.atmosphere_height_m, 0.1)
 	var cloud_radius: float = radius * 1.004
 
@@ -91,15 +110,19 @@ func _apply_emission(material: StandardMaterial3D) -> void:
 	material.emission_texture = emission_texture
 	material.emission_energy_multiplier = 1.0
 
+
 func _configure_exclusion_zone(radius: float) -> void:
 	if exclusion_zone == null:
 		return
 
-	var exclusion_radius: float = radius + maxf(exclusion_zone_height_m, 0.0)
+	var height_from_fraction: float = radius * maxf(exclusion_zone_radius_fraction, 0.0)
+	var exclusion_height: float = maxf(exclusion_zone_height_m, height_from_fraction)
+	_exclusion_radius_m = radius + exclusion_height
+
 	exclusion_zone.scale = Vector3(
-		exclusion_radius,
-		exclusion_radius,
-		exclusion_radius
+		_exclusion_radius_m,
+		_exclusion_radius_m,
+		_exclusion_radius_m
 	)
 	exclusion_zone.monitoring = true
 	exclusion_zone.monitorable = false
@@ -127,14 +150,6 @@ func _apply_exclusion_safety(delta: float) -> void:
 	if ships_in_exclusion_zone.is_empty():
 		return
 
-	var safety_acceleration: float = maxf(
-		exclusion_safety_acceleration_mps2,
-		0.0
-	)
-
-	if safety_acceleration <= 0.0:
-		return
-
 	var active_ships: Array[Ship] = []
 
 	for body: Variant in ships_in_exclusion_zone.keys():
@@ -143,23 +158,69 @@ func _apply_exclusion_safety(delta: float) -> void:
 		if ship == null or not is_instance_valid(ship):
 			continue
 
+		if ship.destroyed_state:
+			continue
+
 		active_ships.append(ship)
 
 	for ship: Ship in active_ships:
 		var offset: Vector3 = ship.global_position - global_position
-		var offset_length_squared: float = offset.length_squared()
+		var distance: float = offset.length()
 
-		if offset_length_squared <= 0.0001:
+		if distance <= 0.0001:
 			continue
 
-		var outward_direction: Vector3 = offset.normalized()
-		var current_speed: float = ship.get_speed()
+		var outward_direction: Vector3 = offset / distance
 
-		if current_speed <= 0.001:
-			continue
-
-		var desired_velocity: Vector3 = outward_direction * current_speed
-		ship.velocity = ship.velocity.move_toward(
-			desired_velocity,
-			safety_acceleration * delta
+		# 0 at outer edge of exclusion zone, 1 at planet surface.
+		var shell_thickness: float = maxf(_exclusion_radius_m - _planet_radius_m, 0.001)
+		var depth_ratio: float = 1.0 - clampf(
+			(distance - _planet_radius_m) / shell_thickness,
+			0.0,
+			1.0
 		)
+
+		# Stronger push the deeper the ship is.
+		var depth_scale: float = lerpf(0.35, 1.0, depth_ratio)
+		var safety_acceleration: float = maxf(
+			exclusion_safety_acceleration_mps2,
+			0.0
+		) * depth_scale
+
+		# Kill inward radial velocity aggressively so full-speed runs reverse
+		# before hitting the hard collider.
+		var radial_speed: float = ship.velocity.dot(outward_direction)
+		if radial_speed < 0.0:
+			var inward_kill: float = maxf(
+				exclusion_inward_kill_acceleration_mps2,
+				0.0
+			) * depth_scale
+			ship.velocity -= outward_direction * radial_speed
+			# radial_speed is negative; removing it zeroes the inward component.
+			# Then push outward.
+			ship.velocity += outward_direction * (inward_kill * delta)
+
+		# Continuously steer remaining velocity outward.
+		var current_speed: float = ship.velocity.length()
+		if current_speed > 0.001 and safety_acceleration > 0.0:
+			var desired_velocity: Vector3 = outward_direction * current_speed
+			ship.velocity = ship.velocity.move_toward(
+				desired_velocity,
+				safety_acceleration * delta
+			)
+
+		# Freelancer-style atmosphere damage when deep in the zone.
+		if (
+			atmosphere_damage_per_second > 0.0
+			and depth_ratio >= atmosphere_damage_depth_start
+		):
+			var damage_t: float = inverse_lerp(
+				atmosphere_damage_depth_start,
+				1.0,
+				depth_ratio
+			)
+			var damage_this_frame: float = (
+				atmosphere_damage_per_second * lerpf(0.25, 1.0, damage_t) * delta
+			)
+			if damage_this_frame > 0.0:
+				ship.receive_damage(damage_this_frame, self)
