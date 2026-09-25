@@ -66,6 +66,8 @@ func _on_bake_button_pressed() -> void:
 	selected_planet_data.surface_texture = surface_texture
 	selected_planet_data.cloud_texture = cloud_texture
 
+	PlanetTextureBaker.bake_atmosphere(selected_planet_data)
+
 	var save_error: Error = ResourceSaver.save(selected_planet_data)
 
 	if save_error != OK:
