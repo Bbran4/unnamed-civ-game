@@ -43,6 +43,7 @@ func _apply_planet_data() -> void:
 		surface_material.albedo_texture = planet_data.surface_texture
 		surface_material.roughness = 0.82
 		surface_material.metallic = 0.0
+		_apply_emission(surface_material)
 
 	if atmosphere_material != null:
 		atmosphere_material.set_shader_parameter("atmosphere_color", planet_data.atmosphere_color)
@@ -54,3 +55,15 @@ func _apply_planet_data() -> void:
 	if cloud_material != null:
 		cloud_material.set_shader_parameter("cloud_texture", planet_data.cloud_texture)
 		cloud_material.set_shader_parameter("cloud_speed", planet_data.cloud_speed)
+
+
+func _apply_emission(material: StandardMaterial3D) -> void:
+	var emission_texture: Texture2D = planet_data.emission_texture
+
+	if emission_texture == null:
+		material.emission_enabled = false
+		return
+
+	material.emission_enabled = true
+	material.emission_texture = emission_texture
+	material.emission_energy_multiplier = 1.0

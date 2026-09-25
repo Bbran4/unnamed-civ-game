@@ -1,0 +1,26 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/planet_baker/planet_baker_dock.gd" id="1_dock"]
+
+[node name="PlanetBakerDock" type="VBoxContainer"]
+custom_minimum_size = Vector2(260, 0)
+theme_override_constants/separation = 8
+script = ExtResource("1_dock")
+
+[node name="Title" type="Label" parent="."]
+text = "Planet Surface Baker"
+
+[node name="PlanetPicker" type="EditorResourcePicker" parent="."]
+base_type = "PlanetData"
+
+[node name="OutputPathLabel" type="Label" parent="."]
+autowrap_mode = 3
+text = "Select a PlanetData resource to bake."
+
+[node name="BakeButton" type="Button" parent="."]
+disabled = true
+text = "Bake Surface Texture"
+
+[node name="StatusLabel" type="Label" parent="."]
+autowrap_mode = 3
+text = ""
