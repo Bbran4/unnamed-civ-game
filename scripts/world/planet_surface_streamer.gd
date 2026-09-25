@@ -7,8 +7,8 @@ extends Node3D
 ## keeps a small set of cube-sphere tiles around the player and replaces them
 ## as the player moves across the surface.
 ##
-## This is intentionally a fixed-resolution prototype. LOD and background
-## generation will be added after the streaming path is proven.
+## The prototype uses deterministic runtime generation and distance-based LOD.
+## Background generation and more advanced terrain stitching can be added later.
 
 @export_category("Streaming")
 @export var stream_distance_m: float = 140.0
