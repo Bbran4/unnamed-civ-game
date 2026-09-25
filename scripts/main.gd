@@ -17,6 +17,7 @@ var prototype_credits: int = 0
 @onready var player_ship: Ship = $PlayerShip
 @onready var ship_spawner: ShipSpawner = $ShipSpawner
 @onready var asteron: Planet = $Asteron
+@onready var asteron_surface_streamer: PlanetSurfaceStreamer = $Asteron/PlanetSurfaceStreamer
 
 
 func _physics_process(_delta: float) -> void:
@@ -25,6 +26,9 @@ func _physics_process(_delta: float) -> void:
 
 
 func _ready() -> void:
+	if asteron_surface_streamer != null:
+		asteron_surface_streamer.set_target_ship(player_ship)
+
 	var player_weapon_left: Weapon = player_ship.equip_weapon(STARTER_LASER_DATA, 0)
 	var player_weapon_right: Weapon = player_ship.equip_weapon(STARTER_LASER_DATA, 1)
 
