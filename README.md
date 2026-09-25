@@ -129,12 +129,19 @@ The player never flies into the atmosphere or lands the ship on the ground. The 
 
 ### Preventing ships from flying into planets
 
-1. Hard collision sphere matching the visual planet.
-2. Slightly larger Area3D that detects ships entering the planetary exclusion zone.
-3. The exclusion signal can later drive HUD warnings, scanner feedback and a gentle outward safety force.
-4. This applies to both the player and AI ships, so combat near planets cannot turn into accidental planet clipping.
+Planetary boundaries use a **Freelancer-style danger zone** rather than relying on the solid planet collider as the primary gameplay protection.
 
-This must work during normal flight and during combat.
+1. Hard collision sphere matching the visual planet.
+2. A larger Area3D detects ships entering the planetary exclusion / atmosphere zone.
+3. Entering the zone registers a boundary with the ship's flight model.
+4. The ship's flight model removes inward radial velocity and applies an outward safety response, allowing ships to skim around the planet without automatically rotating their nose.
+5. Deeper penetration increases the safety response.
+6. Deep inside the zone, the planet applies continuous hull damage.
+7. The hard planet collider remains the final physical barrier if the ship reaches the surface.
+
+The boundary response is applied by the runtime Ship during its own physics step. The Planet defines the boundary and damage rules, but does not directly overwrite ship velocity from its own physics process.
+
+This applies to both the player and AI ships, so combat near planets remains dangerous without making the planet behave like an invisible wall.
 
 ---
 
@@ -347,8 +354,22 @@ Planet (Node3D)
 ├── MeshInstance3D (atmosphere)
 ├── StaticBody3D
 │   └── CollisionShape3D (SphereShape3D)
-└── Area3D (exclusion / warning zone)
-	└── CollisionShape3D (slightly larger sphere)
+└── Area3D (exclusion / atmosphere zone)
+	└── CollisionShape3D (larger sphere)
+
+Planetary boundary flow:
+
+Planet enters exclusion zone
+        ↓
+Planet registers boundary with Ship
+        ↓
+Ship flight model removes inward radial velocity
+        ↓
+Outward safety response increases with depth
+        ↓
+Deep penetration applies continuous hull damage
+        ↓
+Solid planet collider remains the final barrier
 ```
 
 ---
@@ -362,8 +383,10 @@ Reusable ship, flight model, combat, targeting, HUD, basic AI.
 ## Milestone 4 - Solid Space & Planets (CURRENT FOCUS)
 - [ ] High-quality planet visuals (surface, clouds, atmosphere)
 - [x] Solid planet collision (ships cannot fly through)
-- [x] Planetary exclusion detection zone
-- [ ] Exclusion warning / safety response
+- [x] Planetary exclusion / atmosphere zone
+- [x] Ship-side exclusion safety response
+- [x] Continuous atmosphere damage inside the danger zone
+- [ ] Exclusion warning HUD / feedback
 - [ ] Multiple player spacecraft
 - [ ] Reliable docking at a simple orbital station
 - [ ] Station interior as a basic hub
