@@ -62,6 +62,8 @@ var pitch_speed: float = 0.0
 var yaw_speed: float = 0.0
 var roll_speed: float = 0.0
 
+var planetary_boundaries: Array[Planet] = []
+
 func _ready() -> void:
 	destroyed_state = false
 	_initialize_from_data()
@@ -78,6 +80,7 @@ func _physics_process(delta: float) -> void:
 	_apply_rotation(delta, intent)
 	_apply_throttle(delta, intent)
 	_apply_translation(delta, intent)
+	_apply_planetary_boundaries(delta)
 	_apply_weapons(intent)
 	move_and_slide()
 
@@ -235,6 +238,89 @@ func _apply_translation(delta: float, intent: Dictionary) -> void:
 			flight_assist_acceleration * delta
 		)
 		velocity = forward * current_forward_speed + corrected_lateral_velocity
+
+func register_planetary_boundary(planet: Planet) -> void:
+	if planet == null:
+		return
+
+	if planetary_boundaries.has(planet):
+		return
+
+	planetary_boundaries.append(planet)
+
+
+func unregister_planetary_boundary(planet: Planet) -> void:
+	if planet == null:
+		return
+
+	planetary_boundaries.erase(planet)
+
+
+func _apply_planetary_boundaries(delta: float) -> void:
+	if planetary_boundaries.is_empty():
+		return
+
+	var active_boundaries: Array[Planet] = []
+
+	for planet: Planet in planetary_boundaries:
+		if planet == null or not is_instance_valid(planet):
+			continue
+
+		active_boundaries.append(planet)
+
+	planetary_boundaries = active_boundaries
+
+	for planet: Planet in planetary_boundaries:
+		var offset: Vector3 = global_position - planet.global_position
+		var distance: float = offset.length()
+
+		if distance <= 0.0001:
+			continue
+
+		var planet_radius: float = planet.get_planet_radius_m()
+		var exclusion_radius: float = planet.get_exclusion_radius_m()
+		var shell_thickness: float = maxf(
+			exclusion_radius - planet_radius,
+			0.001
+		)
+
+		var depth_ratio: float = 1.0 - clampf(
+			(distance - planet_radius) / shell_thickness,
+			0.0,
+			1.0
+		)
+
+		var outward_direction: Vector3 = offset / distance
+		var depth_scale: float = lerpf(0.35, 1.0, depth_ratio)
+
+		var safety_acceleration: float = maxf(
+			planet.exclusion_safety_acceleration_mps2,
+			0.0
+		) * depth_scale
+
+		var inward_kill_acceleration: float = maxf(
+			planet.exclusion_inward_kill_acceleration_mps2,
+			0.0
+		) * depth_scale
+
+		var radial_speed: float = velocity.dot(outward_direction)
+
+		if radial_speed < 0.0:
+			var inward_velocity: Vector3 = outward_direction * radial_speed
+			velocity -= inward_velocity
+
+		if inward_kill_acceleration > 0.0:
+			velocity += outward_direction * inward_kill_acceleration * delta
+
+		var current_speed: float = velocity.length()
+
+		if current_speed > 0.001 and safety_acceleration > 0.0:
+			var desired_velocity: Vector3 = outward_direction * current_speed
+			velocity = velocity.move_toward(
+				desired_velocity,
+				safety_acceleration * delta
+			)
+
 
 func _update_resource_regeneration(delta: float) -> void:
 	if ship_data == null or destroyed_state:
@@ -526,6 +612,11 @@ func get_energy_recharge_delay_remaining() -> float:
 
 func get_speed() -> float:
 	return velocity.length()
+
+
+func get_planetary_boundary_count() -> int:
+	return planetary_boundaries.size()
+
 
 func get_throttle_percent() -> float:
 	return throttle
