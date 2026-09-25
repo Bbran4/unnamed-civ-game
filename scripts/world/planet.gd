@@ -10,8 +10,10 @@ extends Node3D
 @export var planet_data: PlanetData
 
 @onready var planet_body: MeshInstance3D = $PlanetBody
+@onready var planet_collision: StaticBody3D = $PlanetCollision
 @onready var atmosphere: MeshInstance3D = $Atmosphere
 @onready var clouds: MeshInstance3D = $Clouds
+@onready var collision_shape: CollisionShape3D = $PlanetCollision/CollisionShape3D
 
 var surface_material: StandardMaterial3D
 var atmosphere_material: ShaderMaterial
@@ -32,6 +34,7 @@ func _apply_planet_data() -> void:
 	var cloud_radius: float = radius * 1.004
 
 	planet_body.scale = Vector3(radius, radius, radius)
+	planet_collision.scale = Vector3(radius, radius, radius)
 	atmosphere.scale = Vector3(atmosphere_radius, atmosphere_radius, atmosphere_radius)
 	clouds.scale = Vector3(cloud_radius, cloud_radius, cloud_radius)
 
