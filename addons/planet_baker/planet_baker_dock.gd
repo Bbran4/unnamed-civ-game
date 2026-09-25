@@ -1,11 +1,12 @@
 @tool
 extends VBoxContainer
 
-## Planet Surface Baker dock behaviour.
+## Planet Texture Baker dock behaviour.
 ##
-## Lets the user pick a PlanetData resource, bake its surface texture with
-## PlanetTextureBaker, and assign the result back onto that resource. All UI
-## is defined in planet_baker_dock.tscn; this script only wires behaviour.
+## Lets the user pick a PlanetData resource, bake its surface and cloud
+## textures with PlanetTextureBaker, and assign the results back onto that
+## resource. All UI is defined in planet_baker_dock.tscn; this script only
+## wires behaviour.
 
 const OUTPUT_DIRECTORY: String = "res://assets/textures/planets/generated/"
 
@@ -39,25 +40,51 @@ func _on_bake_button_pressed() -> void:
 	if selected_planet_data == null:
 		return
 
-	status_label.text = "Baking..."
+	status_label.text = "Baking surface and clouds..."
 
-	var output_path: String = _get_output_path(selected_planet_data)
-	var texture: Texture2D = PlanetTextureBaker.bake_and_save(selected_planet_data, output_path)
+	var surface_output_path: String = _get_surface_output_path(selected_planet_data)
+	var cloud_output_path: String = _get_cloud_output_path(selected_planet_data)
 
-	if texture == null:
-		status_label.text = "Bake failed. Check the Output panel."
+	var surface_texture: Texture2D = PlanetTextureBaker.bake_and_save(
+		selected_planet_data,
+		surface_output_path
+	)
+
+	if surface_texture == null:
+		status_label.text = "Surface bake failed. Check the Output panel."
 		return
 
-	selected_planet_data.surface_texture = texture
+	var cloud_texture: Texture2D = PlanetTextureBaker.bake_clouds_and_save(
+		selected_planet_data,
+		cloud_output_path
+	)
+
+	if cloud_texture == null:
+		status_label.text = "Surface baked, but cloud bake failed. Check the Output panel."
+		return
+
+	selected_planet_data.surface_texture = surface_texture
+	selected_planet_data.cloud_texture = cloud_texture
 
 	var save_error: Error = ResourceSaver.save(selected_planet_data)
 
 	if save_error != OK:
-		status_label.text = "Baked the texture, but could not save the PlanetData resource."
+		status_label.text = "Baked the textures, but could not save the PlanetData resource."
 		return
 
-	status_label.text = "Baked and assigned:\n%s" % output_path
+	status_label.text = (
+		"Baked and assigned:\nSurface: %s\nClouds: %s"
+		% [surface_output_path, cloud_output_path]
+	)
+
+
+func _get_surface_output_path(planet_data: PlanetData) -> String:
+	return OUTPUT_DIRECTORY + String(planet_data.id) + "_surface.png"
+
+
+func _get_cloud_output_path(planet_data: PlanetData) -> String:
+	return OUTPUT_DIRECTORY + String(planet_data.id) + "_clouds.png"
 
 
 func _get_output_path(planet_data: PlanetData) -> String:
-	return OUTPUT_DIRECTORY + String(planet_data.id) + "_surface.png"
+	return _get_surface_output_path(planet_data)
