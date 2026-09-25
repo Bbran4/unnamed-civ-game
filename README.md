@@ -125,7 +125,7 @@ Planets are not separate walking-only levels. They are **continuous gameplay spa
 
 The player should be able to fly toward a planet, enter its atmosphere, fight enemy fighters and other aerial threats, descend to the surface, land, leave the ship and interact with people or objects without a traditional loading-screen transition.
 
-The game is **not** intended to reproduce every planetary activity found in No Man's Sky. Ground gameplay is focused and mission-driven. The player mainly visits the surface to find someone, investigate a location, recover an object, meet an NPC or pursue a mission objective. Mining is primarily a **space activity involving asteroid fields**, rather than underground planetary mining.
+The game is **not** intended to reproduce every planetary activity found in No Man's Sky. Ground gameplay is focused and mission-driven, but the wilderness itself should be effectively **endless**. The player should be able to keep flying across a planet and encounter continuous procedural terrain rather than reaching an artificial world boundary. The player mainly visits specific areas to find someone, investigate a location, recover an object, meet an NPC or pursue a mission objective, while the surrounding wilderness remains available for exploration and atmospheric travel. Mining is primarily a **space activity involving asteroid fields**, rather than underground planetary mining.
 
 ## Planetary Flight Loop
 
@@ -214,7 +214,39 @@ Ship / character / NPC gameplay
 
 The orbital planet representation can use authored/baked textures for efficient long-distance rendering. Near the player, streamed terrain provides the actual surface used for atmospheric flight and landing.
 
-The goal is **seamless presentation**, not an unnecessarily huge simulation. Planetary detail should increase as the player approaches the surface, while distant planetary visuals remain inexpensive.
+The goal is **seamless presentation with effectively endless planetary wilderness**, not an unnecessarily huge simulation. Planetary detail should increase as the player approaches the surface, while distant planetary visuals remain inexpensive. Terrain is generated and streamed around the player so there is no designed "edge of the map".
+
+### Endless Planetary Wilderness
+
+Planets should not be small handcrafted maps surrounded by invisible boundaries. Their wilderness is intended to continue procedurally across the planet.
+
+The technical target is:
+
+```text
+Planet
+    ↓
+Planetary coordinates
+    ↓
+Deterministic terrain generation
+    ↓
+Streaming terrain tiles
+    ↓
+Nearby high-detail terrain
+    ↓
+Distant low-detail terrain
+```
+
+Only terrain near the player needs to exist at full resolution. As the player travels, tiles behind them can be unloaded and new tiles generated ahead of them from the same planetary coordinates and seed.
+
+This allows a planet to feel effectively endless while keeping memory and rendering costs bounded.
+
+Important constraints:
+- No finite terrain map.
+- No visible terrain loading during normal travel.
+- Deterministic terrain so revisiting an area produces the same world.
+- Terrain must support atmospheric flight, landing and third-person surface gameplay.
+- Detailed settlements and mission locations are placed on top of the procedural wilderness rather than replacing it.
+- Underground voxel mining and fully simulated planetary interiors are not required.
 
 ### Asteroid Mining
 
@@ -1658,7 +1690,30 @@ The combat HUD should communicate spatial information in 2D while remaining driv
 
 ---
 
-## Milestone 4 - First Station
+## Milestone 4 - Seamless Planetary Flight
+
+**Goal: Prove the continuous space → atmosphere → surface flight layer before building full terrain.**
+
+- [x] Planetary altitude calculation
+- [x] Space / atmosphere / surface flight environment state
+- [x] Planet-aware atmospheric flight tracking
+- [x] Atmospheric drag foundation
+- [ ] Smooth atmospheric visual transition
+- [ ] Atmospheric flight tuning
+- [ ] Planetary gravity
+- [ ] Surface approach
+- [ ] Procedural terrain prototype
+- [ ] Streamed terrain tiles
+- [ ] Terrain collision
+- [ ] Landing detection
+- [ ] Takeoff back into atmosphere
+- [ ] Seamless return to space
+
+**Definition of done:** The player can fly from open space into a planet's atmosphere, continue flying over a continuous procedural surface, land, take off and return to space without a scene-loading transition.
+
+---
+
+## Milestone 5 - First Station
 
 **Goal: Give the player somewhere to go.**
 
@@ -1673,7 +1728,7 @@ The combat HUD should communicate spatial information in 2D while remaining driv
 
 ---
 
-## Milestone 5 - Missions
+## Milestone 6 - Missions
 
 **Goal: Give the player a reason to fly.**
 
@@ -1690,7 +1745,7 @@ The combat HUD should communicate spatial information in 2D while remaining driv
 
 ---
 
-## Milestone 6 - Economy
+## Milestone 7 - Economy
 
 - [ ] Commodities
 - [ ] Cargo hold
@@ -1704,7 +1759,7 @@ The combat HUD should communicate spatial information in 2D while remaining driv
 
 ---
 
-## Milestone 7 - Player Progression
+## Milestone 8 - Player Progression
 
 - [ ] Credits
 - [ ] Ship upgrades
@@ -1716,7 +1771,7 @@ The combat HUD should communicate spatial information in 2D while remaining driv
 
 ---
 
-## Milestone 8 - Factions and Reputation
+## Milestone 9 - Factions and Reputation
 
 - [ ] Faction data
 - [ ] Reputation
@@ -1729,7 +1784,7 @@ The combat HUD should communicate spatial information in 2D while remaining driv
 
 ---
 
-## Milestone 9 - Living Space
+## Milestone 10 - Living Space
 
 - [ ] Third-person character controller
 - [ ] Station interior
@@ -1744,7 +1799,7 @@ This remains focused. We are building playable locations, not an entire open-wor
 
 ---
 
-## Milestone 10 - Boarding
+## Milestone 11 - Boarding
 
 - [ ] Disable enemy ship
 - [ ] Boarding trigger
@@ -1760,7 +1815,7 @@ This remains focused. We are building playable locations, not an entire open-wor
 
 ---
 
-## Milestone 11 - Dynamic Universe
+## Milestone 12 - Dynamic Universe
 
 - [ ] NPC traffic
 - [ ] Traders
@@ -1775,7 +1830,7 @@ This remains focused. We are building playable locations, not an entire open-wor
 
 ---
 
-## Milestone 12 - Exploration
+## Milestone 13 - Exploration
 
 - [ ] Scanner
 - [ ] Unknown contacts
@@ -1788,7 +1843,7 @@ This remains focused. We are building playable locations, not an entire open-wor
 
 ---
 
-## Milestone 13 - Larger Universe
+## Milestone 14 - Larger Universe
 
 Only after the core game works:
 
@@ -1945,7 +2000,7 @@ The immediate objective is:
 
 > **Build one excellent dogfight before building the rest of the universe.**
 
-The longer-term technical prototype will then prove the seamless planetary loop: **space flight → atmosphere → planetary dogfight → landing → third-person surface interaction → takeoff**.
+The longer-term technical prototype will then prove the seamless planetary loop: **space flight → atmosphere → planetary dogfight → endless procedural wilderness → landing → third-person surface interaction → takeoff**.
 
 The reusable ship, combat, targeting and enemy AI foundations are now in place. The current focus is combat HUD feedback: making targeting, incoming fire and aiming information immediately readable without adding unnecessary simulation complexity.
 
