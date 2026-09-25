@@ -47,6 +47,8 @@ func _apply_planet_data() -> void:
 
 	if surface_material != null:
 		surface_material.set_shader_parameter("generation_seed", float(planet_data.generation_seed))
+		surface_material.set_shader_parameter("continent_noise_scale", planet_data.continent_noise_scale)
+		surface_material.set_shader_parameter("continent_threshold", planet_data.continent_threshold)
 		surface_material.set_shader_parameter("surface_color_a", planet_data.surface_color_a)
 		surface_material.set_shader_parameter("surface_color_b", planet_data.surface_color_b)
 		surface_material.set_shader_parameter("ocean_color", planet_data.ocean_color)
