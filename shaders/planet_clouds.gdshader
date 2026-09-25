@@ -1,6 +1,6 @@
 shader_type spatial;
 
-render_mode cull_back, blend_mix, depth_draw_alpha_prepass;
+render_mode cull_back, blend_mix;
 
 uniform float cloud_density = 0.35;
 uniform float cloud_speed = 0.003;
@@ -23,17 +23,17 @@ float noise_value(vec2 position) {
 }
 
 void fragment() {
-	vec2 uv: vec2 = UV;
+	vec2 uv = UV;
 	uv.x += TIME * cloud_speed;
 
-	float cloud_noise: float = noise_value(uv * 7.0);
-	float cloud_mask: float = smoothstep(
+	float cloud_noise = noise_value(uv * 7.0);
+	float cloud_mask = smoothstep(
 		1.0 - cloud_density,
 		1.0 - cloud_density + 0.12,
 		cloud_noise
 	);
 
-	float limb: float = clamp(dot(NORMAL, VIEW), 0.0, 1.0);
+	float limb = clamp(dot(NORMAL, VIEW), 0.0, 1.0);
 
 	ALBEDO = vec3(0.92, 0.95, 1.0);
 	ROUGHNESS = 1.0;
