@@ -124,6 +124,8 @@ func update_ship_environment(ship: Ship) -> void:
 	var environment: Ship.FlightEnvironment = get_flight_environment(ship.global_position)
 	var new_atmosphere_fraction: float = get_atmosphere_fraction(ship.global_position)
 
+	_update_atmosphere_visuals(altitude_m)
+
 	if ship.flight_environment == environment and ship.current_planet == self:
 		ship.atmosphere_fraction = new_atmosphere_fraction
 		return
@@ -134,3 +136,26 @@ func update_ship_environment(ship: Ship) -> void:
 		new_atmosphere_fraction
 	)
 	flight_environment_changed.emit(ship, environment, altitude_m)
+
+
+func _update_atmosphere_visuals(altitude_m: float) -> void:
+	if atmosphere_material == null or planet_data == null:
+		return
+
+	if not planet_data.has_atmosphere:
+		return
+
+	var atmosphere_height_m: float = maxf(planet_data.atmosphere_height_m, 0.1)
+	var approach_distance_m: float = atmosphere_height_m * 4.0
+	var approach_fraction: float = clampf(
+		1.0 - (altitude_m / approach_distance_m),
+		0.0,
+		1.0
+	)
+	var visual_density: float = lerpf(
+		planet_data.atmosphere_density * 0.35,
+		planet_data.atmosphere_density,
+		approach_fraction
+	)
+
+	atmosphere_material.set_shader_parameter("atmosphere_density", visual_density)
