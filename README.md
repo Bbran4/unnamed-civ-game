@@ -1705,6 +1705,7 @@ The combat HUD should communicate spatial information in 2D while remaining driv
 - [x] Procedural terrain prototype
 - [x] Streamed terrain tiles
 - [x] Terrain collision
+- [x] Basic terrain LOD
 - [ ] Landing detection
 - [ ] Takeoff back into atmosphere
 - [ ] Seamless return to space
