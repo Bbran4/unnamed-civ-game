@@ -1,9 +1,10 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/player/player_ship.tscn" id="1_ship"]
 [ext_resource type="PackedScene" path="res://scenes/ui/flight_hud.tscn" id="2_hud"]
 [ext_resource type="Script" path="res://scripts/main.gd" id="3_main"]
 [ext_resource type="Script" path="res://scripts/ships/ship_spawner.gd" id="4_spawner"]
+[ext_resource type="PackedScene" path="res://scenes/planets/planet.tscn" id="5_planet"]
 
 [sub_resource type="Environment" id="Environment_main"]
 background_mode = 1
@@ -37,6 +38,9 @@ position = Vector3(0, 0, 0)
 
 [node name="ShipSpawner" type="Node3D" parent="."]
 script = ExtResource("4_spawner")
+
+[node name="Asteron" parent="." instance=ExtResource("5_planet")]
+position = Vector3(0, 0, -600)
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 rotation_degrees = Vector3(-35, -25, 0)
