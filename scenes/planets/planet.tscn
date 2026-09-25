@@ -168,6 +168,9 @@ rings = 64
 [sub_resource type="SphereShape3D" id="SphereShape_planet"]
 radius = 1.0
 
+[sub_resource type="SphereShape3D" id="SphereShape_exclusion"]
+radius = 1.0
+
 [sub_resource type="ShaderMaterial" id="Material_atmosphere"]
 render_priority = 0
 shader = ExtResource("2_atmosphere")
@@ -194,6 +197,15 @@ mesh = SubResource("Sphere_planet")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="PlanetCollision" unique_id=-1536773034]
 shape = SubResource("SphereShape_planet")
 
+[node name="ExclusionZone" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 1
+monitoring = true
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ExclusionZone"]
+shape = SubResource("SphereShape_exclusion")
+
 [node name="Atmosphere" type="MeshInstance3D" parent="." unique_id=471950228]
 material_override = SubResource("Material_atmosphere")
 mesh = SubResource("Sphere_planet")
@@ -202,5 +214,3 @@ mesh = SubResource("Sphere_planet")
 material_override = SubResource("Material_clouds")
 mesh = SubResource("Sphere_planet")
 
-[node name="PlanetSurfaceStreamer" type="Node3D" parent="."]
-script = ExtResource("5_streamer")
