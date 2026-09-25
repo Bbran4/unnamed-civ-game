@@ -39,6 +39,10 @@ enum PlanetType {
 @export var terrain_stream_distance_m: float = 140.0
 ## Number of terrain tiles streamed outward from the player tile.
 @export var terrain_view_distance_tiles: int = 2
+## Tile distance at which medium terrain resolution begins.
+@export var terrain_medium_lod_distance_tiles: int = 1
+## Tile distance at which the lowest terrain resolution is used.
+@export var terrain_far_lod_distance_tiles: int = 2
 
 @export_category("Surface")
 ## Equirectangular albedo texture authored for this planet.
