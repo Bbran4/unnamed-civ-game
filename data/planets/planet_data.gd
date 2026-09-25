@@ -26,6 +26,20 @@ enum PlanetType {
 ## Runtime planet rendering does not read this value.
 @export var generation_seed: int = 1
 
+@export_category("Runtime Terrain")
+## Seed used by deterministic runtime planetary terrain generation.
+@export var terrain_seed: int = 1
+## Angular width of one cube-sphere terrain tile.
+@export var terrain_tile_angular_size_degrees: float = 12.0
+## Number of vertices along one terrain tile edge.
+@export var terrain_tile_resolution: int = 17
+## Maximum terrain elevation above the planet radius.
+@export var terrain_height_m: float = 8.0
+## Distance from the player at which terrain tiles are kept loaded.
+@export var terrain_stream_distance_m: float = 140.0
+## Number of terrain tiles streamed outward from the player tile.
+@export var terrain_view_distance_tiles: int = 2
+
 @export_category("Surface")
 ## Equirectangular albedo texture authored for this planet.
 @export var surface_texture: Texture2D
