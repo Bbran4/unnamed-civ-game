@@ -1,6 +1,7 @@
 shader_type spatial;
 
 uniform float generation_seed = 1.0;
+uniform int planet_type = 0;
 uniform float continent_noise_scale = 1.35;
 uniform float continent_threshold = 0.55;
 uniform float noise_scale = 2.0;
@@ -63,17 +64,66 @@ float continental_noise(vec3 position) {
 	return fractal_noise(warped_position);
 }
 
-void fragment() {
-	vec3 sphere_position = normalize(NORMAL);
+vec3 get_terran_surface(vec3 sphere_position) {
 	float continent_value = continental_noise(sphere_position);
 	float land_edge = 0.035;
-	float land_mask = smoothstep(continent_threshold - land_edge, continent_threshold + land_edge, continent_value);
+	float land_mask = smoothstep(
+		continent_threshold - land_edge,
+		continent_threshold + land_edge,
+		continent_value
+	);
 
 	float terrain_value = fractal_noise(sphere_position * noise_scale);
 	terrain_value = clamp(pow(terrain_value, surface_contrast), 0.0, 1.0);
 
-	vec3 land_color = mix(surface_color_a.rgb, surface_color_b.rgb, terrain_value * noise_strength);
-	vec3 final_color = mix(ocean_color.rgb, land_color, land_mask);
+	vec3 land_color = mix(
+		surface_color_a.rgb,
+		surface_color_b.rgb,
+		terrain_value * noise_strength
+	);
+
+	return mix(ocean_color.rgb, land_color, land_mask);
+}
+
+vec3 get_desert_surface(vec3 sphere_position) {
+	float terrain_value = fractal_noise(sphere_position * noise_scale);
+	terrain_value = clamp(pow(terrain_value, surface_contrast), 0.0, 1.0);
+
+	return mix(
+		surface_color_a.rgb,
+		surface_color_b.rgb,
+		terrain_value * noise_strength
+	);
+}
+
+vec3 get_gas_giant_surface(vec3 sphere_position) {
+	float latitude = abs(sphere_position.y);
+	float band_noise = fractal_noise(vec3(
+		sphere_position.x * 2.0,
+		sphere_position.y * 0.35,
+		sphere_position.z * 2.0
+	));
+
+	float band_position = latitude * 12.0 + band_noise * 1.4;
+	float band_value = fract(band_position);
+
+	return mix(
+		surface_color_a.rgb,
+		surface_color_b.rgb,
+		smoothstep(0.25, 0.75, band_value)
+	);
+}
+
+void fragment() {
+	vec3 sphere_position = normalize(NORMAL);
+	vec3 final_color = surface_color_a.rgb;
+
+	if (planet_type == 6) {
+		final_color = get_gas_giant_surface(sphere_position);
+	elif planet_type == 1 or planet_type == 2 or planet_type == 5 {
+		final_color = get_desert_surface(sphere_position);
+	else:
+		final_color = get_terran_surface(sphere_position);
 
 	ALBEDO = final_color;
 	ROUGHNESS = 0.82;
