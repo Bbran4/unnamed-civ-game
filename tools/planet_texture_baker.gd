@@ -2,12 +2,12 @@
 class_name PlanetTextureBaker
 extends RefCounted
 
-## Offline planet surface texture baker.
+## Offline planet texture baker.
 ##
-## Generates an equirectangular albedo texture for a PlanetData resource on
-## the CPU, once. The result is an ordinary PNG asset, so runtime planet
-## rendering never runs procedural noise per pixel and the texture can be
-## hand-touched afterward.
+## Generates equirectangular surface and cloud textures for a PlanetData
+## resource on the CPU, once. The results are ordinary PNG assets, so runtime
+## planet rendering never runs procedural noise per pixel and the textures
+## can be hand-touched afterward.
 ##
 ## This class contains no editor UI. The Planet Baker dock
 ## (addons/planet_baker/) calls into it; other editor tools can too.
@@ -20,6 +20,14 @@ const CONTINENT_THRESHOLD: float = 0.51
 const LAND_EDGE: float = 0.035
 const TERRAIN_FREQUENCY: float = 3.0
 const BAND_FREQUENCY: float = 2.0
+
+const CLOUD_LARGE_FREQUENCY: float = 2.2
+const CLOUD_DETAIL_FREQUENCY: float = 7.0
+const CLOUD_WISP_FREQUENCY: float = 15.0
+const DUST_FREQUENCY: float = 2.8
+const HAZE_FREQUENCY: float = 4.0
+const GAS_CLOUD_FREQUENCY: float = 3.5
+const GAS_STORM_FREQUENCY: float = 5.0
 
 const OCEAN_COLOR: Color = Color(0.025, 0.10, 0.28, 1.0)
 const SHALLOW_OCEAN_COLOR: Color = Color(0.04, 0.24, 0.38, 1.0)
@@ -85,13 +93,106 @@ static func bake_image(planet_data: PlanetData) -> Image:
 	return image
 
 
-## Generate, save to disk and return the resulting Texture2D.
+## Generate the cloud Image for a PlanetData resource without saving it.
 ##
-## output_path must be a res:// path. The editor filesystem is refreshed so
-## the new texture is importable immediately.
+## The result is an equirectangular RGBA texture. RGB stores the authored
+## cloud/haze colour and alpha stores coverage. Barren planets receive a fully
+## transparent map because they have no cloud layer.
+static func bake_cloud_image(planet_data: PlanetData) -> Image:
+	if planet_data == null:
+		push_error("PlanetTextureBaker requires a PlanetData resource.")
+		return null
+
+	var image: Image = Image.create(TEXTURE_WIDTH, TEXTURE_HEIGHT, false, Image.FORMAT_RGBA8)
+
+	var large_noise: FastNoiseLite = _make_noise(planet_data.generation_seed + 31337, CLOUD_LARGE_FREQUENCY)
+	var detail_noise: FastNoiseLite = _make_noise(planet_data.generation_seed + 42421, CLOUD_DETAIL_FREQUENCY)
+	var wisp_noise: FastNoiseLite = _make_noise(planet_data.generation_seed + 51001, CLOUD_WISP_FREQUENCY)
+	var dust_noise: FastNoiseLite = _make_noise(planet_data.generation_seed + 62003, DUST_FREQUENCY)
+	var haze_noise: FastNoiseLite = _make_noise(planet_data.generation_seed + 73009, HAZE_FREQUENCY)
+	var gas_cloud_noise: FastNoiseLite = _make_noise(planet_data.generation_seed + 84011, GAS_CLOUD_FREQUENCY)
+	var gas_storm_noise: FastNoiseLite = _make_noise(planet_data.generation_seed + 95027, GAS_STORM_FREQUENCY)
+
+	for y: int in range(TEXTURE_HEIGHT):
+		var latitude: float = float(y) / float(TEXTURE_HEIGHT - 1)
+		var latitude_angle: float = (latitude - 0.5) * PI
+
+		for x: int in range(TEXTURE_WIDTH):
+			var longitude: float = float(x) / float(TEXTURE_WIDTH) * TAU
+			var sphere_position: Vector3 = Vector3(
+				cos(latitude_angle) * cos(longitude),
+				sin(latitude_angle),
+				cos(latitude_angle) * sin(longitude)
+			)
+
+			var cloud_color: Color = Color(1.0, 1.0, 1.0, 0.0)
+
+			match planet_data.planet_type:
+				PlanetData.PlanetType.TERRAN:
+					cloud_color = _sample_terran_clouds(
+						sphere_position,
+						latitude_angle,
+						large_noise,
+						detail_noise,
+						wisp_noise
+					)
+				PlanetData.PlanetType.DESERT:
+					cloud_color = _sample_desert_clouds(
+						sphere_position,
+						latitude_angle,
+						dust_noise,
+						haze_noise
+					)
+				PlanetData.PlanetType.BARREN:
+					cloud_color = Color(1.0, 1.0, 1.0, 0.0)
+				PlanetData.PlanetType.ICE:
+					cloud_color = _sample_ice_clouds(
+						sphere_position,
+						latitude_angle,
+						haze_noise,
+						wisp_noise
+					)
+				PlanetData.PlanetType.OCEAN:
+					cloud_color = _sample_ocean_clouds(
+						sphere_position,
+						latitude_angle,
+						large_noise,
+						detail_noise,
+						gas_cloud_noise
+					)
+				PlanetData.PlanetType.VOLCANIC:
+					cloud_color = _sample_volcanic_clouds(
+						sphere_position,
+						latitude_angle,
+						large_noise,
+						detail_noise
+					)
+				PlanetData.PlanetType.GAS_GIANT:
+					cloud_color = _sample_gas_giant_clouds(
+						sphere_position,
+						latitude_angle,
+						gas_cloud_noise,
+						gas_storm_noise
+					)
+
+			image.set_pixel(x, y, cloud_color)
+
+	return image
+
+
+## Generate, save and return the resulting surface Texture2D.
 static func bake_and_save(planet_data: PlanetData, output_path: String) -> Texture2D:
 	var image: Image = bake_image(planet_data)
+	return _save_image(image, output_path)
 
+
+## Generate, save and return the resulting cloud Texture2D.
+static func bake_clouds_and_save(planet_data: PlanetData, output_path: String) -> Texture2D:
+	var image: Image = bake_cloud_image(planet_data)
+	return _save_image(image, output_path)
+
+
+static func _save_image(image: Image, output_path: String) -> Texture2D:
 	if image == null:
 		return null
 
@@ -114,29 +215,145 @@ static func bake_and_save(planet_data: PlanetData, output_path: String) -> Textu
 	var filesystem: EditorFileSystem = EditorInterface.get_resource_filesystem()
 
 	if filesystem != null:
-		# A brand-new file is not yet known to the editor's import database.
-		# update_file() registers it, then reimport_files() blocks until the
-		# .import file and imported texture actually exist on disk.
 		filesystem.update_file(output_path)
 		filesystem.reimport_files(PackedStringArray([output_path]))
 
-	# ResourceLoader.exists() checks silently. Calling load() on a path that
-	# is not actually importable yet prints Godot's own ERROR to the console
-	# before we can catch the failure, so only load() once import is confirmed.
 	if ResourceLoader.exists(output_path, "Texture2D"):
 		var imported_texture: Texture2D = load(output_path) as Texture2D
 
 		if imported_texture != null:
 			return imported_texture
 
-	# Import can still lag in rare cases (e.g. the very first bake in a fresh
-	# project). Fall back to an in-memory texture so the result is usable
-	# immediately; the file on disk will import normally on the next scan or
-	# a manual right-click Reimport in the FileSystem dock.
 	push_warning(
 		"PlanetTextureBaker: %s saved but not yet imported. Using an in-memory texture for now." % output_path
 	)
 	return ImageTexture.create_from_image(image)
+
+
+static func _sample_terran_clouds(
+	sphere_position: Vector3,
+	latitude_angle: float,
+	large_noise: FastNoiseLite,
+	detail_noise: FastNoiseLite,
+	wisp_noise: FastNoiseLite
+) -> Color:
+	var large_value: float = (large_noise.get_noise_3dv(sphere_position) + 1.0) * 0.5
+	var detail_value: float = (detail_noise.get_noise_3dv(sphere_position) + 1.0) * 0.5
+	var wisp_value: float = (wisp_noise.get_noise_3dv(sphere_position) + 1.0) * 0.5
+
+	var tropical_mask: float = 1.0 - _smoothstep(0.45, 0.85, absf(latitude_angle))
+	var polar_mask: float = _smoothstep(0.95, 1.35, absf(latitude_angle))
+
+	var broad_clouds: float = _smoothstep(0.47, 0.67, large_value)
+	var detail_mask: float = _smoothstep(0.38, 0.72, detail_value)
+	var wisps: float = _smoothstep(0.62, 0.86, wisp_value)
+
+	var density: float = broad_clouds * (0.62 + detail_mask * 0.38)
+	density += wisps * 0.16
+	density *= 0.82 + tropical_mask * 0.18
+	density = clampf(density + polar_mask * 0.12, 0.0, 1.0)
+
+	return Color(0.94, 0.96, 1.0, density * 0.82)
+
+
+static func _sample_desert_clouds(
+	sphere_position: Vector3,
+	latitude_angle: float,
+	dust_noise: FastNoiseLite,
+	haze_noise: FastNoiseLite
+) -> Color:
+	var dust_value: float = (dust_noise.get_noise_3dv(sphere_position) + 1.0) * 0.5
+	var haze_value: float = (haze_noise.get_noise_3dv(sphere_position) + 1.0) * 0.5
+
+	var dust_mask: float = _smoothstep(0.57, 0.78, dust_value)
+	var haze_mask: float = _smoothstep(0.63, 0.86, haze_value)
+	var latitude_factor: float = 0.72 + _smoothstep(0.15, 0.75, absf(latitude_angle)) * 0.28
+
+	var density: float = clampf((dust_mask * 0.72 + haze_mask * 0.28) * latitude_factor, 0.0, 1.0)
+
+	return Color(0.72, 0.50, 0.28, density * 0.38)
+
+
+static func _sample_ice_clouds(
+	sphere_position: Vector3,
+	latitude_angle: float,
+	haze_noise: FastNoiseLite,
+	wisp_noise: FastNoiseLite
+) -> Color:
+	var haze_value: float = (haze_noise.get_noise_3dv(sphere_position) + 1.0) * 0.5
+	var wisp_value: float = (wisp_noise.get_noise_3dv(sphere_position) + 1.0) * 0.5
+
+	var broad_haze: float = _smoothstep(0.48, 0.74, haze_value)
+	var wisps: float = _smoothstep(0.65, 0.88, wisp_value)
+	var latitude_factor: float = 0.55 + _smoothstep(0.2, 1.2, absf(latitude_angle)) * 0.45
+
+	var density: float = clampf((broad_haze * 0.45 + wisps * 0.55) * latitude_factor, 0.0, 1.0)
+
+	return Color(0.72, 0.86, 1.0, density * 0.22)
+
+
+static func _sample_ocean_clouds(
+	sphere_position: Vector3,
+	latitude_angle: float,
+	large_noise: FastNoiseLite,
+	detail_noise: FastNoiseLite,
+	gas_cloud_noise: FastNoiseLite
+) -> Color:
+	var broad_value: float = (large_noise.get_noise_3dv(sphere_position) + 1.0) * 0.5
+	var detail_value: float = (detail_noise.get_noise_3dv(sphere_position) + 1.0) * 0.5
+	var storm_value: float = (gas_cloud_noise.get_noise_3dv(sphere_position) + 1.0) * 0.5
+
+	var bands: float = 0.5 + 0.5 * cos(latitude_angle * 8.0)
+	var broad_clouds: float = _smoothstep(0.44, 0.70, broad_value)
+	var detail_clouds: float = _smoothstep(0.50, 0.82, detail_value)
+	var storms: float = _smoothstep(0.72, 0.92, storm_value)
+
+	var density: float = broad_clouds * 0.52 + detail_clouds * 0.20 + storms * 0.28
+	density += _smoothstep(0.62, 0.92, bands) * 0.10
+	density = clampf(density, 0.0, 1.0)
+
+	return Color(0.78, 0.90, 1.0, density * 0.70)
+
+
+static func _sample_volcanic_clouds(
+	sphere_position: Vector3,
+	latitude_angle: float,
+	large_noise: FastNoiseLite,
+	detail_noise: FastNoiseLite
+) -> Color:
+	var large_value: float = (large_noise.get_noise_3dv(sphere_position) + 1.0) * 0.5
+	var detail_value: float = (detail_noise.get_noise_3dv(sphere_position) + 1.0) * 0.5
+
+	var large_cover: float = _smoothstep(0.32, 0.58, large_value)
+	var detail_variation: float = _smoothstep(0.35, 0.72, detail_value)
+	var polar_brightness: float = _smoothstep(0.85, 1.35, absf(latitude_angle))
+
+	var density: float = clampf(0.76 + large_cover * 0.16 - detail_variation * 0.12, 0.58, 0.96)
+	var color_mix: float = clampf(0.72 + polar_brightness * 0.18, 0.0, 1.0)
+	var cloud_color: Color = Color(0.72, 0.64, 0.48, 1.0).lerp(Color(0.92, 0.86, 0.70, 1.0), color_mix)
+
+	return Color(cloud_color.r, cloud_color.g, cloud_color.b, density * 0.78)
+
+
+static func _sample_gas_giant_clouds(
+	sphere_position: Vector3,
+	latitude_angle: float,
+	gas_cloud_noise: FastNoiseLite,
+	gas_storm_noise: FastNoiseLite
+) -> Color:
+	var cloud_value: float = (gas_cloud_noise.get_noise_3dv(sphere_position) + 1.0) * 0.5
+	var storm_value: float = (gas_storm_noise.get_noise_3dv(sphere_position) + 1.0) * 0.5
+
+	var band_wave: float = 0.5 + 0.5 * cos(latitude_angle * 18.0)
+	var band_density: float = _smoothstep(0.32, 0.72, band_wave)
+	var turbulence: float = _smoothstep(0.38, 0.76, cloud_value)
+	var storms: float = _smoothstep(0.78, 0.94, storm_value)
+
+	var density: float = clampf(band_density * 0.42 + turbulence * 0.32 + storms * 0.34, 0.0, 1.0)
+	var cloud_tone: float = 0.45 + turbulence * 0.30 + storms * 0.20
+	var cloud_color: Color = Color(0.72, 0.58, 0.38, 1.0).lerp(Color(0.96, 0.88, 0.68, 1.0), clampf(cloud_tone, 0.0, 1.0))
+
+	return Color(cloud_color.r, cloud_color.g, cloud_color.b, density * 0.52)
 
 
 static func _sample_surface(
@@ -206,7 +423,7 @@ static func _sample_land_and_ocean(
 	continent_threshold: float
 ) -> Color:
 	var continent_value: float = (continent_noise.get_noise_3dv(sphere_position) + 1.0) * 0.5
-	var land_mask: float = smoothstep(
+	var land_mask: float = _smoothstep(
 		continent_threshold - LAND_EDGE,
 		continent_threshold + LAND_EDGE,
 		continent_value
@@ -216,7 +433,7 @@ static func _sample_land_and_ocean(
 	var land_color: Color = land_low_color.lerp(land_high_color, terrain_value)
 
 	var latitude_cosine: float = cos(latitude_angle)
-	var polar_mask: float = smoothstep(0.70, 0.96, absf(latitude_cosine))
+	var polar_mask: float = _smoothstep(0.70, 0.96, absf(latitude_cosine))
 	var final_land_color: Color = land_color.lerp(POLAR_COLOR, polar_mask * 0.85)
 
 	var ocean_depth: float = clampf(1.0 - continent_value, 0.0, 1.0)
@@ -246,7 +463,12 @@ static func _sample_gas_giant(sphere_position: Vector3, band_noise: FastNoiseLit
 	var band_position: float = latitude_fraction * 12.0 + band_noise_value * 1.4
 	var band_value: float = fposmod(band_position, 1.0)
 
-	return GAS_GIANT_BAND_COLOR_A.lerp(GAS_GIANT_BAND_COLOR_B, smoothstep(0.25, 0.75, band_value))
+	return GAS_GIANT_BAND_COLOR_A.lerp(GAS_GIANT_BAND_COLOR_B, _smoothstep(0.25, 0.75, band_value))
+
+
+static func _smoothstep(edge_0: float, edge_1: float, value: float) -> float:
+	var t: float = clampf((value - edge_0) / (edge_1 - edge_0), 0.0, 1.0)
+	return t * t * (3.0 - 2.0 * t)
 
 
 static func _make_noise(noise_seed: int, frequency: float) -> FastNoiseLite:
