@@ -345,16 +345,33 @@ static func _sample_gas_giant_clouds(
 	var storm_value: float = (gas_storm_noise.get_noise_3dv(sphere_position) + 1.0) * 0.5
 
 	var band_wave: float = 0.5 + 0.5 * cos(latitude_angle * 18.0)
-	var band_density: float = _smoothstep(0.32, 0.72, band_wave)
-	var turbulence: float = _smoothstep(0.38, 0.76, cloud_value)
-	var storms: float = _smoothstep(0.78, 0.94, storm_value)
+	var band_structure: float = _smoothstep(0.15, 0.85, band_wave)
 
-	var density: float = clampf(band_density * 0.42 + turbulence * 0.32 + storms * 0.34, 0.0, 1.0)
-	var cloud_tone: float = 0.45 + turbulence * 0.30 + storms * 0.20
-	var cloud_color: Color = Color(0.72, 0.58, 0.38, 1.0).lerp(Color(0.96, 0.88, 0.68, 1.0), clampf(cloud_tone, 0.0, 1.0))
+	var turbulence: float = _smoothstep(0.28, 0.72, cloud_value)
+	var storms: float = _smoothstep(0.68, 0.92, storm_value)
 
-	return Color(cloud_color.r, cloud_color.g, cloud_color.b, density * 0.52)
+	var cloud_density: float = 0.58
+	cloud_density += band_structure * 0.18
+	cloud_density += turbulence * 0.18
+	cloud_density += storms * 0.16
 
+	cloud_density = clampf(cloud_density, 0.45, 0.98)
+
+	var cloud_tone: float = 0.35
+	cloud_tone += turbulence * 0.25
+	cloud_tone += storms * 0.30
+
+	var cloud_color: Color = Color(0.68, 0.54, 0.34, 1.0).lerp(
+		Color(0.96, 0.88, 0.68, 1.0),
+		clampf(cloud_tone, 0.0, 1.0)
+	)
+
+	return Color(
+		cloud_color.r,
+		cloud_color.g,
+		cloud_color.b,
+		cloud_density * 0.85
+	)
 
 static func _sample_surface(
 	planet_type: int,

@@ -1,16 +1,16 @@
 [gd_resource type="Resource" script_class="PlanetData" format=3 uid="uid://caad3sxhnffhj"]
 
+[ext_resource type="Texture2D" uid="uid://balalm0hhh8b7" path="res://assets/textures/planets/generated/starter_planet_clouds.png" id="1_0jy4t"]
 [ext_resource type="Script" uid="uid://codq567d8wdmb" path="res://data/planets/planet_data.gd" id="1_planet_data"]
 [ext_resource type="Texture2D" uid="uid://dddehenctvrb8" path="res://assets/textures/planets/generated/starter_planet_surface.png" id="3_0jy4t"]
-[ext_resource type="Texture2D" uid="uid://cq8habksncsuk" path="res://assets/textures/planets/asteron_clouds.svg" id="3_clouds"]
 
 [resource]
 script = ExtResource("1_planet_data")
 id = &"starter_planet"
 display_name = "Asteron"
-planet_type = 1
+planet_type = 6
 surface_texture = ExtResource("3_0jy4t")
-cloud_texture = ExtResource("3_clouds")
+cloud_texture = ExtResource("1_0jy4t")
 radius_m = 150.0
 atmosphere_color = Color(0.18, 0.5, 1, 1)
 atmosphere_density = 0.8
