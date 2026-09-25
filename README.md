@@ -130,8 +130,9 @@ The player never flies into the atmosphere or lands the ship on the ground. The 
 ### Preventing ships from flying into planets
 
 1. Hard collision sphere matching the visual planet.
-2. Slightly larger Area3D that triggers a warning and optional gentle push when a ship gets too close.
-3. Clear HUD / scanner feedback (“Planetary exclusion zone”).
+2. Slightly larger Area3D that detects ships entering the planetary exclusion zone.
+3. The exclusion signal can later drive HUD warnings, scanner feedback and a gentle outward safety force.
+4. This applies to both the player and AI ships, so combat near planets cannot turn into accidental planet clipping.
 
 This must work during normal flight and during combat.
 
@@ -337,7 +338,7 @@ Only after space, stations and planets feel excellent do we expand into elevator
 ## Rendering
 **3D** — readable, stylised visuals preferred over photorealism.
 
-## Planet Implementation (target)
+## Planet Implementation
 
 ```text
 Planet (Node3D)
@@ -360,8 +361,9 @@ Reusable ship, flight model, combat, targeting, HUD, basic AI.
 
 ## Milestone 4 - Solid Space & Planets (CURRENT FOCUS)
 - [ ] High-quality planet visuals (surface, clouds, atmosphere)
-- [ ] Solid planet collision (ships cannot fly through)
-- [ ] Exclusion / warning zone around planets
+- [x] Solid planet collision (ships cannot fly through)
+- [x] Planetary exclusion detection zone
+- [ ] Exclusion warning / safety response
 - [ ] Multiple player spacecraft
 - [ ] Reliable docking at a simple orbital station
 - [ ] Station interior as a basic hub
