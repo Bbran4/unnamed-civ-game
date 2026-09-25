@@ -9,21 +9,23 @@ extends Node3D
 @export_category("Planet Definition")
 @export var planet_data: PlanetData
 
+@export_category("Planetary Boundary")
+## Distance outside the visual planet where the warning/exclusion zone begins.
+@export var exclusion_zone_height_m: float = 8.0
+
 @onready var planet_body: MeshInstance3D = $PlanetBody
 @onready var planet_collision: StaticBody3D = $PlanetCollision
 @onready var atmosphere: MeshInstance3D = $Atmosphere
 @onready var clouds: MeshInstance3D = $Clouds
 @onready var collision_shape: CollisionShape3D = $PlanetCollision/CollisionShape3D
+@onready var exclusion_zone: Area3D = $ExclusionZone
 
 var surface_material: StandardMaterial3D
 var atmosphere_material: ShaderMaterial
 var cloud_material: ShaderMaterial
 
-signal flight_environment_changed(
-	ship: Ship,
-	environment: Ship.FlightEnvironment,
-	altitude_m: float
-)
+signal planetary_exclusion_zone_entered(ship: Ship)
+signal planetary_exclusion_zone_exited(ship: Ship)
 
 
 func _ready() -> void:
@@ -43,6 +45,7 @@ func _apply_planet_data() -> void:
 	planet_collision.scale = Vector3(radius, radius, radius)
 	atmosphere.scale = Vector3(atmosphere_radius, atmosphere_radius, atmosphere_radius)
 	clouds.scale = Vector3(cloud_radius, cloud_radius, cloud_radius)
+	_configure_exclusion_zone(radius)
 
 	surface_material = planet_body.material_override as StandardMaterial3D
 	atmosphere_material = atmosphere.material_override as ShaderMaterial
@@ -77,89 +80,34 @@ func _apply_emission(material: StandardMaterial3D) -> void:
 	material.emission_texture = emission_texture
 	material.emission_energy_multiplier = 1.0
 
+func _configure_exclusion_zone(radius: float) -> void:
+	if exclusion_zone == null:
+		return
 
-func get_altitude_m(world_position: Vector3) -> float:
-	if planet_data == null:
-		return INF
-
-	var radius: float = maxf(planet_data.radius_m, 1.0)
-	var distance_from_centre: float = global_position.distance_to(world_position)
-	return distance_from_centre - radius
-
-
-func get_atmosphere_fraction(world_position: Vector3) -> float:
-	if planet_data == null or not planet_data.has_atmosphere:
-		return 0.0
-
-	var altitude_m: float = get_altitude_m(world_position)
-	var atmosphere_height_m: float = maxf(planet_data.atmosphere_height_m, 0.1)
-
-	return clampf(
-		1.0 - (altitude_m / atmosphere_height_m),
-		0.0,
-		1.0
+	var exclusion_radius: float = radius + maxf(exclusion_zone_height_m, 0.0)
+	exclusion_zone.scale = Vector3(
+		exclusion_radius,
+		exclusion_radius,
+		exclusion_radius
 	)
+	exclusion_zone.monitoring = true
+	exclusion_zone.monitorable = false
 
 
-func get_flight_environment(world_position: Vector3) -> Ship.FlightEnvironment:
-	if planet_data == null:
-		return Ship.FlightEnvironment.SPACE
-
-	var altitude_m: float = get_altitude_m(world_position)
-
-	if altitude_m <= 0.0:
-		return Ship.FlightEnvironment.SURFACE
-
-	if planet_data.has_atmosphere and altitude_m <= planet_data.atmosphere_height_m:
-		return Ship.FlightEnvironment.ATMOSPHERE
-
-	return Ship.FlightEnvironment.SPACE
-
-
-func update_ship_environment(ship: Ship, delta: float) -> void:
+func _on_exclusion_zone_body_entered(body: Node3D) -> void:
+	var ship: Ship = body as Ship
 	if ship == null:
 		return
 
-	var altitude_m: float = get_altitude_m(ship.global_position)
-	var environment: Ship.FlightEnvironment = get_flight_environment(ship.global_position)
-	var new_atmosphere_fraction: float = get_atmosphere_fraction(ship.global_position)
+	planetary_exclusion_zone_entered.emit(ship)
 
-	_apply_planetary_gravity(ship, altitude_m, delta)
-	_update_atmosphere_visuals(altitude_m)
 
-	if ship.flight_environment == environment and ship.current_planet == self:
-		ship.atmosphere_fraction = new_atmosphere_fraction
+func _on_exclusion_zone_body_exited(body: Node3D) -> void:
+	var ship: Ship = body as Ship
+	if ship == null:
 		return
 
-	ship.set_flight_environment(
-		environment,
-		self if environment != Ship.FlightEnvironment.SPACE else null,
-		new_atmosphere_fraction
-	)
-	flight_environment_changed.emit(ship, environment, altitude_m)
-
-func _apply_planetary_gravity(ship: Ship, altitude_m: float, delta: float) -> void:
-	if planet_data == null:
-		return
-
-	var surface_gravity_mps2: float = maxf(planet_data.surface_gravity_mps2, 0.0)
-	var influence_height_m: float = maxf(planet_data.gravity_influence_height_m, 0.0)
-
-	if surface_gravity_mps2 <= 0.0 or altitude_m > influence_height_m:
-		return
-
-	var radius_m: float = maxf(planet_data.radius_m, 1.0)
-	var distance_from_centre_m: float = maxf(
-		radius_m + altitude_m,
-		radius_m
-	)
-	var gravity_scale: float = pow(radius_m / distance_from_centre_m, 2.0)
-	var gravity_acceleration_mps2: float = surface_gravity_mps2 * gravity_scale
-	var direction_to_centre: Vector3 = (
-		global_position - ship.global_position
-	).normalized()
-
-	ship.velocity += direction_to_centre * gravity_acceleration_mps2 * delta
+	planetary_exclusion_zone_exited.emit(ship)
 
 
 func _update_atmosphere_visuals(altitude_m: float) -> void:
