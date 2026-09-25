@@ -1,27 +1,22 @@
 [gd_resource type="Resource" script_class="PlanetData" format=3]
 
 [ext_resource type="Script" path="res://data/planets/planet_data.gd" id="1_planet_data"]
+[ext_resource type="Texture2D" path="res://assets/textures/planets/asteron_surface.svg" id="2_surface"]
+[ext_resource type="Texture2D" path="res://assets/textures/planets/asteron_clouds.svg" id="3_clouds"]
 
 [resource]
 script = ExtResource("1_planet_data")
 id = &"starter_planet"
 display_name = "Asteron"
 planet_type = 0
-generation_seed = 18473
-continent_noise_scale = 1.35
-continent_threshold = 0.55
+surface_texture = ExtResource("2_surface")
+cloud_texture = ExtResource("3_clouds")
+emission_texture = null
 radius_m = 150.0
-surface_color_a = Color(0.08, 0.24, 0.12, 1)
-surface_color_b = Color(0.55, 0.38, 0.18, 1)
-ocean_color = Color(0.025, 0.11, 0.3, 1)
-surface_noise_scale = 2.2
-surface_noise_strength = 0.78
-surface_contrast = 1.4
 has_atmosphere = true
 atmosphere_color = Color(0.18, 0.5, 1, 1)
 atmosphere_density = 0.8
 atmosphere_height_m = 5.0
 has_clouds = true
-cloud_density = 0.32
 cloud_speed = 0.003
 has_rings = false
