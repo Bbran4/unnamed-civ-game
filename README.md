@@ -202,13 +202,13 @@ The intended technical model is:
 
 ```text
 Planetary coordinates
-        ↓
+		↓
 Floating-origin / local-coordinate system
-        ↓
+		↓
 Terrain streaming
-        ↓
+		↓
 Local Godot world
-        ↓
+		↓
 Ship / character / NPC gameplay
 ```
 
@@ -224,15 +224,15 @@ The technical target is:
 
 ```text
 Planet
-    ↓
+	↓
 Planetary coordinates
-    ↓
+	↓
 Deterministic terrain generation
-    ↓
+	↓
 Streaming terrain tiles
-    ↓
+	↓
 Nearby high-detail terrain
-    ↓
+	↓
 Distant low-detail terrain
 ```
 
@@ -254,13 +254,13 @@ Mining is primarily performed in space. Asteroid fields can contain mineable res
 
 ```text
 Asteroid field
-    ↓
+	↓
 Locate resource-bearing asteroid
-    ↓
+	↓
 Mine with ship equipment
-    ↓
+	↓
 Collect resources
-    ↓
+	↓
 Return to station / sell / use
 ```
 
