@@ -25,7 +25,7 @@ enum PlanetType {
 ## Equirectangular albedo texture authored for this planet.
 @export var surface_texture: Texture2D
 
-## Optional equirectangular cloud texture. White pixels are opaque clouds.
+## Optional equirectangular cloud texture.
 @export var cloud_texture: Texture2D
 
 ## Optional equirectangular emission texture for night-side lights.
