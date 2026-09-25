@@ -13,6 +13,8 @@ extends Node3D
 @export_category("Streaming")
 @export var stream_distance_m: float = 140.0
 @export var view_distance_tiles: int = 2
+@export var medium_lod_distance_tiles: int = 1
+@export var far_lod_distance_tiles: int = 2
 
 @export_category("Generation")
 @export var tile_resolution: int = 17
@@ -122,20 +124,37 @@ func _stream_around_ship() -> void:
 			var tile_y: int = int(candidate_tile["y"])
 			var key: String = _tile_key(face, tile_x, tile_y)
 
+			var tile_distance: int = maxi(absi(offset_x), absi(offset_y))
+			var desired_resolution: int = _get_lod_resolution(tile_distance)
+
 			desired_tiles[key] = {
 				"face": face,
 				"x": tile_x,
-				"y": tile_y
+				"y": tile_y,
+				"resolution": desired_resolution
 			}
 
 	for key: String in desired_tiles:
-		if not loaded_tiles.has(key):
-			var tile_data: Dictionary = desired_tiles[key]
+		var tile_data: Dictionary = desired_tiles[key]
+		var desired_resolution: int = int(tile_data["resolution"])
+		var existing_tile: PlanetTerrainTile = loaded_tiles.get(key) as PlanetTerrainTile
+
+		if existing_tile == null:
 			_create_tile(
 				key,
 				int(tile_data["face"]),
 				int(tile_data["x"]),
-				int(tile_data["y"])
+				int(tile_data["y"]),
+				desired_resolution
+			)
+		elif existing_tile.resolution != desired_resolution:
+			_remove_tile(key)
+			_create_tile(
+				key,
+				int(tile_data["face"]),
+				int(tile_data["x"]),
+				int(tile_data["y"]),
+				desired_resolution
 			)
 
 	var loaded_keys: Array = loaded_tiles.keys()
@@ -147,7 +166,17 @@ func _stream_around_ship() -> void:
 			_remove_tile(key)
 
 
-func _create_tile(key: String, face: int, tile_x: int, tile_y: int) -> void:
+func _get_lod_resolution(tile_distance: int) -> int:
+	if tile_distance <= medium_lod_distance_tiles:
+		return tile_resolution
+
+	if tile_distance <= far_lod_distance_tiles:
+		return maxi((tile_resolution + 1) / 2, 3)
+
+	return maxi((tile_resolution + 3) / 4, 3)
+
+
+func _create_tile(key: String, face: int, tile_x: int, tile_y: int, desired_resolution: int) -> void:
 	var tile: PlanetTerrainTile = PlanetTerrainTile.new()
 	tile.name = "TerrainTile_%s" % key.replace(":", "_")
 	tile.setup(
@@ -155,7 +184,7 @@ func _create_tile(key: String, face: int, tile_x: int, tile_y: int) -> void:
 		face,
 		tile_x,
 		tile_y,
-		tile_resolution,
+		desired_resolution,
 		tile_angular_size_degrees,
 		terrain_height_m,
 		terrain_noise,
