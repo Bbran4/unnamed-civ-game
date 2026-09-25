@@ -158,6 +158,9 @@ shader_parameter/ocean_color = Color(0.025, 0.11, 0.3, 1)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4q6jh"]
 albedo_texture = ExtResource("3_4pkb0")
 
+[sub_resource type="SphereShape3D" id="SphereShape_planet"]
+radius = 1.0
+
 [sub_resource type="SphereMesh" id="Sphere_planet"]
 radius = 1.0
 height = 2.0
@@ -184,6 +187,11 @@ planet_data = ExtResource("4_data")
 material_override = SubResource("Material_surface")
 material_overlay = SubResource("StandardMaterial3D_4q6jh")
 mesh = SubResource("Sphere_planet")
+
+[node name="PlanetCollision" type="StaticBody3D" parent="." unique_id=2758194261]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PlanetCollision" unique_id=2758194262]
+shape = SubResource("SphereShape_planet")
 
 [node name="Atmosphere" type="MeshInstance3D" parent="." unique_id=471950228]
 material_override = SubResource("Material_atmosphere")
