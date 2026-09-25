@@ -19,6 +19,12 @@ var surface_material: StandardMaterial3D
 var atmosphere_material: ShaderMaterial
 var cloud_material: ShaderMaterial
 
+signal flight_environment_changed(
+	ship: Ship,
+	environment: Ship.FlightEnvironment,
+	altitude_m: float
+)
+
 
 func _ready() -> void:
 	_apply_planet_data()
@@ -70,3 +76,61 @@ func _apply_emission(material: StandardMaterial3D) -> void:
 	material.emission_enabled = true
 	material.emission_texture = emission_texture
 	material.emission_energy_multiplier = 1.0
+
+
+func get_altitude_m(world_position: Vector3) -> float:
+	if planet_data == null:
+		return INF
+
+	var radius: float = maxf(planet_data.radius_m, 1.0)
+	var distance_from_centre: float = global_position.distance_to(world_position)
+	return distance_from_centre - radius
+
+
+func get_atmosphere_fraction(world_position: Vector3) -> float:
+	if planet_data == null or not planet_data.has_atmosphere:
+		return 0.0
+
+	var altitude_m: float = get_altitude_m(world_position)
+	var atmosphere_height_m: float = maxf(planet_data.atmosphere_height_m, 0.1)
+
+	return clampf(
+		1.0 - (altitude_m / atmosphere_height_m),
+		0.0,
+		1.0
+	)
+
+
+func get_flight_environment(world_position: Vector3) -> Ship.FlightEnvironment:
+	if planet_data == null:
+		return Ship.FlightEnvironment.SPACE
+
+	var altitude_m: float = get_altitude_m(world_position)
+
+	if altitude_m <= 0.0:
+		return Ship.FlightEnvironment.SURFACE
+
+	if planet_data.has_atmosphere and altitude_m <= planet_data.atmosphere_height_m:
+		return Ship.FlightEnvironment.ATMOSPHERE
+
+	return Ship.FlightEnvironment.SPACE
+
+
+func update_ship_environment(ship: Ship) -> void:
+	if ship == null:
+		return
+
+	var altitude_m: float = get_altitude_m(ship.global_position)
+	var environment: Ship.FlightEnvironment = get_flight_environment(ship.global_position)
+	var new_atmosphere_fraction: float = get_atmosphere_fraction(ship.global_position)
+
+	if ship.flight_environment == environment and ship.current_planet == self:
+		ship.atmosphere_fraction = new_atmosphere_fraction
+		return
+
+	ship.set_flight_environment(
+		environment,
+		self if environment != Ship.FlightEnvironment.SPACE else null,
+		new_atmosphere_fraction
+	)
+	flight_environment_changed.emit(ship, environment, altitude_m)
