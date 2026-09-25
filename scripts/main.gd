@@ -16,6 +16,12 @@ var prototype_credits: int = 0
 
 @onready var player_ship: Ship = $PlayerShip
 @onready var ship_spawner: ShipSpawner = $ShipSpawner
+@onready var asteron: Planet = $Asteron
+
+
+func _physics_process(_delta: float) -> void:
+	if player_ship != null and asteron != null:
+		asteron.update_ship_environment(player_ship)
 
 
 func _ready() -> void:
