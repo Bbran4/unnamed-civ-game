@@ -45,6 +45,8 @@ enum PlanetType {
 @export var atmosphere_color: Color = Color(0.18, 0.48, 1.0, 1.0)
 @export var atmosphere_density: float = 0.75
 @export var atmosphere_height_m: float = 4.0
+## Multiplier used by ships to model aerodynamic drag while in the atmosphere.
+@export var atmospheric_drag_strength: float = 0.0
 
 @export_category("Clouds")
 @export var has_clouds: bool = true
