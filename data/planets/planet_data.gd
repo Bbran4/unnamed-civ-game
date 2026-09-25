@@ -24,6 +24,8 @@ enum PlanetType {
 @export_category("Generation")
 ## The same seed always produces the same surface pattern.
 @export var generation_seed: int = 1
+@export var continent_noise_scale: float = 1.35
+@export_range(0.0, 1.0, 0.01) var continent_threshold: float = 0.55
 
 @export_category("Physical")
 ## Planet radius in metres.
