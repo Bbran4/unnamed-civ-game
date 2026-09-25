@@ -62,7 +62,18 @@ vec3 rotate_cloud_position(vec3 position, float angle) {
 }
 
 void fragment() {
-	vec3 sphere_position = normalize(NORMAL);
+	// UV coordinates are fixed to the sphere mesh, so the cloud pattern
+	// remains attached to the planet. TIME only rotates the clouds around it.
+	float longitude = (UV.x - 0.5) * 6.28318530718;
+	float latitude = (UV.y - 0.5) * 3.14159265359;
+	float latitude_cosine = cos(latitude);
+
+	vec3 sphere_position = normalize(vec3(
+		cos(longitude) * latitude_cosine,
+		sin(latitude),
+		sin(longitude) * latitude_cosine
+	));
+
 	float rotation_angle = TIME * cloud_speed;
 	vec3 cloud_position = rotate_cloud_position(sphere_position, rotation_angle);
 
