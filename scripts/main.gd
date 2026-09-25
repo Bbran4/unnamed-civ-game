@@ -20,9 +20,9 @@ var prototype_credits: int = 0
 @onready var asteron_surface_streamer: PlanetSurfaceStreamer = $Asteron/PlanetSurfaceStreamer
 
 
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	if player_ship != null and asteron != null:
-		asteron.update_ship_environment(player_ship)
+		asteron.update_ship_environment(player_ship, delta)
 
 
 func _ready() -> void:
