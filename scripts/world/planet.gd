@@ -116,7 +116,7 @@ func get_flight_environment(world_position: Vector3) -> Ship.FlightEnvironment:
 	return Ship.FlightEnvironment.SPACE
 
 
-func update_ship_environment(ship: Ship) -> void:
+func update_ship_environment(ship: Ship, delta: float) -> void:
 	if ship == null:
 		return
 
@@ -124,6 +124,7 @@ func update_ship_environment(ship: Ship) -> void:
 	var environment: Ship.FlightEnvironment = get_flight_environment(ship.global_position)
 	var new_atmosphere_fraction: float = get_atmosphere_fraction(ship.global_position)
 
+	_apply_planetary_gravity(ship, altitude_m, delta)
 	_update_atmosphere_visuals(altitude_m)
 
 	if ship.flight_environment == environment and ship.current_planet == self:
@@ -136,6 +137,29 @@ func update_ship_environment(ship: Ship) -> void:
 		new_atmosphere_fraction
 	)
 	flight_environment_changed.emit(ship, environment, altitude_m)
+
+func _apply_planetary_gravity(ship: Ship, altitude_m: float, delta: float) -> void:
+	if planet_data == null:
+		return
+
+	var surface_gravity_mps2: float = maxf(planet_data.surface_gravity_mps2, 0.0)
+	var influence_height_m: float = maxf(planet_data.gravity_influence_height_m, 0.0)
+
+	if surface_gravity_mps2 <= 0.0 or altitude_m > influence_height_m:
+		return
+
+	var radius_m: float = maxf(planet_data.radius_m, 1.0)
+	var distance_from_centre_m: float = maxf(
+		radius_m + altitude_m,
+		radius_m
+	)
+	var gravity_scale: float = pow(radius_m / distance_from_centre_m, 2.0)
+	var gravity_acceleration_mps2: float = surface_gravity_mps2 * gravity_scale
+	var direction_to_centre: Vector3 = (
+		global_position - ship.global_position
+	).normalized()
+
+	ship.velocity += direction_to_centre * gravity_acceleration_mps2 * delta
 
 
 func _update_atmosphere_visuals(altitude_m: float) -> void:
