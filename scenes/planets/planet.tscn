@@ -1,11 +1,10 @@
-[gd_scene load_steps=8 format=3 uid="uid://c8dmucrlm5jnl"]
+[gd_scene load_steps=7 format=3 uid="uid://c8dmucrlm5jnl"]
 
 [ext_resource type="Script" uid="uid://dhnd5vwta5h01" path="res://scripts/world/planet.gd" id="1_planet"]
 [ext_resource type="Shader" uid="uid://doryqbibtdbdw" path="res://shaders/planet_atmosphere.gdshader" id="2_atmosphere"]
 [ext_resource type="Texture2D" uid="uid://daxgmjhtj6t8a" path="res://assets/textures/planets/generated/Asteron_surface.png" id="3_4pkb0"]
 [ext_resource type="Shader" uid="uid://bljhjdk0jae3g" path="res://shaders/planet_clouds.gdshader" id="3_clouds"]
 [ext_resource type="Resource" uid="uid://caad3sxhnffhj" path="res://data/planets/asteron.tres" id="4_data"]
-[ext_resource type="Script" path="res://scripts/world/planet_surface_streamer.gd" id="5_streamer"]
 
 [sub_resource type="Shader" id="Shader_4q6jh"]
 code = "shader_type spatial;
