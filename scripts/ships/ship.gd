@@ -13,6 +13,13 @@ extends CharacterBody3D
 const THROTTLE_RESPONSE_TIME: float = 1.0
 const WEAPON_SCENE: PackedScene = preload("res://scenes/weapons/weapon.tscn")
 
+
+enum FlightEnvironment {
+	SPACE,
+	ATMOSPHERE,
+	SURFACE
+}
+
 @export_category("Ship Definition")
 @export var ship_data: ShipData
 
@@ -36,6 +43,9 @@ var shield_recharge_delay_remaining: float = 0.0
 var energy_recharge_delay_remaining: float = 0.0
 
 var throttle: float = 0.0
+var flight_environment: FlightEnvironment = FlightEnvironment.SPACE
+var current_planet: Planet = null
+var atmosphere_fraction: float = 0.0
 var boost_active: bool = false
 var brake_active: bool = false
 
@@ -78,6 +88,7 @@ func _physics_process(delta: float) -> void:
 	_apply_rotation(delta, intent)
 	_apply_throttle(delta, intent)
 	_apply_translation(delta, intent)
+	_apply_atmospheric_drag(delta)
 	_apply_weapons(intent)
 	move_and_slide()
 
@@ -235,6 +246,36 @@ func _apply_translation(delta: float, intent: Dictionary) -> void:
 			flight_assist_acceleration * delta
 		)
 		velocity = forward * current_forward_speed + corrected_lateral_velocity
+
+func set_flight_environment(
+	environment: FlightEnvironment,
+	planet: Planet = null,
+	new_atmosphere_fraction: float = 0.0
+) -> void:
+	flight_environment = environment
+	current_planet = planet
+	atmosphere_fraction = clampf(new_atmosphere_fraction, 0.0, 1.0)
+
+
+func _apply_atmospheric_drag(delta: float) -> void:
+	if flight_environment != FlightEnvironment.ATMOSPHERE:
+		return
+
+	if current_planet == null or current_planet.planet_data == null:
+		return
+
+	var drag_strength: float = maxf(
+		current_planet.planet_data.atmospheric_drag_strength,
+		0.0
+	)
+	var drag_factor: float = drag_strength * atmosphere_fraction
+
+	if drag_factor <= 0.0 or velocity.length_squared() <= 0.0001:
+		return
+
+	var drag_acceleration: float = velocity.length() * drag_factor
+	velocity = velocity.move_toward(Vector3.ZERO, drag_acceleration * delta)
+
 
 func _update_resource_regeneration(delta: float) -> void:
 	if ship_data == null or destroyed_state:
