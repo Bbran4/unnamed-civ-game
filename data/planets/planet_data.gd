@@ -58,6 +58,12 @@ enum PlanetType {
 ## Planet radius in metres.
 @export var radius_m: float = 100.0
 
+@export_category("Gravity")
+## Surface gravity in metres per second squared.
+@export var surface_gravity_mps2: float = 9.81
+## Height above the planet surface at which planetary gravity stops affecting ships.
+@export var gravity_influence_height_m: float = 120.0
+
 @export_category("Atmosphere")
 @export var has_atmosphere: bool = true
 @export var atmosphere_color: Color = Color(0.18, 0.48, 1.0, 1.0)
