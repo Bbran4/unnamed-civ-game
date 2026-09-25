@@ -17,7 +17,6 @@ extends Node3D
 @onready var planet_collision: StaticBody3D = $PlanetCollision
 @onready var atmosphere: MeshInstance3D = $Atmosphere
 @onready var clouds: MeshInstance3D = $Clouds
-@onready var collision_shape: CollisionShape3D = $PlanetCollision/CollisionShape3D
 @onready var exclusion_zone: Area3D = $ExclusionZone
 
 var surface_material: StandardMaterial3D
@@ -114,24 +113,3 @@ func _on_exclusion_zone_body_exited(body: Node3D) -> void:
 	planetary_exclusion_zone_exited.emit(ship)
 
 
-func _update_atmosphere_visuals(altitude_m: float) -> void:
-	if atmosphere_material == null or planet_data == null:
-		return
-
-	if not planet_data.has_atmosphere:
-		return
-
-	var atmosphere_height_m: float = maxf(planet_data.atmosphere_height_m, 0.1)
-	var approach_distance_m: float = atmosphere_height_m * 4.0
-	var approach_fraction: float = clampf(
-		1.0 - (altitude_m / approach_distance_m),
-		0.0,
-		1.0
-	)
-	var visual_density: float = lerpf(
-		planet_data.atmosphere_density * 0.35,
-		planet_data.atmosphere_density,
-		approach_fraction
-	)
-
-	atmosphere_material.set_shader_parameter("atmosphere_density", visual_density)
