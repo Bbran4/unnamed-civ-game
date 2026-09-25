@@ -67,8 +67,6 @@ func _build_mesh() -> void:
 			_add_triangle(surface_tool, u0, v0, u1, v0, u1, v1)
 			_add_triangle(surface_tool, u0, v0, u1, v1, u0, v1)
 
-	surface_tool.generate_normals()
-
 	var terrain_mesh: ArrayMesh = surface_tool.commit()
 
 	if terrain_mesh == null:
@@ -104,12 +102,15 @@ func _add_triangle(
 	var position_1: Vector3 = _surface_position(u1, v1)
 	var position_2: Vector3 = _surface_position(u2, v2)
 
+	surface_tool.set_normal(position_0.normalized())
 	surface_tool.set_uv(Vector2(0.0, 0.0))
 	surface_tool.add_vertex(position_0)
 
+	surface_tool.set_normal(position_1.normalized())
 	surface_tool.set_uv(Vector2(1.0, 0.0))
 	surface_tool.add_vertex(position_1)
 
+	surface_tool.set_normal(position_2.normalized())
 	surface_tool.set_uv(Vector2(1.0, 1.0))
 	surface_tool.add_vertex(position_2)
 
@@ -152,6 +153,7 @@ func _create_material() -> StandardMaterial3D:
 	var material: StandardMaterial3D = StandardMaterial3D.new()
 	material.roughness = 0.95
 	material.metallic = 0.0
+	material.cull_mode = BaseMaterial3D.CULL_DISABLED
 
 	match planet.planet_data.planet_type:
 		PlanetData.PlanetType.ICE:
