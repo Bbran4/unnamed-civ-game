@@ -55,6 +55,53 @@ const GAS_GIANT_BAND_COLOR_A: Color = Color(0.55, 0.38, 0.18, 1.0)
 const GAS_GIANT_BAND_COLOR_B: Color = Color(0.82, 0.66, 0.4, 1.0)
 
 
+## Generate atmosphere settings for a PlanetData resource.
+##
+## Atmosphere is a runtime optical effect rather than a baked texture, so the
+## baker assigns the appropriate parameters directly to PlanetData.
+static func bake_atmosphere(planet_data: PlanetData) -> void:
+	if planet_data == null:
+		push_error("PlanetTextureBaker requires a PlanetData resource.")
+		return
+
+	match planet_data.planet_type:
+		PlanetData.PlanetType.TERRAN:
+			planet_data.has_atmosphere = true
+			planet_data.atmosphere_color = Color(0.18, 0.48, 1.0, 1.0)
+			planet_data.atmosphere_density = 0.80
+			planet_data.atmosphere_height_m = 5.0
+		PlanetData.PlanetType.DESERT:
+			planet_data.has_atmosphere = true
+			planet_data.atmosphere_color = Color(0.72, 0.43, 0.22, 1.0)
+			planet_data.atmosphere_density = 0.30
+			planet_data.atmosphere_height_m = 3.0
+		PlanetData.PlanetType.BARREN:
+			planet_data.has_atmosphere = false
+			planet_data.atmosphere_color = Color(0.35, 0.35, 0.35, 1.0)
+			planet_data.atmosphere_density = 0.0
+			planet_data.atmosphere_height_m = 0.5
+		PlanetData.PlanetType.ICE:
+			planet_data.has_atmosphere = true
+			planet_data.atmosphere_color = Color(0.55, 0.78, 1.0, 1.0)
+			planet_data.atmosphere_density = 0.35
+			planet_data.atmosphere_height_m = 3.0
+		PlanetData.PlanetType.OCEAN:
+			planet_data.has_atmosphere = true
+			planet_data.atmosphere_color = Color(0.12, 0.65, 1.0, 1.0)
+			planet_data.atmosphere_density = 0.90
+			planet_data.atmosphere_height_m = 5.0
+		PlanetData.PlanetType.VOLCANIC:
+			planet_data.has_atmosphere = true
+			planet_data.atmosphere_color = Color(0.85, 0.20, 0.06, 1.0)
+			planet_data.atmosphere_density = 0.45
+			planet_data.atmosphere_height_m = 3.5
+		PlanetData.PlanetType.GAS_GIANT:
+			planet_data.has_atmosphere = true
+			planet_data.atmosphere_color = Color(0.86, 0.68, 0.42, 1.0)
+			planet_data.atmosphere_density = 0.70
+			planet_data.atmosphere_height_m = 8.0
+
+
 ## Generate the surface Image for a PlanetData resource without saving it.
 static func bake_image(planet_data: PlanetData) -> Image:
 	if planet_data == null:
